@@ -1,0 +1,14 @@
+{
+  "require": {
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "OrganizeYourLinks\\": "src/library"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}
