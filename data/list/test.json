@@ -1,0 +1,37 @@
+{
+  "id": "",
+  "name": "",
+  "list": "1 | 2 | 3",
+  "seasons": [
+    {
+      "thumbnail": "",
+      "episodes": [
+        {
+          "name": "",
+          "url": "",
+          "watched": true
+        },
+        {
+          "name": "",
+          "url": "",
+          "watched": true
+        }
+      ]
+    },
+    {
+      "thumbnail": "",
+      "episodes": [
+        {
+          "name": "",
+          "url": "",
+          "watched": true
+        },
+        {
+          "name": "",
+          "url": "",
+          "watched": true
+        }
+      ]
+    }
+  ]
+}
