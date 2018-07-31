@@ -1,0 +1,76 @@
+.list-element {
+    display: flex;
+    flex-direction: column;
+    background-color: #d0d0d0;
+    border-radius: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    margin-right: 15px;
+    margin-left: 15px;
+    margin-bottom: 30px;
+    width: 330px;
+    /*height: 113px;*/
+    height: 130px;
+    justify-content: space-between;
+}
+.list-element:hover {
+    box-shadow: inset -3px 4px 9px 0;
+}
+.list-img-label {
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 5px;
+    /*border-bottom: 1px solid #3c3f41;*/
+}
+.thumbnail {
+    width: 75px;
+    min-width: 75px;
+    height: 90px;
+    min-height: 75px;
+    border: 1px solid black;
+}
+.list-label {
+    display: flex;
+    flex-direction: column;
+    padding-left: 5px;
+}
+.list-label h3 {
+    margin: 0 0 5px;
+    cursor: pointer;
+}
+.list-label h3:hover {
+    text-decoration: underline;
+}
+.list-label-p {
+    margin: 0;
+    font-size: 0.8em;
+    color: #3c3f41;
+}
+.episode-name {
+    margin-bottom: 5px;
+}
+.add-sub-count-container {
+    display: flex;
+    flex-direction: row;
+}
+.add-sub-count-container img {
+    margin-left: 5px;
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+}
+.list-button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    /*height: 100%;*/
+    border-top: 1px solid #3c3f41;
+}
+.list-button-container img {
+    padding: 5px;
+    cursor: pointer;
+}
+.list-button-container img:hover {
+    background-color: #5d6062;
+}
