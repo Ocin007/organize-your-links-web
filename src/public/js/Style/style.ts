@@ -13,12 +13,12 @@ function closeWin() {
 document.addEventListener('DOMContentLoaded', function () {
     window.onscroll = function() {myFunction()};
 
-    var pages = document.getElementsByClassName('page');
-    var navTabs = document.getElementById('nav-tabs');
-    var sticky = navTabs.offsetTop;
+    let pages: any = document.getElementsByClassName('page');
+    let navTabs = document.getElementById('nav-tabs');
+    let sticky = navTabs.offsetTop;
 
     function setMargin(str) {
-        for (var i = 0; i < pages.length; i++) {
+        for (let i = 0; i < pages.length; i++) {
             pages[i].style.marginTop = str;
         }
     }

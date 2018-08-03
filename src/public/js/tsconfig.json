@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es5",
+    "sourceMap": true
+  },
+  "include": [
+    "Enums/*",
+    "Interfaces/*",
+    "DataHandler/*",
+    "Renderer/*",
+    "Style/*",
+    "Other/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

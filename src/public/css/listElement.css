@@ -1,8 +1,9 @@
 .list-element {
     display: flex;
     flex-direction: column;
-    background-color: #d0d0d0;
+    background-color: #dedede;
     border-radius: 5px;
+    /*9e9e9e*/
     padding-left: 5px;
     padding-right: 5px;
     padding-top: 5px;
@@ -11,7 +12,7 @@
     margin-bottom: 30px;
     width: 330px;
     /*height: 113px;*/
-    height: 130px;
+    height: 133px;
     justify-content: space-between;
 }
 .list-element:hover {
@@ -26,9 +27,10 @@
 .thumbnail {
     width: 75px;
     min-width: 75px;
-    height: 90px;
+    height: 95px;
     min-height: 75px;
     border: 1px solid black;
+    cursor: pointer;
 }
 .list-label {
     display: flex;
@@ -44,8 +46,8 @@
 }
 .list-label-p {
     margin: 0;
-    font-size: 0.8em;
-    color: #3c3f41;
+    /*font-size: 0.8em;*/
+    /*color: #3c3f41;*/
 }
 .episode-name {
     margin-bottom: 5px;
@@ -53,6 +55,7 @@
 .add-sub-count-container {
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 .add-sub-count-container img {
     margin-left: 5px;
