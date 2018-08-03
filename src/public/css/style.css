@@ -44,7 +44,7 @@ header {
 .tab:hover {
     color: #78d561;
 }
-.tap-active {
+.tab-active {
     color: #78d561;
     background-color: #171717;
     text-decoration: underline;
