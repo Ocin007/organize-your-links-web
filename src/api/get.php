@@ -1,6 +1,6 @@
 <?php
 
-if(is_file(__DIR__.'/../../vendor/autoload.php')) {
+if(file_exists(__DIR__.'/../../vendor/autoload.php')) {
     echo json_encode([
         'error' => 'autoloader missing, do composer install --no-dev'
     ], JSON_PRETTY_PRINT);
