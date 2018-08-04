@@ -28,11 +28,11 @@ var ServerData = /** @class */ (function () {
             }
         });
     };
-    ServerData.prototype.put = function (list) {
+    ServerData.prototype.put = function (list, callback) {
     };
-    ServerData.prototype.post = function (list) {
+    ServerData.prototype.post = function (list, callback) {
     };
-    ServerData.prototype.delete = function (idArray) {
+    ServerData.prototype.delete = function (idArray, callback) {
     };
     ServerData.prototype.getList = function (id) {
         switch (id) {
@@ -108,14 +108,17 @@ var ListElement = /** @class */ (function () {
         imgLabelContainer.classList.add('list-img-label');
         var thumbnail = this.generateThumbnail();
         imgLabelContainer.appendChild(thumbnail);
-        var labelContainer = this.generateLabelContainer();
+        var _a = this.generateButtonContainer(), buttonContainer = _a[0], watchedButton = _a[1];
+        var labelContainer = this.generateLabelContainer(thumbnail, watchedButton);
         imgLabelContainer.appendChild(labelContainer);
         listElement.appendChild(imgLabelContainer);
-        listElement.appendChild(this.generateButtonContainer());
+        listElement.appendChild(buttonContainer);
         this.htmlListElement = listElement;
     };
     ListElement.prototype.generateThumbnail = function () {
+        var instance = this;
         var thumbnail = this.generateButton(this.data.seasons[this.sIndex].thumbnail, 'thumbnail', function () {
+            window.open(instance.data.seasons[instance.sIndex].url);
         });
         thumbnail.classList.add('thumbnail');
         return thumbnail;
@@ -148,24 +151,28 @@ var ListElement = /** @class */ (function () {
                 break;
         }
         container.appendChild(this.playButton());
-        container.appendChild(this.watchedButton());
+        var watchedButton = this.watchedButton();
+        container.appendChild(watchedButton);
         container.appendChild(this.editButton());
         container.appendChild(this.deleteButton());
-        return container;
+        return [container, watchedButton];
     };
     ListElement.prototype.arrowLeftButton = function () {
+        var instance = this;
         return this.generateButton('img/arrow-left.ico', 'arrow-left', function () {
             //TODO
         });
     };
     ListElement.prototype.arrowRightButton = function () {
+        var instance = this;
         return this.generateButton('img/arrow-right.ico', 'arrow-right', function () {
             //TODO
         });
     };
     ListElement.prototype.playButton = function () {
+        var instance = this;
         return this.generateButton('img/play.ico', 'play', function () {
-            //TODO
+            window.open(instance.data.seasons[instance.sIndex].episodes[instance.epIndex].url);
         });
     };
     ListElement.prototype.watchedButton = function () {
@@ -178,17 +185,20 @@ var ListElement = /** @class */ (function () {
             watchedStatus.src = 'img/not-watched.ico';
             watchedStatus.alt = 'not-watched';
         }
+        var instance = this;
         watchedStatus.addEventListener('click', function () {
             //TODO
         });
         return watchedStatus;
     };
     ListElement.prototype.editButton = function () {
+        var instance = this;
         return this.generateButton('img/edit.ico', 'edit', function () {
             //TODO
         });
     };
     ListElement.prototype.deleteButton = function () {
+        var instance = this;
         return this.generateButton('img/delete.ico', 'delete', function () {
             //TODO
         });
@@ -202,18 +212,19 @@ var ListElement = /** @class */ (function () {
         });
         return button;
     };
-    ListElement.prototype.generateLabelContainer = function () {
+    ListElement.prototype.generateLabelContainer = function (thumbnail, watchedButton) {
         var container = document.createElement('div');
         container.classList.add('list-label');
         container.appendChild(this.generateTitle());
         var episode = this.generateEpisodeName();
         container.appendChild(episode);
-        container.appendChild(this.generateAddSubContainer(episode));
+        container.appendChild(this.generateAddSubContainer(episode, thumbnail, watchedButton));
         return container;
     };
     ListElement.prototype.generateTitle = function () {
         var title = document.createElement('h3');
         title.innerHTML = this.getName();
+        var instance = this;
         title.addEventListener('click', function () {
             //TODO
         });
@@ -226,7 +237,7 @@ var ListElement = /** @class */ (function () {
         episode.innerHTML = this.data.seasons[this.sIndex].episodes[this.epIndex].name;
         return episode;
     };
-    ListElement.prototype.generateAddSubContainer = function (episode) {
+    ListElement.prototype.generateAddSubContainer = function (episode, thumbnail, watchedButton) {
         var addSub = document.createElement('div');
         addSub.classList.add('add-sub-count-container');
         var count = document.createElement('p');
@@ -240,11 +251,43 @@ var ListElement = /** @class */ (function () {
         count.appendChild(node);
         count.appendChild(countMax);
         addSub.appendChild(count);
+        var instance = this;
+        var refresh = function () {
+            episode.innerHTML = instance.data.seasons[instance.sIndex].episodes[instance.epIndex].name;
+            countEp.innerHTML = instance.epCount.toString();
+            thumbnail.src = instance.data.seasons[instance.sIndex].thumbnail;
+            if (instance.data.seasons[instance.sIndex].episodes[instance.epIndex].watched) {
+                watchedButton.src = 'img/watched.ico';
+                watchedButton.alt = 'watched';
+            }
+            else {
+                watchedButton.src = 'img/not-watched.ico';
+                watchedButton.alt = 'not-watched';
+            }
+        };
         addSub.appendChild(this.generateButton('img/add-button.ico', 'add', function () {
-            //TODO
+            if (instance.data.seasons[instance.sIndex].episodes.length - 1 > instance.epIndex) {
+                instance.epIndex++;
+                instance.epCount++;
+            }
+            else if (instance.data.seasons.length - 1 > instance.sIndex) {
+                instance.sIndex++;
+                instance.epIndex = 0;
+                instance.epCount++;
+            }
+            refresh();
         }));
         addSub.appendChild(this.generateButton('img/subtr-button.ico', 'subtr', function () {
-            //TODO
+            if (instance.epIndex > 0) {
+                instance.epIndex--;
+                instance.epCount--;
+            }
+            else if (instance.sIndex > 0) {
+                instance.sIndex--;
+                instance.epIndex = instance.data.seasons[instance.sIndex].episodes.length - 1;
+                instance.epCount--;
+            }
+            refresh();
         }));
         return addSub;
     };

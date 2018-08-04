@@ -24,15 +24,15 @@ class ServerData {
         });
     }
 
-    put(list: DataListElement[]) {
+    put(list: DataListElement[], callback?: Function) {
 
     }
 
-    post(list: DataListElement[]) {
+    post(list: DataListElement[], callback?: Function) {
 
     }
 
-    delete(idArray: string[]) {
+    delete(idArray: string[], callback?: Function) {
 
     }
 

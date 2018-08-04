@@ -4,6 +4,7 @@ interface DataListElement {
     list: ListID,
     seasons: {
         thumbnail: string,
+        url: string,
         episodes: {
             name: string,
             url: string,

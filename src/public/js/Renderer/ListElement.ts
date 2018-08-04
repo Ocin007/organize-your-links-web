@@ -37,17 +37,19 @@ class ListElement {
         imgLabelContainer.classList.add('list-img-label');
         const thumbnail = this.generateThumbnail();
         imgLabelContainer.appendChild(thumbnail);
-        const labelContainer = this.generateLabelContainer();
+        const [buttonContainer, watchedButton] = this.generateButtonContainer();
+        const labelContainer = this.generateLabelContainer(thumbnail, watchedButton);
         imgLabelContainer.appendChild(labelContainer);
         listElement.appendChild(imgLabelContainer);
-        listElement.appendChild(this.generateButtonContainer());
+        listElement.appendChild(buttonContainer);
         this.htmlListElement = listElement;
     }
 
     private generateThumbnail() {
+        const instance = this;
         const thumbnail = this.generateButton(
             this.data.seasons[this.sIndex].thumbnail, 'thumbnail', function () {
-
+            window.open(instance.data.seasons[instance.sIndex].url);
         });
         thumbnail.classList.add('thumbnail');
         return thumbnail;
@@ -65,7 +67,7 @@ class ListElement {
         */
     }
 
-    private generateButtonContainer() {
+    private generateButtonContainer(): [HTMLDivElement, HTMLImageElement] {
         const container = document.createElement('div');
         container.classList.add('list-button-container');
         switch (this.listId) {
@@ -78,27 +80,31 @@ class ListElement {
                                      break;
         }
         container.appendChild(this.playButton());
-        container.appendChild(this.watchedButton());
+        const watchedButton = this.watchedButton();
+        container.appendChild(watchedButton);
         container.appendChild(this.editButton());
         container.appendChild(this.deleteButton());
-        return container;
+        return [container, watchedButton];
     }
 
     private arrowLeftButton() {
+        const instance = this;
         return this.generateButton('img/arrow-left.ico', 'arrow-left', function () {
             //TODO
         });
     }
 
     private arrowRightButton() {
+        const instance = this;
         return this.generateButton('img/arrow-right.ico', 'arrow-right', function () {
             //TODO
         });
     }
 
     private playButton() {
+        const instance = this;
         return this.generateButton('img/play.ico', 'play', function () {
-            //TODO
+            window.open(instance.data.seasons[instance.sIndex].episodes[instance.epIndex].url);
         });
     }
 
@@ -111,6 +117,7 @@ class ListElement {
             watchedStatus.src = 'img/not-watched.ico';
             watchedStatus.alt = 'not-watched';
         }
+        const instance = this;
         watchedStatus.addEventListener('click', function () {
             //TODO
         });
@@ -118,12 +125,14 @@ class ListElement {
     }
 
     private editButton() {
+        const instance = this;
         return this.generateButton('img/edit.ico', 'edit', function () {
             //TODO
         });
     }
 
     private deleteButton() {
+        const instance = this;
         return this.generateButton('img/delete.ico', 'delete', function () {
             //TODO
         });
@@ -139,19 +148,20 @@ class ListElement {
         return button;
     }
 
-    private generateLabelContainer() {
+    private generateLabelContainer(thumbnail: HTMLImageElement, watchedButton: HTMLImageElement) {
         const container = document.createElement('div');
         container.classList.add('list-label');
         container.appendChild(this.generateTitle());
         const episode = this.generateEpisodeName();
         container.appendChild(episode);
-        container.appendChild(this.generateAddSubContainer(episode));
+        container.appendChild(this.generateAddSubContainer(episode, thumbnail, watchedButton));
         return container;
     }
 
     private generateTitle() {
         const title = document.createElement('h3');
         title.innerHTML = this.getName();
+        const instance = this;
         title.addEventListener('click', function () {
             //TODO
         });
@@ -166,7 +176,7 @@ class ListElement {
         return episode;
     }
 
-    private generateAddSubContainer(episode: HTMLElement) {
+    private generateAddSubContainer(episode: HTMLElement, thumbnail: HTMLImageElement, watchedButton: HTMLImageElement) {
         const addSub = document.createElement('div');
         addSub.classList.add('add-sub-count-container');
 
@@ -182,11 +192,40 @@ class ListElement {
         count.appendChild(countMax);
         addSub.appendChild(count);
 
+        const instance = this;
+        const refresh = function () {
+            episode.innerHTML = instance.data.seasons[instance.sIndex].episodes[instance.epIndex].name;
+            countEp.innerHTML = instance.epCount.toString();
+            thumbnail.src = instance.data.seasons[instance.sIndex].thumbnail;
+            if(instance.data.seasons[instance.sIndex].episodes[instance.epIndex].watched) {
+                watchedButton.src = 'img/watched.ico';
+                watchedButton.alt = 'watched';
+            } else {
+                watchedButton.src = 'img/not-watched.ico';
+                watchedButton.alt = 'not-watched';
+            }
+        };
         addSub.appendChild(this.generateButton('img/add-button.ico' ,'add' ,function () {
-            //TODO
+            if(instance.data.seasons[instance.sIndex].episodes.length-1 > instance.epIndex) {
+                instance.epIndex++;
+                instance.epCount++;
+            } else if(instance.data.seasons.length-1 > instance.sIndex) {
+                instance.sIndex++;
+                instance.epIndex = 0;
+                instance.epCount++;
+            }
+            refresh();
         }));
         addSub.appendChild(this.generateButton('img/subtr-button.ico', 'subtr', function () {
-            //TODO
+            if(instance.epIndex > 0) {
+                instance.epIndex--;
+                instance.epCount--;
+            } else if(instance.sIndex > 0) {
+                instance.sIndex--;
+                instance.epIndex = instance.data.seasons[instance.sIndex].episodes.length-1;
+                instance.epCount--;
+            }
+            refresh();
         }));
         return addSub;
     }
