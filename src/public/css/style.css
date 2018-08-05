@@ -21,6 +21,7 @@
 
 body {
     margin: 0;
+    font-family: sans-serif;
 }
 header {
     text-align: center;
@@ -59,6 +60,7 @@ img {
 .page {
     margin-right: 20px;
     margin-left: 20px;
+    margin-bottom: 50px;
 }
 .page-list {
     display: block;
@@ -75,4 +77,133 @@ img {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+}
+
+
+.page-detail {
+    margin-top: 20px;
+    /*background-color: #5d6062;*/
+    /*background-color: #929292;*/
+    background-color: #dedede;
+    /*background-color: #9e9e9e;*/
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+
+}
+.big-thumbnail {
+    display: flex;
+    flex-direction: column;
+    /*border-right: 1px solid #3c3f41;*/
+    /*border-right: 1px solid #adadad;*/
+    background-color: lightgray;
+    box-shadow: 0 0 5px 0;
+    border-radius: 5px 0 0 5px;
+}
+.big-thumbnail > img {
+    width: 217px;
+    height: 292px;
+    margin: 5px;
+}
+.input-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 5px;
+}
+#all-names {
+    height: 100px;
+    max-height: 100px;
+}
+.page-count {
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.page-count p {
+    margin: 5px 5px;
+}
+.page-count div {
+    width: 100%;
+}
+.align-right {
+    text-align: right;
+}
+.align-left {
+    text-align: left;
+}
+.info-container {
+    border-top: 1px solid #adadad;
+    text-align: center;
+}
+.info-wrapper {
+    display: flex;
+    /*flex-direction: column;*/
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px;
+}
+.info-wrapper p {
+    margin: 0;
+}
+.detail-container {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+.detail-container > h1 {
+    font-size: 3em;
+    height: 111px;
+    max-height: 111px;
+}
+.episode-container {
+    /*background-color: #3c3f41;*/
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: inset 0 0 20px 0;
+}
+.episode-detail {
+    display: flex;
+    flex-direction: row;
+    font-size: 1.2em;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.episode-detail:hover p {
+    color: #78d561;
+    text-decoration: underline;
+}
+.episode-button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-right: 1px solid #adadad;
+}
+.episode-button-container img {
+    padding: 5px;
+    cursor: pointer;
+}
+.episode-button-container img:hover {
+    background-color: #5d6062;
+}
+.episode-label {
+    /*margin: 0;*/
+    display: flex;
+    flex-direction: row;
+}
+.episode-label p {
+    padding: 0 20px;
+    margin: 0;
+}
+.episode-prefix {
+    font-weight: bold;
+    margin-right: 20px;
+    width: 100px;
+    max-width: 100px;
+    border-right: 1px solid #adadad;
 }

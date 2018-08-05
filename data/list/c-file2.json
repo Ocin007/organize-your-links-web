@@ -1,6 +1,6 @@
 {
   "id": "5b64b9edb26ad2.77598312",
-  "name": "C File 2",
+  "name": "C File 2 test testtesttest test testtest testtesttest",
   "list": 2,
   "seasons": [
     {
@@ -24,7 +24,7 @@
       "url": "https://placeholder.com/200x200",
       "episodes": [
         {
-          "name": "folge 3: c",
+          "name": "folge 3: c test testtest test testtesttesttest test test  testtesttest",
           "url": "https://forum.ionicframework.com/t/minimum-android-version-supported-by-ionic-version-3/103719",
           "watched": false
         },

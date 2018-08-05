@@ -11,6 +11,7 @@ var ServerData = /** @class */ (function () {
         this.watched = [];
         this.playList = [];
         this.notWatched = [];
+        this.allElements = [];
     }
     ServerData.prototype.get = function (callback) {
         var instance = this;
@@ -22,6 +23,7 @@ var ServerData = /** @class */ (function () {
                 console.log(resObj.error);
                 return;
             }
+            instance.allElements = resObj.response;
             instance.splitInThreeLists(resObj.response);
             if (callback !== undefined) {
                 callback();
@@ -62,7 +64,31 @@ var ServerData = /** @class */ (function () {
                 return this.playList;
             case ListID.NOT_WATCHED:
                 return this.notWatched;
+            default:
+                return this.allElements;
         }
+    };
+    ServerData.prototype.getListLen = function () {
+        return this.allElements.length;
+    };
+    ServerData.prototype.getListElement = function (index) {
+        return this.allElements[index];
+    };
+    ServerData.prototype.getIndexOfElementWithName = function (name) {
+        for (var i = 0; i < this.allElements.length; i++) {
+            if (this.allElements[i].name === name) {
+                return i;
+            }
+        }
+        return -1;
+    };
+    ServerData.prototype.getIndexOfELement = function (data) {
+        for (var i = 0; i < this.allElements.length; i++) {
+            if (this.allElements[i].id === data.id) {
+                return i;
+            }
+        }
+        return -1;
     };
     ServerData.prototype.splitInThreeLists = function (list) {
         for (var i = 0; i < list.length; i++) {
@@ -91,6 +117,7 @@ var ServerData = /** @class */ (function () {
                 ServerData.updateList(this.notWatched, element);
                 break;
         }
+        ServerData.updateList(this.allElements, element);
     };
     ServerData.prototype.sendAjaxRequest = function (url, data, onError, onSuccess) {
         var http = new XMLHttpRequest();
@@ -135,11 +162,13 @@ var ServerData = /** @class */ (function () {
 }());
 //# sourceMappingURL=ServerData.js.map
 var ListElement = /** @class */ (function () {
-    function ListElement(data, listId, serverData) {
+    function ListElement(data, listId, serverData, detailPage, pageList) {
         this.data = data;
         this.listId = listId;
         this.serverData = serverData;
-        _a = this.getIndicesAndCountOfFirstNotWatched(), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
+        this.detailPage = detailPage;
+        this.pageList = pageList;
+        _a = ListElement.getIndicesAndCountOfFirstNotWatched(this.data), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
         var _a;
     }
     ListElement.prototype.getId = function () {
@@ -169,7 +198,7 @@ var ListElement = /** @class */ (function () {
     };
     ListElement.prototype.generateThumbnail = function () {
         var instance = this;
-        var thumbnail = this.generateButton(this.data.seasons[this.sIndex].thumbnail, 'thumbnail', function () {
+        var thumbnail = ListElement.generateButton(this.data.seasons[this.sIndex].thumbnail, 'thumbnail', function () {
             window.open(instance.data.seasons[instance.sIndex].url);
         });
         thumbnail.classList.add('thumbnail');
@@ -199,19 +228,19 @@ var ListElement = /** @class */ (function () {
     };
     ListElement.prototype.arrowLeftButton = function () {
         var instance = this;
-        return this.generateButton('img/arrow-left.ico', 'arrow-left', function () {
-            //TODO
+        return ListElement.generateButton('img/arrow-left.ico', 'arrow-left', function () {
+            //TODO: arrow left
         });
     };
     ListElement.prototype.arrowRightButton = function () {
         var instance = this;
-        return this.generateButton('img/arrow-right.ico', 'arrow-right', function () {
-            //TODO
+        return ListElement.generateButton('img/arrow-right.ico', 'arrow-right', function () {
+            //TODO: arrow right
         });
     };
     ListElement.prototype.playButton = function () {
         var instance = this;
-        return this.generateButton('img/play.ico', 'play', function () {
+        return ListElement.generateButton('img/play.ico', 'play', function () {
             window.open(instance.data.seasons[instance.sIndex].episodes[instance.epIndex].url);
         });
     };
@@ -239,17 +268,17 @@ var ListElement = /** @class */ (function () {
     };
     ListElement.prototype.editButton = function () {
         var instance = this;
-        return this.generateButton('img/edit.ico', 'edit', function () {
-            //TODO
+        return ListElement.generateButton('img/edit.ico', 'edit', function () {
+            //TODO: edit
         });
     };
     ListElement.prototype.deleteButton = function () {
         var instance = this;
-        return this.generateButton('img/delete.ico', 'delete', function () {
-            //TODO
+        return ListElement.generateButton('img/delete.ico', 'delete', function () {
+            //TODO: delete
         });
     };
-    ListElement.prototype.generateButton = function (src, alt, onClick) {
+    ListElement.generateButton = function (src, alt, onClick) {
         var button = document.createElement('img');
         button.src = src;
         button.alt = alt;
@@ -260,10 +289,12 @@ var ListElement = /** @class */ (function () {
     };
     ListElement.prototype.generateLabelContainer = function (thumbnail, watchedButton) {
         var container = document.createElement('div');
+        var labelContainer = document.createElement('div');
         container.classList.add('list-label');
-        container.appendChild(this.generateTitle());
+        labelContainer.appendChild(this.generateTitle());
         var episode = this.generateEpisodeName();
-        container.appendChild(episode);
+        labelContainer.appendChild(episode);
+        container.appendChild(labelContainer);
         container.appendChild(this.generateAddSubContainer(episode, thumbnail, watchedButton));
         return container;
     };
@@ -272,15 +303,22 @@ var ListElement = /** @class */ (function () {
         title.innerHTML = this.getName();
         var instance = this;
         title.addEventListener('click', function () {
-            //TODO
+            instance.detailPage.renderPage(instance.data);
+            instance.pageList.hideElement();
+            instance.detailPage.showElement();
+            //TODO: onClick Title
         });
         return title;
+    };
+    ListElement.prototype.generatePrefix = function () {
+        return 's' + (this.sIndex + 1) + 'ep' + (this.epIndex + 1) + ': ';
     };
     ListElement.prototype.generateEpisodeName = function () {
         var episode = document.createElement('p');
         episode.classList.add('episode-name');
         episode.classList.add('list-label-p');
-        episode.innerHTML = this.data.seasons[this.sIndex].episodes[this.epIndex].name;
+        var prefix = this.generatePrefix();
+        episode.innerHTML = prefix + this.data.seasons[this.sIndex].episodes[this.epIndex].name;
         return episode;
     };
     ListElement.prototype.generateAddSubContainer = function (episode, thumbnail, watchedButton) {
@@ -299,7 +337,8 @@ var ListElement = /** @class */ (function () {
         addSub.appendChild(count);
         var instance = this;
         var refresh = function () {
-            episode.innerHTML = instance.data.seasons[instance.sIndex].episodes[instance.epIndex].name;
+            var prefix = instance.generatePrefix();
+            episode.innerHTML = prefix + instance.data.seasons[instance.sIndex].episodes[instance.epIndex].name;
             countEp.innerHTML = instance.epCount.toString();
             thumbnail.src = instance.data.seasons[instance.sIndex].thumbnail;
             if (instance.data.seasons[instance.sIndex].episodes[instance.epIndex].watched) {
@@ -311,7 +350,7 @@ var ListElement = /** @class */ (function () {
                 watchedButton.alt = 'not-watched';
             }
         };
-        addSub.appendChild(this.generateButton('img/add-button.ico', 'add', function () {
+        addSub.appendChild(ListElement.generateButton('img/add-button.ico', 'add', function () {
             if (instance.data.seasons[instance.sIndex].episodes.length - 1 > instance.epIndex) {
                 instance.epIndex++;
                 instance.epCount++;
@@ -323,7 +362,7 @@ var ListElement = /** @class */ (function () {
             }
             refresh();
         }));
-        addSub.appendChild(this.generateButton('img/subtr-button.ico', 'subtr', function () {
+        addSub.appendChild(ListElement.generateButton('img/subtr-button.ico', 'subtr', function () {
             if (instance.epIndex > 0) {
                 instance.epIndex--;
                 instance.epCount--;
@@ -337,16 +376,16 @@ var ListElement = /** @class */ (function () {
         }));
         return addSub;
     };
-    ListElement.prototype.getIndicesAndCountOfFirstNotWatched = function () {
+    ListElement.getIndicesAndCountOfFirstNotWatched = function (data) {
         var sIndex, epIndex, epCount = 0, maxCount = 0, success = false;
         var flag = true;
         var s, ep;
-        for (s = 0; s < this.data.seasons.length; s++) {
-            for (ep = 0; ep < this.data.seasons[s].episodes.length; ep++) {
+        for (s = 0; s < data.seasons.length; s++) {
+            for (ep = 0; ep < data.seasons[s].episodes.length; ep++) {
                 if (flag) {
                     epCount++;
                 }
-                if (!this.data.seasons[s].episodes[ep].watched && flag) {
+                if (!data.seasons[s].episodes[ep].watched && flag) {
                     sIndex = s;
                     epIndex = ep;
                     flag = false;
@@ -364,17 +403,330 @@ var ListElement = /** @class */ (function () {
     return ListElement;
 }());
 //# sourceMappingURL=ListElement.js.map
+var PageDetail = /** @class */ (function () {
+    function PageDetail(pageElement, tabElement, serverData) {
+        this.pageElement = pageElement;
+        this.tabElement = tabElement;
+        this.serverData = serverData;
+        this.thumbnail = PageDetail.createImg('', 'thumbnail');
+        this.detailContainer = PageDetail.createDiv('detail-container');
+    }
+    PageDetail.prototype.showElement = function () {
+        this.pageElement.style.display = 'flex';
+        if (!this.tabElement.classList.contains('tab-active')) {
+            this.tabElement.classList.add('tab-active');
+        }
+    };
+    PageDetail.prototype.hideElement = function () {
+        this.pageElement.style.display = 'none';
+        this.tabElement.classList.remove('tab-active');
+    };
+    PageDetail.prototype.initPage = function () {
+        this.pageElement.innerHTML = '';
+        var thumbnailAndDetails = PageDetail.createDiv('big-thumbnail');
+        thumbnailAndDetails.appendChild(this.thumbnail);
+        var buttonContainer = this.generateButtonContainer();
+        thumbnailAndDetails.appendChild(buttonContainer);
+        var countContainer = this.generateCountCounainer();
+        thumbnailAndDetails.appendChild(countContainer);
+        var inputContainer = this.generateInputContainer();
+        thumbnailAndDetails.appendChild(inputContainer);
+        thumbnailAndDetails.appendChild(this.generateInfoContainer());
+        this.pageElement.appendChild(thumbnailAndDetails);
+        this.pageElement.appendChild(this.detailContainer);
+    };
+    PageDetail.prototype.renderPage = function (data) {
+        this.setFlags(data);
+        this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
+        var instance = this;
+        var thumbnailFunc = function () {
+            window.open(data.seasons[instance.sIndex].url);
+        };
+        this.thumbnail.removeEventListener('click', thumbnailFunc);
+        this.thumbnail.addEventListener('click', thumbnailFunc);
+        this.pageNumber.innerHTML = (this.serverData.getIndexOfELement(data) + 1).toString();
+        this.setInfoValues(data);
+        this.renderDetailsContainer(data);
+    };
+    PageDetail.prototype.setFlags = function (data) {
+        _a = ListElement.getIndicesAndCountOfFirstNotWatched(data), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
+        var _a;
+    };
+    PageDetail.prototype.renderDetailsContainer = function (data) {
+        this.detailContainer.innerHTML = '';
+        var title = document.createElement('h1');
+        title.innerHTML = data.name;
+        this.detailContainer.appendChild(title);
+        for (var s = 0; s < data.seasons.length; s++) {
+            this.detailContainer.appendChild(this.createSegment(s, data));
+        }
+    };
+    PageDetail.prototype.createSegment = function (sIndex, data) {
+        var segment = PageDetail.createDiv('list-segment');
+        var label = document.createElement('h2');
+        label.innerHTML = 'Season ' + (sIndex + 1);
+        segment.appendChild(label);
+        var epContainer = PageDetail.createDiv('episode-container');
+        epContainer.classList.add('background-gray');
+        for (var ep = 0; ep < data.seasons[sIndex].episodes.length; ep++) {
+            epContainer.appendChild(this.createEpisode(sIndex, ep, data));
+        }
+        segment.appendChild(epContainer);
+        return segment;
+    };
+    PageDetail.prototype.createEpisode = function (sIndex, epIndex, data) {
+        var episode = PageDetail.createDiv('episode-detail');
+        var buttonContainer = this.generateEpisodeButtons(sIndex, epIndex, data, episode);
+        episode.appendChild(buttonContainer);
+        var epLabel = PageDetail.generateEpisodeLabel(epIndex, data.seasons[sIndex].episodes[epIndex].name);
+        episode.appendChild(epLabel);
+        return episode;
+    };
+    PageDetail.generateEpisodeLabel = function (epIndex, name) {
+        var container = PageDetail.createDiv('episode-label');
+        var prefix = document.createElement('p');
+        prefix.classList.add('episode-prefix');
+        prefix.innerHTML = 'Folge ' + (epIndex + 1);
+        container.appendChild(prefix);
+        var label = document.createElement('p');
+        label.innerHTML = name;
+        container.appendChild(label);
+        return container;
+    };
+    PageDetail.prototype.generateEpisodeButtons = function (sIndex, epIndex, data, episode) {
+        var container = PageDetail.createDiv('episode-button-container');
+        container.appendChild(this.playButton(sIndex, epIndex, data));
+        container.appendChild(this.watchedButton(sIndex, epIndex, data, episode));
+        return container;
+    };
+    PageDetail.prototype.generateButtonContainer = function () {
+        var container = PageDetail.createDiv('list-button-container');
+        container.appendChild(this.arrowLeftButton());
+        container.appendChild(this.editButton());
+        container.appendChild(this.deleteButton());
+        container.appendChild(this.arrowRightButton());
+        return container;
+    };
+    PageDetail.prototype.playButton = function (sIndex, epIndex, data) {
+        return ListElement.generateButton('img/play.ico', 'play', function () {
+            window.open(data.seasons[sIndex].episodes[epIndex].url);
+            //TODO: check play button
+        });
+    };
+    PageDetail.prototype.watchedButton = function (sIndex, epIndex, data, episode) {
+        var watchedStatus = document.createElement('img');
+        var setAttributes = function (bool) {
+            if (bool) {
+                watchedStatus.src = 'img/watched.ico';
+                watchedStatus.alt = 'watched';
+                episode.classList.remove('font-green');
+                episode.classList.add('font-light-green');
+            }
+            else {
+                watchedStatus.src = 'img/not-watched.ico';
+                watchedStatus.alt = 'not-watched';
+                episode.classList.remove('font-light-green');
+                episode.classList.add('font-green');
+            }
+        };
+        setAttributes(data.seasons[sIndex].episodes[epIndex].watched);
+        var instance = this;
+        watchedStatus.addEventListener('click', function () {
+            var oldBool = data.seasons[sIndex].episodes[epIndex].watched;
+            data.seasons[sIndex].episodes[epIndex].watched = !oldBool;
+            setAttributes(!oldBool);
+            instance.updateInfo(data);
+            instance.updateThumbnail(data);
+            instance.serverData.put([data]);
+            //TODO: watched button
+        });
+        return watchedStatus;
+    };
+    PageDetail.prototype.updateInfo = function (data) {
+        //TODO
+    };
+    PageDetail.prototype.updateThumbnail = function (data) {
+        //TODO
+    };
+    PageDetail.prototype.arrowLeftButton = function () {
+        var instance = this;
+        return ListElement.generateButton('img/arrow-left.ico', 'arrow-left', function () {
+            //TODO: arrow left detail
+        });
+    };
+    PageDetail.prototype.arrowRightButton = function () {
+        var instance = this;
+        return ListElement.generateButton('img/arrow-right.ico', 'arrow-right', function () {
+            //TODO: arrow right detail
+        });
+    };
+    PageDetail.prototype.editButton = function () {
+        var instance = this;
+        return ListElement.generateButton('img/edit.ico', 'edit', function () {
+            //TODO: edit detail
+        });
+    };
+    PageDetail.prototype.deleteButton = function () {
+        var instance = this;
+        return ListElement.generateButton('img/delete.ico', 'delete', function () {
+            //TODO: delete detail
+        });
+    };
+    PageDetail.prototype.generateCountCounainer = function () {
+        var container = PageDetail.createDiv('page-count');
+        var right = PageDetail.createDiv('align-right');
+        var count = document.createElement('p');
+        right.appendChild(count);
+        this.pageNumber = count;
+        container.appendChild(right);
+        var node = document.createElement('p');
+        node.innerHTML = 'von';
+        container.appendChild(node);
+        var left = PageDetail.createDiv('align-left');
+        var maxCount = document.createElement('p');
+        maxCount.innerHTML = this.serverData.getListLen().toString();
+        left.appendChild(maxCount);
+        container.appendChild(left);
+        return container;
+    };
+    PageDetail.prototype.generateInputContainer = function () {
+        var container = PageDetail.createDiv('input-container');
+        var label = document.createElement('label');
+        label.htmlFor = 'search-textfield';
+        label.innerHTML = 'Suche:';
+        container.appendChild(label);
+        var input = document.createElement('input');
+        input.id = 'search-textfield';
+        input.type = 'search';
+        input.setAttribute('list', 'all-names');
+        var instance = this;
+        input.addEventListener('keypress', function (ev) {
+            if (ev.key !== 'Enter') {
+                return;
+            }
+            var index = instance.serverData.getIndexOfElementWithName(ev.target.value);
+            if (index === -1) {
+                return;
+            }
+            instance.renderPage(instance.serverData.getListElement(index));
+        });
+        container.appendChild(input);
+        var dataList = document.createElement('dataList');
+        dataList.id = 'all-names';
+        this.fillWithOptions(dataList);
+        container.appendChild(dataList);
+        return container;
+    };
+    PageDetail.prototype.fillWithOptions = function (dataList) {
+        var len = this.serverData.getListLen();
+        for (var i = 0; i < len; i++) {
+            var data = this.serverData.getListElement(i);
+            var option = document.createElement('option');
+            option.innerHTML = data.name;
+            dataList.appendChild(option);
+        }
+    };
+    PageDetail.prototype.generateInfoContainer = function () {
+        var container = PageDetail.createDiv('info-container');
+        var label = document.createElement('h3');
+        label.innerHTML = 'Details';
+        container.appendChild(label);
+        var standard = document.createElement('div');
+        var _a = PageDetail.generateInfoWrapper('Liste', ''), infoList = _a[0], p1 = _a[1];
+        var _b = PageDetail.generateInfoWrapper('Fortschritt', ''), infoProgress = _b[0], p2 = _b[1];
+        var _c = PageDetail.generateInfoWrapper('Noch nicht geschaut', ''), infoNotWatched = _c[0], p3 = _c[1];
+        var _d = PageDetail.generateInfoWrapper('Bereits geschaut', ''), infoWatched = _d[0], p4 = _d[1];
+        var _e = PageDetail.generateInfoWrapper('# Folgen insgesamt', ''), infoMaxAmount = _e[0], p5 = _e[1];
+        this.infoList = p1;
+        this.infoProgress = p2;
+        this.infoNotWatched = p3;
+        this.infoWatched = p4;
+        this.infoMaxAmount = p5;
+        standard.appendChild(infoList);
+        standard.appendChild(infoProgress);
+        standard.appendChild(infoNotWatched);
+        standard.appendChild(infoWatched);
+        standard.appendChild(infoMaxAmount);
+        container.appendChild(standard);
+        this.infoSeasonContainer = document.createElement('div');
+        container.appendChild(this.infoSeasonContainer);
+        return container;
+    };
+    PageDetail.prototype.setInfoListValue = function (list) {
+        switch (list) {
+            case ListID.WATCHED:
+                this.infoList.innerHTML = 'Fertig gesehen';
+                break;
+            case ListID.PLAYLIST:
+                this.infoList.innerHTML = 'Aktuelle Playlist';
+                break;
+            case ListID.NOT_WATCHED:
+                this.infoList.innerHTML = 'Noch nicht gesehen';
+                break;
+        }
+    };
+    PageDetail.prototype.setInfoValues = function (data) {
+        var count = 0;
+        this.infoSeasonContainer.innerHTML = '';
+        for (var s = 0; s < data.seasons.length; s++) {
+            var countPerSeason = 0;
+            for (var ep = 0; ep < data.seasons[s].episodes.length; ep++) {
+                if (data.seasons[s].episodes[ep].watched) {
+                    count++;
+                }
+                countPerSeason++;
+            }
+            var label = '# Folgen Season ' + (s + 1);
+            this.infoSeasonContainer.appendChild(PageDetail.generateInfoWrapper(label, countPerSeason.toString())[0]);
+        }
+        var result = ((count / this.maxCount) * 100).toFixed(1);
+        this.infoProgress.innerHTML = result + '%';
+        this.infoNotWatched.innerHTML = (this.maxCount - count).toString();
+        this.infoWatched.innerHTML = count.toString();
+        this.setInfoListValue(data.list);
+        this.infoMaxAmount.innerHTML = this.maxCount.toString();
+    };
+    PageDetail.generateInfoWrapper = function (label, value) {
+        var wrapper = PageDetail.createDiv('info-wrapper');
+        var labelElement = document.createElement('p');
+        labelElement.innerHTML = label;
+        wrapper.appendChild(labelElement);
+        var p = document.createElement('p');
+        p.innerHTML = value;
+        wrapper.appendChild(p);
+        return [wrapper, p];
+    };
+    PageDetail.createImg = function (src, alt) {
+        var img = document.createElement('img');
+        img.src = src;
+        img.alt = alt;
+        return img;
+    };
+    PageDetail.createDiv = function (str) {
+        var div = document.createElement('div');
+        div.classList.add(str);
+        return div;
+    };
+    return PageDetail;
+}());
+//# sourceMappingURL=PageDetail.js.map
 var PageList = /** @class */ (function () {
-    function PageList(listID, pageElement, serverData) {
+    function PageList(listID, pageElement, tabElement, serverData, detailPage) {
         this.listID = listID;
         this.pageElement = pageElement;
+        this.tabElement = tabElement;
         this.serverData = serverData;
+        this.detailPage = detailPage;
     }
     PageList.prototype.showElement = function () {
         this.pageElement.style.display = 'block';
+        if (!this.tabElement.classList.contains('tab-active')) {
+            this.tabElement.classList.add('tab-active');
+        }
     };
     PageList.prototype.hideElement = function () {
         this.pageElement.style.display = 'none';
+        this.tabElement.classList.remove('tab-active');
     };
     PageList.prototype.generateMap = function () {
         this.dataList = {};
@@ -382,10 +734,10 @@ var PageList = /** @class */ (function () {
         for (var i = 0; i < dataList.length; i++) {
             var firstChar = dataList[i].name.charAt(0).toUpperCase();
             if (this.dataList[firstChar] === undefined) {
-                this.dataList[firstChar] = [new ListElement(dataList[i], this.listID, this.serverData)];
+                this.dataList[firstChar] = [new ListElement(dataList[i], this.listID, this.serverData, this.detailPage, this)];
             }
             else {
-                this.dataList[firstChar].push(new ListElement(dataList[i], this.listID, this.serverData));
+                this.dataList[firstChar].push(new ListElement(dataList[i], this.listID, this.serverData, this.detailPage, this));
             }
         }
     };
@@ -441,11 +793,11 @@ document.addEventListener('DOMContentLoaded', function () {
     function myFunction() {
         if (window.pageYOffset > sticky) {
             navTabs.style.position = 'fixed';
-            setMargin('47px');
+            setMargin('67px');
         }
         else {
             navTabs.style.position = 'static';
-            setMargin('0');
+            setMargin('20px');
         }
     }
 });
@@ -454,14 +806,21 @@ var serverData;
 var playlist;
 var watched;
 var notWatched;
+var details;
 document.addEventListener('DOMContentLoaded', function () {
     serverData = new ServerData();
     var playlistElement = document.getElementById('playlist');
     var watchedElement = document.getElementById('watched');
     var notWatchedElement = document.getElementById('not-watched');
-    playlist = new PageList(ListID.PLAYLIST, playlistElement, serverData);
-    watched = new PageList(ListID.WATCHED, watchedElement, serverData);
-    notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, serverData);
+    var detailsElement = document.getElementById('details');
+    var tabWatched = document.getElementById('tab-watched');
+    var tabPlaylist = document.getElementById('tab-playlist');
+    var tabNotWatched = document.getElementById('tab-not-watched');
+    var tabDetails = document.getElementById('tab-details');
+    details = new PageDetail(detailsElement, tabDetails, serverData);
+    playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details);
+    watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details);
+    notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details);
     serverData.get(function () {
         playlist.generateMap();
         playlist.renderList();
@@ -471,39 +830,64 @@ document.addEventListener('DOMContentLoaded', function () {
         notWatched.hideElement();
         notWatched.generateMap();
         notWatched.renderList();
+        details.hideElement();
+        details.initPage();
     });
-    var tabWatched = document.getElementById('tab-watched');
     tabWatched.addEventListener('click', function () {
         watched.showElement();
         playlist.hideElement();
         notWatched.hideElement();
+        details.hideElement();
+        /*
         if (!tabWatched.classList.contains('tab-active')) {
             tabWatched.classList.add('tab-active');
         }
         tabPlaylist.classList.remove('tab-active');
         tabNotWatched.classList.remove('tab-active');
+        tabDetails.classList.remove('tab-active');
+        */
     });
-    var tabPlaylist = document.getElementById('tab-playlist');
     tabPlaylist.addEventListener('click', function () {
         watched.hideElement();
         playlist.showElement();
         notWatched.hideElement();
+        details.hideElement();
+        /*
         tabWatched.classList.remove('tab-active');
         if (!tabPlaylist.classList.contains('tab-active')) {
             tabPlaylist.classList.add('tab-active');
         }
         tabNotWatched.classList.remove('tab-active');
+        tabDetails.classList.remove('tab-active');
+        */
     });
-    var tabNotWatched = document.getElementById('tab-not-watched');
     tabNotWatched.addEventListener('click', function () {
         watched.hideElement();
         playlist.hideElement();
         notWatched.showElement();
+        details.hideElement();
+        /*
         tabWatched.classList.remove('tab-active');
         tabPlaylist.classList.remove('tab-active');
         if (!tabNotWatched.classList.contains('tab-active')) {
             tabNotWatched.classList.add('tab-active');
         }
+        tabDetails.classList.remove('tab-active');
+        */
+    });
+    tabDetails.addEventListener('click', function () {
+        watched.hideElement();
+        playlist.hideElement();
+        notWatched.hideElement();
+        details.showElement();
+        /*
+        tabWatched.classList.remove('tab-active');
+        tabPlaylist.classList.remove('tab-active');
+        tabNotWatched.classList.remove('tab-active');
+        if (!tabDetails.classList.contains('tab-active')) {
+            tabDetails.classList.add('tab-active');
+        }
+        */
     });
 });
 //# sourceMappingURL=init.js.map

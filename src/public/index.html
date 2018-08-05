@@ -16,23 +16,28 @@
             <div id="tab-watched" class="tab font-light-green">Fertig gesehen</div>
             <div id="tab-playlist" class="tab font-light-green tab-active">Aktuelle Playlist</div>
             <div id="tab-not-watched" class="tab font-light-green">Noch nicht gesehen</div>
+            <div id="tab-details" class="tab font-light-green">Details</div>
         </nav>
     </header>
+
     <div id="watched" class="page page-list"></div>
     <div id="playlist" class="page page-list">
+        <!--
         <div class="list-segment">
             <h2 class="font-white">A</h2>
             <div class="list-container">
 
 
 
-<!--
+
                 <div class="list-element shadow-bottom">
                     <div class="list-img-label">
                         <img class="thumbnail" src="http://www.anime-loads.org/files/image/w200-bleach-cover.jpg">
                         <div class="list-label">
-                            <h3>Titel TitelTitel Titel TitelTitel TitelTitelTitel</h3>
-                            <p class="episode-name list-label-p">Folge FolgeFolge FolgeFolgeFolge FolgeFolge FolgeFolge Folge</p>
+                            <div>
+                                <h3>Titel TitelTitel Titel TitelTitel TitelTitelTitel</h3>
+                                <p class="episode-name list-label-p">Folge FolgeFolge FolgeFolgeFolge FolgeFolge FolgeFolge Folge</p>
+                            </div>
                             <div class="add-sub-count-container">
                                 <p class="list-label-p"><span>0</span>/<span>0</span></p>
                                 <img src="img/add-button.ico">
@@ -49,7 +54,7 @@
                         <img src="img/delete.ico">
                     </div>
                 </div>
--->
+
 
 
 
@@ -61,8 +66,112 @@
 
             </div>
         </div>
+        -->
     </div>
     <div id="not-watched" class="page page-list"></div>
     <!--<div class="page page-edit"></div>-->
+    <div id="details" class="page page-detail">
+        <!--
+        <div class="big-thumbnail">
+            <img src="http://www.anime-loads.org/files/image/w200-bleach-cover.jpg">
+            <div class="list-button-container">
+                <img src="img/arrow-left.ico">
+                <img src="img/edit.ico">
+                <img src="img/delete.ico">
+                <img src="img/arrow-right.ico">
+            </div>
+            <div class="page-count">
+                <div class="align-right">
+                    <p>1</p>
+                </div>
+                <p> von </p>
+                <div class="align-left">
+                    <p>1000</p>
+                </div>
+            </div>
+            <div class="input-container">
+                <label for="search-textfield">Suche:</label>
+                <input id="search-textfield" type="search" list="all-names">
+                <datalist id="all-names">
+                    <option>A</option>
+                    <option>b</option>
+                    <option>c</option>
+                    <option>d</option>
+                </datalist>
+            </div>
+            <div class="info-container">
+                <h3>Details</h3>
+                <div>
+                    <div class="info-wrapper">
+                        <p>Liste</p>
+                        <p>Aktuelle Playlist</p>
+                    </div>
+                    <div class="info-wrapper">
+                        <p>Fortschritt</p>
+                        <p>60%</p>
+                    </div>
+                    <div class="info-wrapper">
+                        <p>Noch nicht geschaut</p>
+                        <p>200</p>
+                    </div>
+                    <div class="info-wrapper">
+                        <p>Bereits geschaut</p>
+                        <p>300</p>
+                    </div>
+                    <div class="info-wrapper">
+                        <p>Folgen insgesamt</p>
+                        <p>500</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="info-wrapper">
+                        <p>Season 1</p>
+                        <p>250</p>
+                    </div>
+                    <div class="info-wrapper">
+                        <p>Season 2</p>
+                        <p>250</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="detail-container">
+            <h1>Title TitleTitle Title TitleTitleTitle TitleTitle Title Title TitleTitle</h1>
+            <div class="list-segment">
+                <h2>Season 1</h2>
+                <div class="episode-container background-gray">
+
+                    <div class="episode-detail font-light-green">
+                        <div class="episode-button-container">
+                            <img src="img/play.ico">
+                            <img src="img/watched.ico">
+                        </div>
+                        <div class="episode-label">
+                            <p class="episode-prefix">Folge 1000</p>
+                            <p>Detail DetailDetail Detail DetailDetailDetail</p>
+                        </div>
+                    </div>
+                    <div class="episode-detail font-green">
+                        <div class="episode-button-container">
+                            <img src="img/play.ico">
+                            <img src="img/not-watched.ico">
+                        </div>
+                        <div class="episode-label">
+                            <p class="episode-prefix">Folge 1</p>
+                            <p>Detail DetailDetail Detail DetailDetailDetail</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="list-segment">
+                <h2>Season 2</h2>
+                <div class="episode-container background-gray">
+
+                </div>
+            </div>
+        </div>
+        -->
+    </div>
 </body>
 </html>

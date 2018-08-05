@@ -28,10 +28,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function myFunction() {
         if (window.pageYOffset > sticky) {
             navTabs.style.position = 'fixed';
-            setMargin('47px');
+            setMargin('67px');
         } else {
             navTabs.style.position = 'static';
-            setMargin('0');
+            setMargin('20px');
         }
     }
 });

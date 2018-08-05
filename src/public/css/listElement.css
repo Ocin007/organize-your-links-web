@@ -35,22 +35,27 @@
 .list-label {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     padding-left: 5px;
 }
 .list-label h3 {
     margin: 0 0 5px;
     cursor: pointer;
+    /*height: 43px;*/
+    /*max-height: 43px;*/
 }
 .list-label h3:hover {
     text-decoration: underline;
 }
 .list-label-p {
     margin: 0;
-    /*font-size: 0.8em;*/
+    font-size: 0.8em;
     /*color: #3c3f41;*/
 }
 .episode-name {
     margin-bottom: 5px;
+    /*height: 29px;*/
+    /*max-height: 29px;*/
 }
 .add-sub-count-container {
     display: flex;
@@ -68,7 +73,8 @@
     flex-direction: row;
     justify-content: center;
     /*height: 100%;*/
-    border-top: 1px solid #3c3f41;
+    border-top: 1px solid #adadad;
+    /*border-top: 1px solid #3c3f41;*/
 }
 .list-button-container img {
     padding: 5px;

@@ -1,16 +1,24 @@
 class PageList {
     private dataList: Object;
 
-    constructor(private readonly listID: ListID, private pageElement: HTMLElement, private serverData: ServerData) {
-
-    }
+    constructor(
+        private readonly listID: ListID,
+        private pageElement: HTMLElement,
+        private tabElement: HTMLElement,
+        private serverData: ServerData,
+        private detailPage: PageDetail
+    ) {}
 
     showElement() {
         this.pageElement.style.display = 'block';
+        if (!this.tabElement.classList.contains('tab-active')) {
+            this.tabElement.classList.add('tab-active');
+        }
     }
 
     hideElement() {
         this.pageElement.style.display = 'none';
+        this.tabElement.classList.remove('tab-active');
     }
 
     generateMap() {
@@ -19,9 +27,9 @@ class PageList {
         for (let i = 0; i < dataList.length; i++) {
             let firstChar = dataList[i].name.charAt(0).toUpperCase();
             if (this.dataList[firstChar] === undefined) {
-                this.dataList[firstChar] = [new ListElement(dataList[i], this.listID, this.serverData)];
+                this.dataList[firstChar] = [new ListElement(dataList[i], this.listID, this.serverData, this.detailPage, this)];
             } else {
-                this.dataList[firstChar].push(new ListElement(dataList[i], this.listID, this.serverData));
+                this.dataList[firstChar].push(new ListElement(dataList[i], this.listID, this.serverData, this.detailPage, this));
             }
         }
     }

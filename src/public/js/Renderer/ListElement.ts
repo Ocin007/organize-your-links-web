@@ -6,14 +6,20 @@ class ListElement {
     private success: boolean;
     private htmlListElement: HTMLDivElement;
 
-    constructor(private data: DataListElement, private listId: ListID, private serverData: ServerData) {
+    constructor(
+        private data: DataListElement,
+        private listId: ListID,
+        private serverData: ServerData,
+        private detailPage: PageDetail,
+        private pageList: PageList
+    ) {
         [
             this.sIndex,
             this.epIndex,
             this.epCount,
             this.maxCount,
             this.success
-        ] = this.getIndicesAndCountOfFirstNotWatched();
+        ] = ListElement.getIndicesAndCountOfFirstNotWatched(this.data);
     }
 
     getId() {
@@ -47,7 +53,7 @@ class ListElement {
 
     private generateThumbnail() {
         const instance = this;
-        const thumbnail = this.generateButton(
+        const thumbnail = ListElement.generateButton(
             this.data.seasons[this.sIndex].thumbnail, 'thumbnail', function () {
                 window.open(instance.data.seasons[instance.sIndex].url);
             });
@@ -80,21 +86,21 @@ class ListElement {
 
     private arrowLeftButton() {
         const instance = this;
-        return this.generateButton('img/arrow-left.ico', 'arrow-left', function () {
+        return ListElement.generateButton('img/arrow-left.ico', 'arrow-left', function () {
             //TODO: arrow left
         });
     }
 
     private arrowRightButton() {
         const instance = this;
-        return this.generateButton('img/arrow-right.ico', 'arrow-right', function () {
+        return ListElement.generateButton('img/arrow-right.ico', 'arrow-right', function () {
             //TODO: arrow right
         });
     }
 
     private playButton() {
         const instance = this;
-        return this.generateButton('img/play.ico', 'play', function () {
+        return ListElement.generateButton('img/play.ico', 'play', function () {
             window.open(instance.data.seasons[instance.sIndex].episodes[instance.epIndex].url);
         });
     }
@@ -123,19 +129,19 @@ class ListElement {
 
     private editButton() {
         const instance = this;
-        return this.generateButton('img/edit.ico', 'edit', function () {
+        return ListElement.generateButton('img/edit.ico', 'edit', function () {
             //TODO: edit
         });
     }
 
     private deleteButton() {
         const instance = this;
-        return this.generateButton('img/delete.ico', 'delete', function () {
+        return ListElement.generateButton('img/delete.ico', 'delete', function () {
             //TODO: delete
         });
     }
 
-    private generateButton(src: string, alt: string, onClick: Function) {
+    static generateButton(src: string, alt: string, onClick: Function) {
         const button = document.createElement('img');
         button.src = src;
         button.alt = alt;
@@ -147,10 +153,12 @@ class ListElement {
 
     private generateLabelContainer(thumbnail: HTMLImageElement, watchedButton: HTMLImageElement) {
         const container = document.createElement('div');
+        const labelContainer = document.createElement('div');
         container.classList.add('list-label');
-        container.appendChild(this.generateTitle());
+        labelContainer.appendChild(this.generateTitle());
         const episode = this.generateEpisodeName();
-        container.appendChild(episode);
+        labelContainer.appendChild(episode);
+        container.appendChild(labelContainer);
         container.appendChild(this.generateAddSubContainer(episode, thumbnail, watchedButton));
         return container;
     }
@@ -160,16 +168,24 @@ class ListElement {
         title.innerHTML = this.getName();
         const instance = this;
         title.addEventListener('click', function () {
-            //TODO: title, open detail-page
+            instance.detailPage.renderPage(instance.data);
+            instance.pageList.hideElement();
+            instance.detailPage.showElement();
+            //TODO: onClick Title
         });
         return title;
+    }
+
+    private generatePrefix() {
+        return 's'+(this.sIndex+1)+'ep'+(this.epIndex+1)+': ';
     }
 
     private generateEpisodeName() {
         const episode = document.createElement('p');
         episode.classList.add('episode-name');
         episode.classList.add('list-label-p');
-        episode.innerHTML = this.data.seasons[this.sIndex].episodes[this.epIndex].name;
+        const prefix = this.generatePrefix();
+        episode.innerHTML = prefix+this.data.seasons[this.sIndex].episodes[this.epIndex].name;
         return episode;
     }
 
@@ -191,7 +207,8 @@ class ListElement {
 
         const instance = this;
         const refresh = function () {
-            episode.innerHTML = instance.data.seasons[instance.sIndex].episodes[instance.epIndex].name;
+            const prefix = instance.generatePrefix();
+            episode.innerHTML = prefix+instance.data.seasons[instance.sIndex].episodes[instance.epIndex].name;
             countEp.innerHTML = instance.epCount.toString();
             thumbnail.src = instance.data.seasons[instance.sIndex].thumbnail;
             if (instance.data.seasons[instance.sIndex].episodes[instance.epIndex].watched) {
@@ -202,7 +219,7 @@ class ListElement {
                 watchedButton.alt = 'not-watched';
             }
         };
-        addSub.appendChild(this.generateButton('img/add-button.ico', 'add', function () {
+        addSub.appendChild(ListElement.generateButton('img/add-button.ico', 'add', function () {
             if (instance.data.seasons[instance.sIndex].episodes.length - 1 > instance.epIndex) {
                 instance.epIndex++;
                 instance.epCount++;
@@ -213,7 +230,7 @@ class ListElement {
             }
             refresh();
         }));
-        addSub.appendChild(this.generateButton('img/subtr-button.ico', 'subtr', function () {
+        addSub.appendChild(ListElement.generateButton('img/subtr-button.ico', 'subtr', function () {
             if (instance.epIndex > 0) {
                 instance.epIndex--;
                 instance.epCount--;
@@ -227,16 +244,16 @@ class ListElement {
         return addSub;
     }
 
-    private getIndicesAndCountOfFirstNotWatched() {
+    static getIndicesAndCountOfFirstNotWatched(data: DataListElement) {
         let sIndex, epIndex, epCount = 0, maxCount = 0, success = false;
         let flag = true;
         let s, ep;
-        for (s = 0; s < this.data.seasons.length; s++) {
-            for (ep = 0; ep < this.data.seasons[s].episodes.length; ep++) {
+        for (s = 0; s < data.seasons.length; s++) {
+            for (ep = 0; ep < data.seasons[s].episodes.length; ep++) {
                 if (flag) {
                     epCount++;
                 }
-                if (!this.data.seasons[s].episodes[ep].watched && flag) {
+                if (!data.seasons[s].episodes[ep].watched && flag) {
                     sIndex = s;
                     epIndex = ep;
                     flag = false;

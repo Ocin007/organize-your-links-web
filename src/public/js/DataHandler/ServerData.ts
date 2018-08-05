@@ -2,6 +2,7 @@ class ServerData {
     private watched: DataListElement[] = [];
     private playList: DataListElement[] = [];
     private notWatched: DataListElement[] = [];
+    private allElements: DataListElement[] = [];
 
     constructor() {
 
@@ -17,6 +18,7 @@ class ServerData {
                 console.log(resObj.error);
                 return;
             }
+            instance.allElements = resObj.response;
             instance.splitInThreeLists(resObj.response);
             if (callback !== undefined) {
                 callback();
@@ -55,7 +57,7 @@ class ServerData {
 
     }
 
-    getList(id: ListID) {
+    getList(id?: ListID) {
         switch (id) {
             case ListID.WATCHED:
                 return this.watched;
@@ -63,7 +65,35 @@ class ServerData {
                 return this.playList;
             case ListID.NOT_WATCHED:
                 return this.notWatched;
+            default:
+                return this.allElements;
         }
+    }
+
+    getListLen() {
+        return this.allElements.length;
+    }
+
+    getListElement(index: number) {
+        return this.allElements[index];
+    }
+
+    getIndexOfElementWithName(name: string) {
+        for (let i = 0; i < this.allElements.length; i++) {
+            if(this.allElements[i].name === name) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    getIndexOfELement(data: DataListElement) {
+        for (let i = 0; i < this.allElements.length; i++) {
+            if(this.allElements[i].id === data.id) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private splitInThreeLists(list: DataListElement[]) {
@@ -94,6 +124,7 @@ class ServerData {
                 ServerData.updateList(this.notWatched, element);
                 break;
         }
+        ServerData.updateList(this.allElements, element);
     }
 
     private sendAjaxRequest(url: string, data: any, onError: Function, onSuccess: Function) {
