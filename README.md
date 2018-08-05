@@ -1,5 +1,8 @@
 # organize-your-links-web
 
+index.html in src/public  
+Benötigt composer
+
 Geplante Funktionen:
 - neue einträge erstellen
 - einträge bearbeiten

@@ -6,7 +6,7 @@ class ListElement {
     private success: boolean;
     private htmlListElement: HTMLDivElement;
 
-    constructor(private data: DataListElement, private listId: ListID) {
+    constructor(private data: DataListElement, private listId: ListID, private serverData: ServerData) {
         [
             this.sIndex,
             this.epIndex,
@@ -49,35 +49,26 @@ class ListElement {
         const instance = this;
         const thumbnail = this.generateButton(
             this.data.seasons[this.sIndex].thumbnail, 'thumbnail', function () {
-            window.open(instance.data.seasons[instance.sIndex].url);
-        });
+                window.open(instance.data.seasons[instance.sIndex].url);
+            });
         thumbnail.classList.add('thumbnail');
         return thumbnail;
-        /*
-        debugger;
-        const thumbnail = document.createElement('img');
-        thumbnail.classList.add('thumbnail');
-        if(this.success) {
-            thumbnail.src = this.data.seasons[this.sIndex].thumbnail;
-        } else {
-            thumbnail.src = this.data.seasons[this.sIndex-1].thumbnail;
-        }
-        thumbnail.alt = 'thumbnail';
-        return thumbnail;
-        */
     }
 
     private generateButtonContainer(): [HTMLDivElement, HTMLImageElement] {
         const container = document.createElement('div');
         container.classList.add('list-button-container');
         switch (this.listId) {
-            case ListID.WATCHED: container.appendChild(this.arrowRightButton());
-                                 break;
-            case ListID.PLAYLIST: container.appendChild(this.arrowLeftButton());
-                                  container.appendChild(this.arrowRightButton());
-                                  break;
-            case ListID.NOT_WATCHED: container.appendChild(this.arrowLeftButton());
-                                     break;
+            case ListID.WATCHED:
+                container.appendChild(this.arrowRightButton());
+                break;
+            case ListID.PLAYLIST:
+                container.appendChild(this.arrowLeftButton());
+                container.appendChild(this.arrowRightButton());
+                break;
+            case ListID.NOT_WATCHED:
+                container.appendChild(this.arrowLeftButton());
+                break;
         }
         container.appendChild(this.playButton());
         const watchedButton = this.watchedButton();
@@ -90,14 +81,14 @@ class ListElement {
     private arrowLeftButton() {
         const instance = this;
         return this.generateButton('img/arrow-left.ico', 'arrow-left', function () {
-            //TODO
+            //TODO: arrow left
         });
     }
 
     private arrowRightButton() {
         const instance = this;
         return this.generateButton('img/arrow-right.ico', 'arrow-right', function () {
-            //TODO
+            //TODO: arrow right
         });
     }
 
@@ -110,16 +101,22 @@ class ListElement {
 
     private watchedButton() {
         const watchedStatus = document.createElement('img');
-        if(this.data.seasons[this.sIndex].episodes[this.epIndex].watched) {
-            watchedStatus.src = 'img/watched.ico';
-            watchedStatus.alt = 'watched';
-        } else {
-            watchedStatus.src = 'img/not-watched.ico';
-            watchedStatus.alt = 'not-watched';
-        }
+        const setAttributes = function (bool: boolean) {
+            if (bool) {
+                watchedStatus.src = 'img/watched.ico';
+                watchedStatus.alt = 'watched';
+            } else {
+                watchedStatus.src = 'img/not-watched.ico';
+                watchedStatus.alt = 'not-watched';
+            }
+        };
+        setAttributes(this.data.seasons[this.sIndex].episodes[this.epIndex].watched);
         const instance = this;
         watchedStatus.addEventListener('click', function () {
-            //TODO
+            const oldBool = instance.data.seasons[instance.sIndex].episodes[instance.epIndex].watched;
+            instance.data.seasons[instance.sIndex].episodes[instance.epIndex].watched = !oldBool;
+            setAttributes(!oldBool);
+            instance.serverData.put([instance.data]);
         });
         return watchedStatus;
     }
@@ -127,14 +124,14 @@ class ListElement {
     private editButton() {
         const instance = this;
         return this.generateButton('img/edit.ico', 'edit', function () {
-            //TODO
+            //TODO: edit
         });
     }
 
     private deleteButton() {
         const instance = this;
         return this.generateButton('img/delete.ico', 'delete', function () {
-            //TODO
+            //TODO: delete
         });
     }
 
@@ -163,7 +160,7 @@ class ListElement {
         title.innerHTML = this.getName();
         const instance = this;
         title.addEventListener('click', function () {
-            //TODO
+            //TODO: title, open detail-page
         });
         return title;
     }
@@ -197,7 +194,7 @@ class ListElement {
             episode.innerHTML = instance.data.seasons[instance.sIndex].episodes[instance.epIndex].name;
             countEp.innerHTML = instance.epCount.toString();
             thumbnail.src = instance.data.seasons[instance.sIndex].thumbnail;
-            if(instance.data.seasons[instance.sIndex].episodes[instance.epIndex].watched) {
+            if (instance.data.seasons[instance.sIndex].episodes[instance.epIndex].watched) {
                 watchedButton.src = 'img/watched.ico';
                 watchedButton.alt = 'watched';
             } else {
@@ -205,11 +202,11 @@ class ListElement {
                 watchedButton.alt = 'not-watched';
             }
         };
-        addSub.appendChild(this.generateButton('img/add-button.ico' ,'add' ,function () {
-            if(instance.data.seasons[instance.sIndex].episodes.length-1 > instance.epIndex) {
+        addSub.appendChild(this.generateButton('img/add-button.ico', 'add', function () {
+            if (instance.data.seasons[instance.sIndex].episodes.length - 1 > instance.epIndex) {
                 instance.epIndex++;
                 instance.epCount++;
-            } else if(instance.data.seasons.length-1 > instance.sIndex) {
+            } else if (instance.data.seasons.length - 1 > instance.sIndex) {
                 instance.sIndex++;
                 instance.epIndex = 0;
                 instance.epCount++;
@@ -217,12 +214,12 @@ class ListElement {
             refresh();
         }));
         addSub.appendChild(this.generateButton('img/subtr-button.ico', 'subtr', function () {
-            if(instance.epIndex > 0) {
+            if (instance.epIndex > 0) {
                 instance.epIndex--;
                 instance.epCount--;
-            } else if(instance.sIndex > 0) {
+            } else if (instance.sIndex > 0) {
                 instance.sIndex--;
-                instance.epIndex = instance.data.seasons[instance.sIndex].episodes.length-1;
+                instance.epIndex = instance.data.seasons[instance.sIndex].episodes.length - 1;
                 instance.epCount--;
             }
             refresh();
@@ -236,10 +233,10 @@ class ListElement {
         let s, ep;
         for (s = 0; s < this.data.seasons.length; s++) {
             for (ep = 0; ep < this.data.seasons[s].episodes.length; ep++) {
-                if(flag) {
+                if (flag) {
                     epCount++;
                 }
-                if(!this.data.seasons[s].episodes[ep].watched && flag) {
+                if (!this.data.seasons[s].episodes[ep].watched && flag) {
                     sIndex = s;
                     epIndex = ep;
                     flag = false;
@@ -248,7 +245,7 @@ class ListElement {
                 maxCount++;
             }
         }
-        if(!success) {
+        if (!success) {
             sIndex = s - 1;
             epIndex = ep - 1;
         }

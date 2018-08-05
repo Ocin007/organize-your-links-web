@@ -11,7 +11,9 @@ function closeWin() {
 }
 */
 document.addEventListener('DOMContentLoaded', function () {
-    window.onscroll = function() {myFunction()};
+    window.onscroll = function () {
+        myFunction()
+    };
 
     let pages: any = document.getElementsByClassName('page');
     let navTabs = document.getElementById('nav-tabs');
@@ -22,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
             pages[i].style.marginTop = str;
         }
     }
+
     function myFunction() {
         if (window.pageYOffset > sticky) {
             navTabs.style.position = 'fixed';

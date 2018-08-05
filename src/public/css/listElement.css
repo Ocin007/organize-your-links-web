@@ -15,9 +15,9 @@
     height: 133px;
     justify-content: space-between;
 }
-.list-element:hover {
-    box-shadow: inset -3px 4px 9px 0;
-}
+/*.list-element:hover {*/
+    /*box-shadow: inset -3px 4px 9px 0;*/
+/*}*/
 .list-img-label {
     display: flex;
     flex-direction: row;

@@ -29,6 +29,26 @@ var ServerData = /** @class */ (function () {
         });
     };
     ServerData.prototype.put = function (list, callback) {
+        var instance = this;
+        this.sendAjaxRequest('../api/put.php', list, function (http) {
+            ServerData.errFunction(http, 'put');
+        }, function (http) {
+            var resObj = JSON.parse(http.responseText);
+            if (resObj.error !== undefined) {
+                console.log(resObj.error);
+            }
+            if (resObj.response === undefined) {
+                return;
+            }
+            for (var i = 0; i < list.length; i++) {
+                if (resObj.response.indexOf(list[i].id) !== -1) {
+                    instance.refreshLists(list[i]);
+                }
+            }
+            if (callback !== undefined) {
+                callback();
+            }
+        });
     };
     ServerData.prototype.post = function (list, callback) {
     };
@@ -36,9 +56,12 @@ var ServerData = /** @class */ (function () {
     };
     ServerData.prototype.getList = function (id) {
         switch (id) {
-            case ListID.WATCHED: return this.watched;
-            case ListID.PLAYLIST: return this.playList;
-            case ListID.NOT_WATCHED: return this.notWatched;
+            case ListID.WATCHED:
+                return this.watched;
+            case ListID.PLAYLIST:
+                return this.playList;
+            case ListID.NOT_WATCHED:
+                return this.notWatched;
         }
     };
     ServerData.prototype.splitInThreeLists = function (list) {
@@ -56,19 +79,47 @@ var ServerData = /** @class */ (function () {
             }
         }
     };
+    ServerData.prototype.refreshLists = function (element) {
+        switch (element.list) {
+            case ListID.WATCHED:
+                ServerData.updateList(this.watched, element);
+                break;
+            case ListID.PLAYLIST:
+                ServerData.updateList(this.playList, element);
+                break;
+            case ListID.NOT_WATCHED:
+                ServerData.updateList(this.notWatched, element);
+                break;
+        }
+    };
     ServerData.prototype.sendAjaxRequest = function (url, data, onError, onSuccess) {
         var http = new XMLHttpRequest();
         http.open("POST", url);
         http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         http.addEventListener('load', function () {
             if (http.status >= 200 && http.status < 300) {
-                onSuccess(http);
+                try {
+                    onSuccess(http);
+                }
+                catch (e) {
+                    var errWindow = window.open();
+                    errWindow.document.write(http.responseText);
+                    return;
+                }
             }
             else {
                 onError(http);
             }
         });
-        http.send(JSON.stringify(data));
+        http.send('data=' + JSON.stringify(data));
+    };
+    ServerData.updateList = function (list, element) {
+        for (var i = 0; i < list.length; i++) {
+            if (list[i].id === element.id) {
+                list[i] = element;
+                return;
+            }
+        }
     };
     ServerData.errFunction = function (http, title) {
         console.warn('Error: ' + title + ', code: ' + http.status + ' ' + http.statusText);
@@ -84,9 +135,10 @@ var ServerData = /** @class */ (function () {
 }());
 //# sourceMappingURL=ServerData.js.map
 var ListElement = /** @class */ (function () {
-    function ListElement(data, listId) {
+    function ListElement(data, listId, serverData) {
         this.data = data;
         this.listId = listId;
+        this.serverData = serverData;
         _a = this.getIndicesAndCountOfFirstNotWatched(), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
         var _a;
     }
@@ -122,18 +174,6 @@ var ListElement = /** @class */ (function () {
         });
         thumbnail.classList.add('thumbnail');
         return thumbnail;
-        /*
-        debugger;
-        const thumbnail = document.createElement('img');
-        thumbnail.classList.add('thumbnail');
-        if(this.success) {
-            thumbnail.src = this.data.seasons[this.sIndex].thumbnail;
-        } else {
-            thumbnail.src = this.data.seasons[this.sIndex-1].thumbnail;
-        }
-        thumbnail.alt = 'thumbnail';
-        return thumbnail;
-        */
     };
     ListElement.prototype.generateButtonContainer = function () {
         var container = document.createElement('div');
@@ -177,17 +217,23 @@ var ListElement = /** @class */ (function () {
     };
     ListElement.prototype.watchedButton = function () {
         var watchedStatus = document.createElement('img');
-        if (this.data.seasons[this.sIndex].episodes[this.epIndex].watched) {
-            watchedStatus.src = 'img/watched.ico';
-            watchedStatus.alt = 'watched';
-        }
-        else {
-            watchedStatus.src = 'img/not-watched.ico';
-            watchedStatus.alt = 'not-watched';
-        }
+        var setAttributes = function (bool) {
+            if (bool) {
+                watchedStatus.src = 'img/watched.ico';
+                watchedStatus.alt = 'watched';
+            }
+            else {
+                watchedStatus.src = 'img/not-watched.ico';
+                watchedStatus.alt = 'not-watched';
+            }
+        };
+        setAttributes(this.data.seasons[this.sIndex].episodes[this.epIndex].watched);
         var instance = this;
         watchedStatus.addEventListener('click', function () {
-            //TODO
+            var oldBool = instance.data.seasons[instance.sIndex].episodes[instance.epIndex].watched;
+            instance.data.seasons[instance.sIndex].episodes[instance.epIndex].watched = !oldBool;
+            setAttributes(!oldBool);
+            instance.serverData.put([instance.data]);
         });
         return watchedStatus;
     };
@@ -336,10 +382,10 @@ var PageList = /** @class */ (function () {
         for (var i = 0; i < dataList.length; i++) {
             var firstChar = dataList[i].name.charAt(0).toUpperCase();
             if (this.dataList[firstChar] === undefined) {
-                this.dataList[firstChar] = [new ListElement(dataList[i], this.listID)];
+                this.dataList[firstChar] = [new ListElement(dataList[i], this.listID, this.serverData)];
             }
             else {
-                this.dataList[firstChar].push(new ListElement(dataList[i], this.listID));
+                this.dataList[firstChar].push(new ListElement(dataList[i], this.listID, this.serverData));
             }
         }
     };
@@ -381,7 +427,9 @@ function closeWin() {
 }
 */
 document.addEventListener('DOMContentLoaded', function () {
-    window.onscroll = function () { myFunction(); };
+    window.onscroll = function () {
+        myFunction();
+    };
     var pages = document.getElementsByClassName('page');
     var navTabs = document.getElementById('nav-tabs');
     var sticky = navTabs.offsetTop;

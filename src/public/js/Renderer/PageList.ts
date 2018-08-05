@@ -18,17 +18,17 @@ class PageList {
         const dataList = this.serverData.getList(this.listID);
         for (let i = 0; i < dataList.length; i++) {
             let firstChar = dataList[i].name.charAt(0).toUpperCase();
-            if(this.dataList[firstChar] === undefined) {
-                this.dataList[firstChar] = [ new ListElement(dataList[i], this.listID) ];
+            if (this.dataList[firstChar] === undefined) {
+                this.dataList[firstChar] = [new ListElement(dataList[i], this.listID, this.serverData)];
             } else {
-                this.dataList[firstChar].push(new ListElement(dataList[i], this.listID));
+                this.dataList[firstChar].push(new ListElement(dataList[i], this.listID, this.serverData));
             }
         }
     }
 
     renderList() {
         this.pageElement.innerHTML = '';
-        for(let key in this.dataList) {
+        for (let key in this.dataList) {
             this.pageElement.appendChild(this.generateSegment(key));
         }
     }

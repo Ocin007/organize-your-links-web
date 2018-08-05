@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
         watched.showElement();
         playlist.hideElement();
         notWatched.hideElement();
-        if(!tabWatched.classList.contains('tab-active')) {
+        if (!tabWatched.classList.contains('tab-active')) {
             tabWatched.classList.add('tab-active');
         }
         tabPlaylist.classList.remove('tab-active');
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         playlist.showElement();
         notWatched.hideElement();
         tabWatched.classList.remove('tab-active');
-        if(!tabPlaylist.classList.contains('tab-active')) {
+        if (!tabPlaylist.classList.contains('tab-active')) {
             tabPlaylist.classList.add('tab-active');
         }
         tabNotWatched.classList.remove('tab-active');
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
         notWatched.showElement();
         tabWatched.classList.remove('tab-active');
         tabPlaylist.classList.remove('tab-active');
-        if(!tabNotWatched.classList.contains('tab-active')) {
+        if (!tabNotWatched.classList.contains('tab-active')) {
             tabNotWatched.classList.add('tab-active');
         }
     });

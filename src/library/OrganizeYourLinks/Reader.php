@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: nwalter
- * Date: 03.08.2018
- * Time: 22:58
- */
 
 namespace OrganizeYourLinks;
 
