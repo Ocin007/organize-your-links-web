@@ -37,7 +37,6 @@ class PageList implements Slideable {
         this.tabElement.classList.remove('tab-active');
     }
 
-
     getPageElement() {
         return this.pageElement;
     }

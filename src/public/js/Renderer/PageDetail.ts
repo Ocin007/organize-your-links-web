@@ -56,7 +56,6 @@ class PageDetail implements Slideable {
         this.tabElement.classList.remove('tab-active');
     }
 
-
     getPageElement() {
         return this.pageElement;
     }
@@ -223,7 +222,6 @@ class PageDetail implements Slideable {
             instance.serverData.put([data], function () {
                 instance.listElementMap[data.id].renderPageList();
             });
-            //TODO: watched button
         });
         return watchedStatus;
     }
@@ -241,14 +239,26 @@ class PageDetail implements Slideable {
     private arrowLeftButton() {
         const instance = this;
         return ListElement.generateButton('img/arrow-left.ico', 'arrow-left', function () {
-            //TODO: arrow left detail
+            if(instance.currentIndex > 0) {
+                instance.currentIndex--;
+            } else {
+                instance.currentIndex = instance.serverData.getListLen() - 1;
+            }
+            const data = instance.serverData.getListElement(instance.currentIndex);
+            instance.renderPage(data);
         });
     }
 
     private arrowRightButton() {
         const instance = this;
         return ListElement.generateButton('img/arrow-right.ico', 'arrow-right', function () {
-            //TODO: arrow right detail
+            if(instance.currentIndex + 1 < instance.serverData.getListLen()) {
+                instance.currentIndex++;
+            } else {
+                instance.currentIndex = 0;
+            }
+            const data = instance.serverData.getListElement(instance.currentIndex);
+            instance.renderPage(data);
         });
     }
 

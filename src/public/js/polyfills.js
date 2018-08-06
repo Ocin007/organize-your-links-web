@@ -623,7 +623,6 @@ var PageDetail = /** @class */ (function () {
             instance.serverData.put([data], function () {
                 instance.listElementMap[data.id].renderPageList();
             });
-            //TODO: watched button
         });
         return watchedStatus;
     };
@@ -638,13 +637,27 @@ var PageDetail = /** @class */ (function () {
     PageDetail.prototype.arrowLeftButton = function () {
         var instance = this;
         return ListElement.generateButton('img/arrow-left.ico', 'arrow-left', function () {
-            //TODO: arrow left detail
+            if (instance.currentIndex > 0) {
+                instance.currentIndex--;
+            }
+            else {
+                instance.currentIndex = instance.serverData.getListLen() - 1;
+            }
+            var data = instance.serverData.getListElement(instance.currentIndex);
+            instance.renderPage(data);
         });
     };
     PageDetail.prototype.arrowRightButton = function () {
         var instance = this;
         return ListElement.generateButton('img/arrow-right.ico', 'arrow-right', function () {
-            //TODO: arrow right detail
+            if (instance.currentIndex + 1 < instance.serverData.getListLen()) {
+                instance.currentIndex++;
+            }
+            else {
+                instance.currentIndex = 0;
+            }
+            var data = instance.serverData.getListElement(instance.currentIndex);
+            instance.renderPage(data);
         });
     };
     PageDetail.prototype.editButton = function () {
