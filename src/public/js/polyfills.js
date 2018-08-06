@@ -200,6 +200,9 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.getName = function () {
         return this.serverData.getListElement(this.dataIndex).name;
     };
+    ListElement.prototype.getListId = function () {
+        return this.serverData.getListElement(this.dataIndex).list;
+    };
     ListElement.prototype.getElement = function () {
         return this.htmlListElement;
     };
@@ -316,8 +319,9 @@ var ListElement = /** @class */ (function () {
     };
     ListElement.prototype.generateLabelContainer = function (thumbnail, watchedButton) {
         var container = document.createElement('div');
-        var labelContainer = document.createElement('div');
         container.classList.add('list-label');
+        var labelContainer = document.createElement('div');
+        labelContainer.classList.add('title-episode-container');
         labelContainer.appendChild(this.generateTitle());
         var episode = this.generateEpisodeName();
         labelContainer.appendChild(episode);
@@ -331,12 +335,13 @@ var ListElement = /** @class */ (function () {
         var instance = this;
         title.addEventListener('click', function () {
             instance.detailPage.renderPage(instance.data);
-            instance.pageList.hideElement();
-            instance.detailPage.showElement();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            slideToDetails();
+            setTimeout(function () {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }, 120);
         });
         return title;
     };
@@ -505,20 +510,33 @@ var PageDetail = /** @class */ (function () {
     };
     PageDetail.prototype.renderDetailsContainer = function (data) {
         this.detailContainer.innerHTML = '';
+        var titleContainer = PageDetail.createDiv('title-container');
         var title = document.createElement('h1');
         title.innerHTML = data.name;
         var instance = this;
         title.addEventListener('click', function () {
-            instance.hideElement();
             var listElement = instance.listElementMap[data.id];
-            listElement.showPageList();
-            var height = listElement.getElement().offsetTop - 190;
-            window.scrollTo({
-                top: height,
-                behavior: 'smooth'
-            });
+            switch (listElement.getListId()) {
+                case ListID.WATCHED:
+                    slideToWatched();
+                    break;
+                case ListID.PLAYLIST:
+                    slideToPlaylist();
+                    break;
+                case ListID.NOT_WATCHED:
+                    slideToNotWatched();
+                    break;
+            }
+            var height = listElement.getElement().offsetTop - 30;
+            setTimeout(function () {
+                window.scrollTo({
+                    top: height,
+                    behavior: 'smooth'
+                });
+            }, 120);
         });
-        this.detailContainer.appendChild(title);
+        titleContainer.appendChild(title);
+        this.detailContainer.appendChild(titleContainer);
         for (var s = 0; s < data.seasons.length; s++) {
             this.detailContainer.appendChild(this.createSegment(s, data));
         }
@@ -880,6 +898,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+document.addEventListener('keydown', function (ev) {
+    if (ev.keyCode === 39 && navMap.active < 4) {
+        animationSlideLeft(navMap[navMap.active], navMap[navMap.active + 1]);
+        navMap.active++;
+    }
+    if (ev.keyCode === 37 && navMap.active > 1) {
+        animationSlideRight(navMap[navMap.active], navMap[navMap.active - 1]);
+        navMap.active--;
+    }
+});
 function animationSlideLeft(hide, show) {
     show.activateTab();
     hide.deactivateTab();
@@ -928,12 +956,52 @@ function animationSlideRight(hide, show) {
         toHide.style.left = (slideRange + innerWidth) + 'px';
     }, 10);
 }
+function slideToWatched() {
+    if (navMap.active === 1) {
+        return;
+    }
+    animationSlideRight(navMap[navMap.active], watched);
+    navMap.active = 1;
+}
+function slideToPlaylist() {
+    if (navMap.active === 2) {
+        return;
+    }
+    if (navMap.active > 2) {
+        animationSlideRight(navMap[navMap.active], playlist);
+    }
+    else {
+        animationSlideLeft(navMap[navMap.active], playlist);
+    }
+    navMap.active = 2;
+}
+function slideToNotWatched() {
+    if (navMap.active === 3) {
+        return;
+    }
+    if (navMap.active > 3) {
+        animationSlideRight(navMap[navMap.active], notWatched);
+    }
+    else {
+        animationSlideLeft(navMap[navMap.active], notWatched);
+    }
+    navMap.active = 3;
+}
+function slideToDetails() {
+    if (navMap.active === 4) {
+        return;
+    }
+    animationSlideLeft(navMap[navMap.active], details);
+    navMap.active = 4;
+}
 //# sourceMappingURL=style.js.map
+//*
 var serverData;
 var playlist;
 var watched;
 var notWatched;
 var details;
+var navMap;
 document.addEventListener('DOMContentLoaded', function () {
     serverData = new ServerData();
     var playlistElement = document.getElementById('playlist');
@@ -949,6 +1017,13 @@ document.addEventListener('DOMContentLoaded', function () {
     watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details);
     notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details);
     serverData.get(function () {
+        navMap = {
+            1: watched,
+            2: playlist,
+            3: notWatched,
+            4: details,
+            active: 2
+        };
         playlist.generateMap();
         playlist.renderList();
         watched.hideElement();
@@ -961,28 +1036,45 @@ document.addEventListener('DOMContentLoaded', function () {
         details.initPage();
     });
     tabWatched.addEventListener('click', function () {
+        if (navMap !== undefined) {
+            slideToWatched();
+            return;
+        }
         watched.showElement();
         playlist.hideElement();
         notWatched.hideElement();
         details.hideElement();
     });
     tabPlaylist.addEventListener('click', function () {
+        if (navMap !== undefined) {
+            slideToPlaylist();
+            return;
+        }
         watched.hideElement();
         playlist.showElement();
         notWatched.hideElement();
         details.hideElement();
     });
     tabNotWatched.addEventListener('click', function () {
+        if (navMap !== undefined) {
+            slideToNotWatched();
+            return;
+        }
         watched.hideElement();
         playlist.hideElement();
         notWatched.showElement();
         details.hideElement();
     });
     tabDetails.addEventListener('click', function () {
+        if (navMap !== undefined) {
+            slideToDetails();
+            return;
+        }
         watched.hideElement();
         playlist.hideElement();
         notWatched.hideElement();
         details.showElement();
     });
 });
+//*/ 
 //# sourceMappingURL=init.js.map

@@ -108,20 +108,33 @@ class PageDetail implements Slideable {
 
     private renderDetailsContainer(data: DataListElement) {
         this.detailContainer.innerHTML = '';
+        const titleContainer = PageDetail.createDiv('title-container');
         const title = document.createElement('h1');
         title.innerHTML = data.name;
         const instance = this;
         title.addEventListener('click', function () {
-            instance.hideElement();
             const listElement = instance.listElementMap[data.id];
-            listElement.showPageList();
-            const height = listElement.getElement().offsetTop-190;
-            window.scrollTo({
-                top: height,
-                behavior: 'smooth'
-            });
+            switch (listElement.getListId()) {
+                case ListID.WATCHED:
+                    slideToWatched();
+                    break;
+                case ListID.PLAYLIST:
+                    slideToPlaylist();
+                    break;
+                case ListID.NOT_WATCHED:
+                    slideToNotWatched();
+                    break;
+            }
+            const height = listElement.getElement().offsetTop-30;
+            setTimeout(function () {
+                window.scrollTo({
+                    top: height,
+                    behavior: 'smooth'
+                });
+            }, 120);
         });
-        this.detailContainer.appendChild(title);
+        titleContainer.appendChild(title);
+        this.detailContainer.appendChild(titleContainer);
         for (let s = 0; s < data.seasons.length; s++) {
             this.detailContainer.appendChild(this.createSegment(s, data))
         }

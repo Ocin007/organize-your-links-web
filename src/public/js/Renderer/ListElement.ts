@@ -31,6 +31,10 @@ class ListElement {
         return this.serverData.getListElement(this.dataIndex).name;
     }
 
+    getListId() {
+        return this.serverData.getListElement(this.dataIndex).list;
+    }
+
     getElement() {
         return this.htmlListElement;
     }
@@ -159,8 +163,9 @@ class ListElement {
 
     private generateLabelContainer(thumbnail: HTMLImageElement, watchedButton: HTMLImageElement) {
         const container = document.createElement('div');
-        const labelContainer = document.createElement('div');
         container.classList.add('list-label');
+        const labelContainer = document.createElement('div');
+        labelContainer.classList.add('title-episode-container');
         labelContainer.appendChild(this.generateTitle());
         const episode = this.generateEpisodeName();
         labelContainer.appendChild(episode);
@@ -175,12 +180,13 @@ class ListElement {
         const instance = this;
         title.addEventListener('click', function () {
             instance.detailPage.renderPage(instance.data);
-            instance.pageList.hideElement();
-            instance.detailPage.showElement();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            slideToDetails();
+            setTimeout(function () {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }, 120);
         });
         return title;
     }

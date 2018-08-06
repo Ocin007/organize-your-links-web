@@ -36,6 +36,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+document.addEventListener('keydown', function (ev: any) {
+    if(ev.keyCode === 39 && navMap.active < 4) {
+        animationSlideLeft(navMap[navMap.active], navMap[navMap.active+1]);
+        navMap.active++;
+    }
+    if(ev.keyCode === 37 && navMap.active > 1) {
+        animationSlideRight(navMap[navMap.active], navMap[navMap.active-1]);
+        navMap.active--;
+    }
+});
+
 function animationSlideLeft(hide: Slideable, show: Slideable) {
     show.activateTab();
     hide.deactivateTab();
@@ -84,4 +95,44 @@ function animationSlideRight(hide: Slideable, show: Slideable) {
         toShow.style.left = (slideRange)+'px';
         toHide.style.left = (slideRange+innerWidth)+'px';
     }, 10);
+}
+
+function slideToWatched() {
+    if(navMap.active === 1) {
+        return;
+    }
+    animationSlideRight(navMap[navMap.active], watched);
+    navMap.active = 1;
+}
+
+function slideToPlaylist() {
+    if(navMap.active === 2) {
+        return;
+    }
+    if(navMap.active > 2) {
+        animationSlideRight(navMap[navMap.active], playlist);
+    } else {
+        animationSlideLeft(navMap[navMap.active], playlist);
+    }
+    navMap.active = 2;
+}
+
+function slideToNotWatched() {
+    if(navMap.active === 3) {
+        return;
+    }
+    if(navMap.active > 3) {
+        animationSlideRight(navMap[navMap.active], notWatched);
+    } else {
+        animationSlideLeft(navMap[navMap.active], notWatched);
+    }
+    navMap.active = 3;
+}
+
+function slideToDetails() {
+    if(navMap.active === 4) {
+        return;
+    }
+    animationSlideLeft(navMap[navMap.active], details);
+    navMap.active = 4;
 }

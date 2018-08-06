@@ -90,7 +90,6 @@ img {
     border-radius: 5px;
     display: flex;
     flex-direction: row;
-
 }
 .big-thumbnail {
     display: flex;
@@ -155,13 +154,19 @@ img {
     margin-bottom: 20px;
     width: 100%;
 }
-.detail-container > h1 {
-    font-size: 3em;
-    height: 111px;
-    max-height: 111px;
-    cursor: pointer;
+.title-container {
+    height: 155px;
+    max-height: 155px;
+    display: flex;
+    align-items: center;
+    margin-left: 50px;
 }
-.detail-container > h1:hover {
+.title-container > h1 {
+    font-size: 3em;
+    cursor: pointer;
+    margin: 0;
+}
+.title-container > h1:hover {
     text-decoration: underline;
 }
 .episode-container {
@@ -175,10 +180,16 @@ img {
     font-size: 1.2em;
     padding-top: 5px;
     padding-bottom: 5px;
+    border-radius: 10px;
+}
+.episode-detail:hover {
+    background: radial-gradient(ellipse farthest-corner, #4e5254, #3c3f41);
 }
 .episode-detail:hover p {
     color: #78d561;
-    text-decoration: underline;
+}
+.episode-detail p:hover {
+    /*text-decoration: underline;*/
 }
 .episode-button-container {
     display: flex;
@@ -191,7 +202,7 @@ img {
     cursor: pointer;
 }
 .episode-button-container img:hover {
-    background-color: #5d6062;
+    /*background-color: #5d6062;*/
 }
 .episode-label {
     display: flex;
