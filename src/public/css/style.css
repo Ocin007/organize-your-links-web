@@ -22,6 +22,7 @@
 body {
     margin: 0;
     font-family: sans-serif;
+    overflow-x: hidden;
 }
 header {
     text-align: center;
@@ -33,13 +34,14 @@ img {
     -webkit-user-drag: none;
 }
 #header-title {
-    z-index: 1;
+    z-index: 2;
 }
 #nav-tabs {
     display: flex;
     flex-direction: row;
     position: static;
     width: 100%;
+    z-index: 1;
 }
 .tab {
     font-size: 1.5em;
@@ -57,8 +59,13 @@ img {
 
 
 
+#body-content {
+    position: relative;
+}
 .page {
     margin: 20px 20px 50px;
+    width: 97%;
+    position: absolute;
 }
 .page-list {
     display: block;

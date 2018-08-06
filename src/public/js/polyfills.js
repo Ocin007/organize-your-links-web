@@ -6,6 +6,7 @@ var ListID;
 })(ListID || (ListID = {}));
 //# sourceMappingURL=ListID.js.map
 //# sourceMappingURL=DataListElement.js.map
+//# sourceMappingURL=Slideable.js.map
 var ServerData = /** @class */ (function () {
     function ServerData() {
         this.watched = [];
@@ -336,7 +337,6 @@ var ListElement = /** @class */ (function () {
                 top: 0,
                 behavior: 'smooth'
             });
-            //TODO: onClick Title
         });
         return title;
     };
@@ -443,14 +443,29 @@ var PageDetail = /** @class */ (function () {
         this.listElementMap = {};
     }
     PageDetail.prototype.showElement = function () {
+        this.showPage();
+        this.activateTab();
+    };
+    PageDetail.prototype.hideElement = function () {
+        this.hidePage();
+        this.deactivateTab();
+    };
+    PageDetail.prototype.showPage = function () {
         this.pageElement.style.display = 'flex';
+    };
+    PageDetail.prototype.activateTab = function () {
         if (!this.tabElement.classList.contains('tab-active')) {
             this.tabElement.classList.add('tab-active');
         }
     };
-    PageDetail.prototype.hideElement = function () {
+    PageDetail.prototype.hidePage = function () {
         this.pageElement.style.display = 'none';
+    };
+    PageDetail.prototype.deactivateTab = function () {
         this.tabElement.classList.remove('tab-active');
+    };
+    PageDetail.prototype.getPageElement = function () {
+        return this.pageElement;
     };
     PageDetail.prototype.registerListElement = function (id, listElement) {
         this.listElementMap[id] = listElement;
@@ -494,11 +509,9 @@ var PageDetail = /** @class */ (function () {
         title.innerHTML = data.name;
         var instance = this;
         title.addEventListener('click', function () {
-            //TODO: title detail page
             instance.hideElement();
             var listElement = instance.listElementMap[data.id];
             listElement.showPageList();
-            // window.location.hash = data.id;
             var height = listElement.getElement().offsetTop - 190;
             window.scrollTo({
                 top: height,
@@ -767,14 +780,29 @@ var PageList = /** @class */ (function () {
         this.detailPage = detailPage;
     }
     PageList.prototype.showElement = function () {
+        this.showPage();
+        this.activateTab();
+    };
+    PageList.prototype.hideElement = function () {
+        this.hidePage();
+        this.deactivateTab();
+    };
+    PageList.prototype.showPage = function () {
         this.pageElement.style.display = 'block';
+    };
+    PageList.prototype.activateTab = function () {
         if (!this.tabElement.classList.contains('tab-active')) {
             this.tabElement.classList.add('tab-active');
         }
     };
-    PageList.prototype.hideElement = function () {
+    PageList.prototype.hidePage = function () {
         this.pageElement.style.display = 'none';
+    };
+    PageList.prototype.deactivateTab = function () {
         this.tabElement.classList.remove('tab-active');
+    };
+    PageList.prototype.getPageElement = function () {
+        return this.pageElement;
     };
     PageList.prototype.generateMap = function () {
         this.dataList = {};
@@ -852,6 +880,54 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+function animationSlideLeft(hide, show) {
+    show.activateTab();
+    hide.deactivateTab();
+    var toHide = hide.getPageElement();
+    var toShow = show.getPageElement();
+    var slideRange = innerWidth;
+    toShow.style.left = innerWidth + 'px';
+    show.showPage();
+    var interval = setInterval(function () {
+        if (slideRange <= 0) {
+            clearInterval(interval);
+            hide.hidePage();
+            toHide.style.left = '0px';
+            toShow.style.left = '0px';
+            return;
+        }
+        slideRange -= 80;
+        if (slideRange < 0) {
+            slideRange = 0;
+        }
+        toShow.style.left = (slideRange) + 'px';
+        toHide.style.left = (slideRange - innerWidth) + 'px';
+    }, 10);
+}
+function animationSlideRight(hide, show) {
+    show.activateTab();
+    hide.deactivateTab();
+    var toHide = hide.getPageElement();
+    var toShow = show.getPageElement();
+    var slideRange = (-1 * innerWidth);
+    toShow.style.left = (-1 * innerWidth) + 'px';
+    show.showPage();
+    var interval = setInterval(function () {
+        if (slideRange >= 0) {
+            clearInterval(interval);
+            hide.hidePage();
+            toHide.style.left = '0px';
+            toShow.style.left = '0px';
+            return;
+        }
+        slideRange += 80;
+        if (slideRange > 0) {
+            slideRange = 0;
+        }
+        toShow.style.left = (slideRange) + 'px';
+        toHide.style.left = (slideRange + innerWidth) + 'px';
+    }, 10);
+}
 //# sourceMappingURL=style.js.map
 var serverData;
 var playlist;

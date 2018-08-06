@@ -1,4 +1,4 @@
-class PageList {
+class PageList implements Slideable {
     private dataList: Object;
 
     constructor(
@@ -10,15 +10,36 @@ class PageList {
     ) {}
 
     showElement() {
+        this.showPage();
+        this.activateTab();
+    }
+
+    hideElement() {
+        this.hidePage();
+        this.deactivateTab();
+    }
+
+    showPage() {
         this.pageElement.style.display = 'block';
+    }
+
+    activateTab() {
         if (!this.tabElement.classList.contains('tab-active')) {
             this.tabElement.classList.add('tab-active');
         }
     }
 
-    hideElement() {
+    hidePage() {
         this.pageElement.style.display = 'none';
+    }
+
+    deactivateTab() {
         this.tabElement.classList.remove('tab-active');
+    }
+
+
+    getPageElement() {
+        return this.pageElement;
     }
 
     generateMap() {

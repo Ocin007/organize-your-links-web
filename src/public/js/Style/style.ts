@@ -35,3 +35,53 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+
+function animationSlideLeft(hide: Slideable, show: Slideable) {
+    show.activateTab();
+    hide.deactivateTab();
+    const toHide = hide.getPageElement();
+    const toShow = show.getPageElement();
+    let slideRange = innerWidth;
+    toShow.style.left = innerWidth+'px';
+    show.showPage();
+    const interval = setInterval(function () {
+        if(slideRange <= 0) {
+            clearInterval(interval);
+            hide.hidePage();
+            toHide.style.left = '0px';
+            toShow.style.left = '0px';
+            return;
+        }
+        slideRange -= 80;
+        if(slideRange < 0) {
+            slideRange = 0;
+        }
+        toShow.style.left = (slideRange)+'px';
+        toHide.style.left = (slideRange-innerWidth)+'px';
+    }, 10);
+}
+
+function animationSlideRight(hide: Slideable, show: Slideable) {
+    show.activateTab();
+    hide.deactivateTab();
+    const toHide = hide.getPageElement();
+    const toShow = show.getPageElement();
+    let slideRange = (-1 * innerWidth);
+    toShow.style.left = (-1 * innerWidth)+'px';
+    show.showPage();
+    const interval = setInterval(function () {
+        if(slideRange >= 0) {
+            clearInterval(interval);
+            hide.hidePage();
+            toHide.style.left = '0px';
+            toShow.style.left = '0px';
+            return;
+        }
+        slideRange += 80;
+        if(slideRange > 0) {
+            slideRange = 0;
+        }
+        toShow.style.left = (slideRange)+'px';
+        toHide.style.left = (slideRange+innerWidth)+'px';
+    }, 10);
+}

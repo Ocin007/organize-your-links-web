@@ -1,4 +1,4 @@
-class PageDetail {
+class PageDetail implements Slideable {
 
     private thumbnail: HTMLImageElement;
     private detailContainer: HTMLElement;
@@ -29,15 +29,36 @@ class PageDetail {
     ) {}
 
     showElement() {
+        this.showPage();
+        this.activateTab();
+    }
+
+    hideElement() {
+        this.hidePage();
+        this.deactivateTab();
+    }
+
+    showPage() {
         this.pageElement.style.display = 'flex';
+    }
+
+    activateTab() {
         if (!this.tabElement.classList.contains('tab-active')) {
             this.tabElement.classList.add('tab-active');
         }
     }
 
-    hideElement() {
+    hidePage() {
         this.pageElement.style.display = 'none';
+    }
+
+    deactivateTab() {
         this.tabElement.classList.remove('tab-active');
+    }
+
+
+    getPageElement() {
+        return this.pageElement;
     }
 
     registerListElement(id: string, listElement: ListElement) {
