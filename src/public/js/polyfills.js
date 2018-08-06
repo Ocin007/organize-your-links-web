@@ -202,6 +202,9 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.getElement = function () {
         return this.htmlListElement;
     };
+    ListElement.prototype.showPageList = function () {
+        this.pageList.showElement();
+    };
     ListElement.prototype.generateNewElement = function () {
         this.data = this.serverData.getListElement(this.dataIndex);
         var listElement = document.createElement('div');
@@ -329,6 +332,10 @@ var ListElement = /** @class */ (function () {
             instance.detailPage.renderPage(instance.data);
             instance.pageList.hideElement();
             instance.detailPage.showElement();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
             //TODO: onClick Title
         });
         return title;
@@ -431,7 +438,9 @@ var PageDetail = /** @class */ (function () {
         this.pageElement = pageElement;
         this.tabElement = tabElement;
         this.serverData = serverData;
+        this.currentIndex = 0;
         this.seasonUrl = '';
+        this.listElementMap = {};
     }
     PageDetail.prototype.showElement = function () {
         this.pageElement.style.display = 'flex';
@@ -442,6 +451,9 @@ var PageDetail = /** @class */ (function () {
     PageDetail.prototype.hideElement = function () {
         this.pageElement.style.display = 'none';
         this.tabElement.classList.remove('tab-active');
+    };
+    PageDetail.prototype.registerListElement = function (id, listElement) {
+        this.listElementMap[id] = listElement;
     };
     PageDetail.prototype.initPage = function () {
         this.pageElement.innerHTML = '';
@@ -467,7 +479,8 @@ var PageDetail = /** @class */ (function () {
         this.setFlags(data);
         this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
         this.seasonUrl = data.seasons[this.sIndex].url;
-        this.pageNumberElement.innerHTML = (this.serverData.getIndexOfELement(data) + 1).toString();
+        this.currentIndex = this.serverData.getIndexOfELement(data);
+        this.pageNumberElement.innerHTML = (this.currentIndex + 1).toString();
         this.setInfoValues(data);
         this.renderDetailsContainer(data);
     };
@@ -479,6 +492,19 @@ var PageDetail = /** @class */ (function () {
         this.detailContainer.innerHTML = '';
         var title = document.createElement('h1');
         title.innerHTML = data.name;
+        var instance = this;
+        title.addEventListener('click', function () {
+            //TODO: title detail page
+            instance.hideElement();
+            var listElement = instance.listElementMap[data.id];
+            listElement.showPageList();
+            // window.location.hash = data.id;
+            var height = listElement.getElement().offsetTop - 190;
+            window.scrollTo({
+                top: height,
+                behavior: 'smooth'
+            });
+        });
         this.detailContainer.appendChild(title);
         for (var s = 0; s < data.seasons.length; s++) {
             this.detailContainer.appendChild(this.createSegment(s, data));
@@ -533,7 +559,6 @@ var PageDetail = /** @class */ (function () {
     PageDetail.prototype.playButton = function (sIndex, epIndex, data) {
         return ListElement.generateButton('img/play.ico', 'play', function () {
             window.open(data.seasons[sIndex].episodes[epIndex].url);
-            //TODO: check play button
         });
     };
     PageDetail.prototype.watchedButton = function (sIndex, epIndex, data, episode) {
@@ -757,12 +782,14 @@ var PageList = /** @class */ (function () {
         for (var i = 0; i < indexList.length; i++) {
             var element = this.serverData.getListElement(indexList[i]);
             var firstChar = element.name.charAt(0).toUpperCase();
+            var listElement = new ListElement(indexList[i], this.serverData, this.detailPage, this);
             if (this.dataList[firstChar] === undefined) {
-                this.dataList[firstChar] = [new ListElement(indexList[i], this.serverData, this.detailPage, this)];
+                this.dataList[firstChar] = [listElement];
             }
             else {
-                this.dataList[firstChar].push(new ListElement(indexList[i], this.serverData, this.detailPage, this));
+                this.dataList[firstChar].push(listElement);
             }
+            this.detailPage.registerListElement(element.id, listElement);
         }
     };
     PageList.prototype.renderList = function () {
@@ -862,56 +889,24 @@ document.addEventListener('DOMContentLoaded', function () {
         playlist.hideElement();
         notWatched.hideElement();
         details.hideElement();
-        /*
-        if (!tabWatched.classList.contains('tab-active')) {
-            tabWatched.classList.add('tab-active');
-        }
-        tabPlaylist.classList.remove('tab-active');
-        tabNotWatched.classList.remove('tab-active');
-        tabDetails.classList.remove('tab-active');
-        */
     });
     tabPlaylist.addEventListener('click', function () {
         watched.hideElement();
         playlist.showElement();
         notWatched.hideElement();
         details.hideElement();
-        /*
-        tabWatched.classList.remove('tab-active');
-        if (!tabPlaylist.classList.contains('tab-active')) {
-            tabPlaylist.classList.add('tab-active');
-        }
-        tabNotWatched.classList.remove('tab-active');
-        tabDetails.classList.remove('tab-active');
-        */
     });
     tabNotWatched.addEventListener('click', function () {
         watched.hideElement();
         playlist.hideElement();
         notWatched.showElement();
         details.hideElement();
-        /*
-        tabWatched.classList.remove('tab-active');
-        tabPlaylist.classList.remove('tab-active');
-        if (!tabNotWatched.classList.contains('tab-active')) {
-            tabNotWatched.classList.add('tab-active');
-        }
-        tabDetails.classList.remove('tab-active');
-        */
     });
     tabDetails.addEventListener('click', function () {
         watched.hideElement();
         playlist.hideElement();
         notWatched.hideElement();
         details.showElement();
-        /*
-        tabWatched.classList.remove('tab-active');
-        tabPlaylist.classList.remove('tab-active');
-        tabNotWatched.classList.remove('tab-active');
-        if (!tabDetails.classList.contains('tab-active')) {
-            tabDetails.classList.add('tab-active');
-        }
-        */
     });
 });
 //# sourceMappingURL=init.js.map

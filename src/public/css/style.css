@@ -152,6 +152,10 @@ img {
     font-size: 3em;
     height: 111px;
     max-height: 111px;
+    cursor: pointer;
+}
+.detail-container > h1:hover {
+    text-decoration: underline;
 }
 .episode-container {
     padding: 10px;

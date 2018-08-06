@@ -27,11 +27,13 @@ class PageList {
         for (let i = 0; i < indexList.length; i++) {
             let element = this.serverData.getListElement(indexList[i]);
             let firstChar = element.name.charAt(0).toUpperCase();
+            let listElement = new ListElement(indexList[i], this.serverData, this.detailPage, this);
             if (this.dataList[firstChar] === undefined) {
-                this.dataList[firstChar] = [new ListElement(indexList[i], this.serverData, this.detailPage, this)];
+                this.dataList[firstChar] = [listElement];
             } else {
-                this.dataList[firstChar].push(new ListElement(indexList[i], this.serverData, this.detailPage, this));
+                this.dataList[firstChar].push(listElement);
             }
+            this.detailPage.registerListElement(element.id, listElement);
         }
     }
 

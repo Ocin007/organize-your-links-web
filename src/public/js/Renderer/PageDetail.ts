@@ -12,7 +12,9 @@ class PageDetail {
     private infoWatched: HTMLParagraphElement;
     private infoMaxAmount: HTMLParagraphElement;
 
+    private currentIndex: number = 0;
     private seasonUrl: string = '';
+    private listElementMap: {} = {};
 
     private sIndex: number;
     private epIndex: number;
@@ -36,6 +38,10 @@ class PageDetail {
     hideElement() {
         this.pageElement.style.display = 'none';
         this.tabElement.classList.remove('tab-active');
+    }
+
+    registerListElement(id: string, listElement: ListElement) {
+        this.listElementMap[id] = listElement;
     }
 
     initPage() {
@@ -63,7 +69,8 @@ class PageDetail {
         this.setFlags(data);
         this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
         this.seasonUrl = data.seasons[this.sIndex].url;
-        this.pageNumberElement.innerHTML = (this.serverData.getIndexOfELement(data)+1).toString();
+        this.currentIndex = this.serverData.getIndexOfELement(data);
+        this.pageNumberElement.innerHTML = (this.currentIndex+1).toString();
         this.setInfoValues(data);
         this.renderDetailsContainer(data);
     }
@@ -82,6 +89,17 @@ class PageDetail {
         this.detailContainer.innerHTML = '';
         const title = document.createElement('h1');
         title.innerHTML = data.name;
+        const instance = this;
+        title.addEventListener('click', function () {
+            instance.hideElement();
+            const listElement = instance.listElementMap[data.id];
+            listElement.showPageList();
+            const height = listElement.getElement().offsetTop-190;
+            window.scrollTo({
+                top: height,
+                behavior: 'smooth'
+            });
+        });
         this.detailContainer.appendChild(title);
         for (let s = 0; s < data.seasons.length; s++) {
             this.detailContainer.appendChild(this.createSegment(s, data))
@@ -142,7 +160,6 @@ class PageDetail {
     private playButton(sIndex: number, epIndex: number, data: DataListElement) {
         return ListElement.generateButton('img/play.ico', 'play', function () {
             window.open(data.seasons[sIndex].episodes[epIndex].url);
-            //TODO: check play button
         });
     }
 

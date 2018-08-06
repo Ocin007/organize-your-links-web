@@ -35,6 +35,10 @@ class ListElement {
         return this.htmlListElement;
     }
 
+    showPageList() {
+        this.pageList.showElement();
+    }
+
     generateNewElement() {
         this.data = this.serverData.getListElement(this.dataIndex);
         const listElement = document.createElement('div');
@@ -173,7 +177,10 @@ class ListElement {
             instance.detailPage.renderPage(instance.data);
             instance.pageList.hideElement();
             instance.detailPage.showElement();
-            //TODO: onClick Title
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
         return title;
     }
