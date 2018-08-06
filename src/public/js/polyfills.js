@@ -20,11 +20,13 @@ var ServerData = /** @class */ (function () {
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
             if (resObj.error !== undefined) {
-                console.log(resObj.error);
+                console.warn('Error "get"');
+                console.warn(resObj.error);
                 return;
             }
             instance.allElements = resObj.response;
-            instance.splitInThreeLists(resObj.response);
+            // instance.decodeAllElements();
+            instance.splitInThreeLists();
             if (callback !== undefined) {
                 callback();
             }
@@ -32,21 +34,24 @@ var ServerData = /** @class */ (function () {
     };
     ServerData.prototype.put = function (list, callback) {
         var instance = this;
+        ServerData.encodeAllElements(list);
         this.sendAjaxRequest('../api/put.php', list, function (http) {
             ServerData.errFunction(http, 'put');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
             if (resObj.error !== undefined) {
-                console.log(resObj.error);
+                console.warn('Error "put"');
+                console.warn(resObj.error);
             }
             if (resObj.response === undefined) {
                 return;
             }
             for (var i = 0; i < list.length; i++) {
                 if (resObj.response.indexOf(list[i].id) !== -1) {
-                    instance.refreshLists(list[i]);
+                    instance.updateList(list[i]);
                 }
             }
+            instance.decodeAllElements();
             if (callback !== undefined) {
                 callback();
             }
@@ -56,7 +61,7 @@ var ServerData = /** @class */ (function () {
     };
     ServerData.prototype.delete = function (idArray, callback) {
     };
-    ServerData.prototype.getList = function (id) {
+    ServerData.prototype.getIndexList = function (id) {
         switch (id) {
             case ListID.WATCHED:
                 return this.watched;
@@ -64,8 +69,6 @@ var ServerData = /** @class */ (function () {
                 return this.playList;
             case ListID.NOT_WATCHED:
                 return this.notWatched;
-            default:
-                return this.allElements;
         }
     };
     ServerData.prototype.getListLen = function () {
@@ -90,34 +93,53 @@ var ServerData = /** @class */ (function () {
         }
         return -1;
     };
-    ServerData.prototype.splitInThreeLists = function (list) {
-        for (var i = 0; i < list.length; i++) {
-            switch (list[i].list) {
-                case ListID.WATCHED:
-                    this.watched.push(list[i]);
-                    break;
-                case ListID.PLAYLIST:
-                    this.playList.push(list[i]);
-                    break;
-                case ListID.NOT_WATCHED:
-                    this.notWatched.push(list[i]);
-                    break;
+    ServerData.prototype.decodeAllElements = function () {
+        for (var i = 0; i < this.allElements.length; i++) {
+            this.decodeElement(i);
+        }
+    };
+    ServerData.prototype.decodeElement = function (index) {
+        var element = this.allElements[index];
+        element.name = decodeURIComponent(element.name);
+        for (var s = 0; s < element.seasons.length; s++) {
+            element.seasons[s].url = decodeURIComponent(element.seasons[s].url);
+            element.seasons[s].thumbnail = decodeURIComponent(element.seasons[s].thumbnail);
+            for (var ep = 0; ep < element.seasons[s].episodes.length; ep++) {
+                element.seasons[s].episodes[ep].url = decodeURIComponent(element.seasons[s].episodes[ep].url);
+                element.seasons[s].episodes[ep].name = decodeURIComponent(element.seasons[s].episodes[ep].name);
             }
         }
     };
-    ServerData.prototype.refreshLists = function (element) {
-        switch (element.list) {
-            case ListID.WATCHED:
-                ServerData.updateList(this.watched, element);
-                break;
-            case ListID.PLAYLIST:
-                ServerData.updateList(this.playList, element);
-                break;
-            case ListID.NOT_WATCHED:
-                ServerData.updateList(this.notWatched, element);
-                break;
+    ServerData.encodeAllElements = function (elementList) {
+        for (var i = 0; i < elementList.length; i++) {
+            ServerData.encodeElement(elementList[i]);
         }
-        ServerData.updateList(this.allElements, element);
+    };
+    ServerData.encodeElement = function (element) {
+        element.name = encodeURIComponent(element.name);
+        for (var s = 0; s < element.seasons.length; s++) {
+            element.seasons[s].url = encodeURIComponent(element.seasons[s].url);
+            element.seasons[s].thumbnail = encodeURIComponent(element.seasons[s].thumbnail);
+            for (var ep = 0; ep < element.seasons[s].episodes.length; ep++) {
+                element.seasons[s].episodes[ep].url = encodeURIComponent(element.seasons[s].episodes[ep].url);
+                element.seasons[s].episodes[ep].name = encodeURIComponent(element.seasons[s].episodes[ep].name);
+            }
+        }
+    };
+    ServerData.prototype.splitInThreeLists = function () {
+        for (var i = 0; i < this.allElements.length; i++) {
+            switch (this.allElements[i].list) {
+                case ListID.WATCHED:
+                    this.watched.push(i);
+                    break;
+                case ListID.PLAYLIST:
+                    this.playList.push(i);
+                    break;
+                case ListID.NOT_WATCHED:
+                    this.notWatched.push(i);
+                    break;
+            }
+        }
     };
     ServerData.prototype.sendAjaxRequest = function (url, data, onError, onSuccess) {
         var http = new XMLHttpRequest();
@@ -140,10 +162,10 @@ var ServerData = /** @class */ (function () {
         });
         http.send('data=' + JSON.stringify(data));
     };
-    ServerData.updateList = function (list, element) {
-        for (var i = 0; i < list.length; i++) {
-            if (list[i].id === element.id) {
-                list[i] = element;
+    ServerData.prototype.updateList = function (element) {
+        for (var i = 0; i < this.allElements.length; i++) {
+            if (this.allElements[i].id === element.id) {
+                this.allElements[i] = element;
                 return;
             }
         }
@@ -162,25 +184,26 @@ var ServerData = /** @class */ (function () {
 }());
 //# sourceMappingURL=ServerData.js.map
 var ListElement = /** @class */ (function () {
-    function ListElement(data, listId, serverData, detailPage, pageList) {
-        this.data = data;
-        this.listId = listId;
+    function ListElement(dataIndex, serverData, detailPage, pageList) {
+        this.dataIndex = dataIndex;
         this.serverData = serverData;
         this.detailPage = detailPage;
         this.pageList = pageList;
-        _a = ListElement.getIndicesAndCountOfFirstNotWatched(this.data), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
+        var element = this.serverData.getListElement(this.dataIndex);
+        _a = ListElement.getIndicesAndCountOfFirstNotWatched(element), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
         var _a;
     }
     ListElement.prototype.getId = function () {
-        return this.data.id;
+        return this.serverData.getListElement(this.dataIndex).id;
     };
     ListElement.prototype.getName = function () {
-        return this.data.name;
+        return this.serverData.getListElement(this.dataIndex).name;
     };
     ListElement.prototype.getElement = function () {
         return this.htmlListElement;
     };
     ListElement.prototype.generateNewElement = function () {
+        this.data = this.serverData.getListElement(this.dataIndex);
         var listElement = document.createElement('div');
         listElement.id = this.getId();
         listElement.classList.add('list-element');
@@ -207,7 +230,7 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.generateButtonContainer = function () {
         var container = document.createElement('div');
         container.classList.add('list-button-container');
-        switch (this.listId) {
+        switch (this.data.list) {
             case ListID.WATCHED:
                 container.appendChild(this.arrowRightButton());
                 break;
@@ -408,8 +431,7 @@ var PageDetail = /** @class */ (function () {
         this.pageElement = pageElement;
         this.tabElement = tabElement;
         this.serverData = serverData;
-        this.thumbnail = PageDetail.createImg('', 'thumbnail');
-        this.detailContainer = PageDetail.createDiv('detail-container');
+        this.seasonUrl = '';
     }
     PageDetail.prototype.showElement = function () {
         this.pageElement.style.display = 'flex';
@@ -423,6 +445,12 @@ var PageDetail = /** @class */ (function () {
     };
     PageDetail.prototype.initPage = function () {
         this.pageElement.innerHTML = '';
+        this.thumbnail = PageDetail.createImg('', 'thumbnail');
+        var instance = this;
+        this.thumbnail.addEventListener('click', function () {
+            window.open(instance.seasonUrl);
+        });
+        this.detailContainer = PageDetail.createDiv('detail-container');
         var thumbnailAndDetails = PageDetail.createDiv('big-thumbnail');
         thumbnailAndDetails.appendChild(this.thumbnail);
         var buttonContainer = this.generateButtonContainer();
@@ -438,13 +466,8 @@ var PageDetail = /** @class */ (function () {
     PageDetail.prototype.renderPage = function (data) {
         this.setFlags(data);
         this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
-        var instance = this;
-        var thumbnailFunc = function () {
-            window.open(data.seasons[instance.sIndex].url);
-        };
-        this.thumbnail.removeEventListener('click', thumbnailFunc);
-        this.thumbnail.addEventListener('click', thumbnailFunc);
-        this.pageNumber.innerHTML = (this.serverData.getIndexOfELement(data) + 1).toString();
+        this.seasonUrl = data.seasons[this.sIndex].url;
+        this.pageNumberElement.innerHTML = (this.serverData.getIndexOfELement(data) + 1).toString();
         this.setInfoValues(data);
         this.renderDetailsContainer(data);
     };
@@ -577,7 +600,7 @@ var PageDetail = /** @class */ (function () {
         var right = PageDetail.createDiv('align-right');
         var count = document.createElement('p');
         right.appendChild(count);
-        this.pageNumber = count;
+        this.pageNumberElement = count;
         container.appendChild(right);
         var node = document.createElement('p');
         node.innerHTML = 'von';
@@ -730,14 +753,15 @@ var PageList = /** @class */ (function () {
     };
     PageList.prototype.generateMap = function () {
         this.dataList = {};
-        var dataList = this.serverData.getList(this.listID);
-        for (var i = 0; i < dataList.length; i++) {
-            var firstChar = dataList[i].name.charAt(0).toUpperCase();
+        var indexList = this.serverData.getIndexList(this.listID);
+        for (var i = 0; i < indexList.length; i++) {
+            var element = this.serverData.getListElement(indexList[i]);
+            var firstChar = element.name.charAt(0).toUpperCase();
             if (this.dataList[firstChar] === undefined) {
-                this.dataList[firstChar] = [new ListElement(dataList[i], this.listID, this.serverData, this.detailPage, this)];
+                this.dataList[firstChar] = [new ListElement(indexList[i], this.serverData, this.detailPage, this)];
             }
             else {
-                this.dataList[firstChar].push(new ListElement(dataList[i], this.listID, this.serverData, this.detailPage, this));
+                this.dataList[firstChar].push(new ListElement(indexList[i], this.serverData, this.detailPage, this));
             }
         }
     };

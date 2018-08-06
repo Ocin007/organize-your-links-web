@@ -1,7 +1,7 @@
 class ServerData {
-    private watched: DataListElement[] = [];
-    private playList: DataListElement[] = [];
-    private notWatched: DataListElement[] = [];
+    private watched: number[] = [];
+    private playList: number[] = [];
+    private notWatched: number[] = [];
     private allElements: DataListElement[] = [];
 
     constructor() {
@@ -15,11 +15,13 @@ class ServerData {
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
             if (resObj.error !== undefined) {
-                console.log(resObj.error);
+                console.warn('Error "get"');
+                console.warn(resObj.error);
                 return;
             }
             instance.allElements = resObj.response;
-            instance.splitInThreeLists(resObj.response);
+            // instance.decodeAllElements();
+            instance.splitInThreeLists();
             if (callback !== undefined) {
                 callback();
             }
@@ -28,21 +30,24 @@ class ServerData {
 
     put(list: DataListElement[], callback?: Function) {
         const instance = this;
+        ServerData.encodeAllElements(list);
         this.sendAjaxRequest('../api/put.php', list, function (http) {
             ServerData.errFunction(http, 'put');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
             if (resObj.error !== undefined) {
-                console.log(resObj.error);
+                console.warn('Error "put"');
+                console.warn(resObj.error);
             }
             if (resObj.response === undefined) {
                 return;
             }
             for (let i = 0; i < list.length; i++) {
                 if (resObj.response.indexOf(list[i].id) !== -1) {
-                    instance.refreshLists(list[i]);
+                    instance.updateList(list[i]);
                 }
             }
+            instance.decodeAllElements();
             if (callback !== undefined) {
                 callback();
             }
@@ -57,7 +62,7 @@ class ServerData {
 
     }
 
-    getList(id?: ListID) {
+    getIndexList(id: ListID) {
         switch (id) {
             case ListID.WATCHED:
                 return this.watched;
@@ -65,8 +70,6 @@ class ServerData {
                 return this.playList;
             case ListID.NOT_WATCHED:
                 return this.notWatched;
-            default:
-                return this.allElements;
         }
     }
 
@@ -96,35 +99,57 @@ class ServerData {
         return -1;
     }
 
-    private splitInThreeLists(list: DataListElement[]) {
-        for (let i = 0; i < list.length; i++) {
-            switch (list[i].list) {
-                case ListID.WATCHED:
-                    this.watched.push(list[i]);
-                    break;
-                case ListID.PLAYLIST:
-                    this.playList.push(list[i]);
-                    break;
-                case ListID.NOT_WATCHED:
-                    this.notWatched.push(list[i]);
-                    break;
+    private decodeAllElements() {
+        for (let i = 0; i < this.allElements.length; i++) {
+            this.decodeElement(i);
+        }
+    }
+
+    private decodeElement(index: number) {
+        const element = this.allElements[index];
+        element.name = decodeURIComponent(element.name);
+        for (let s = 0; s < element.seasons.length; s++) {
+            element.seasons[s].url = decodeURIComponent(element.seasons[s].url);
+            element.seasons[s].thumbnail = decodeURIComponent(element.seasons[s].thumbnail);
+            for (let ep = 0; ep < element.seasons[s].episodes.length; ep++) {
+                element.seasons[s].episodes[ep].url = decodeURIComponent(element.seasons[s].episodes[ep].url);
+                element.seasons[s].episodes[ep].name = decodeURIComponent(element.seasons[s].episodes[ep].name);
             }
         }
     }
 
-    private refreshLists(element: DataListElement) {
-        switch (element.list) {
-            case ListID.WATCHED:
-                ServerData.updateList(this.watched, element);
-                break;
-            case ListID.PLAYLIST:
-                ServerData.updateList(this.playList, element);
-                break;
-            case ListID.NOT_WATCHED:
-                ServerData.updateList(this.notWatched, element);
-                break;
+    private static encodeAllElements(elementList: DataListElement[]) {
+        for (let i = 0; i < elementList.length; i++) {
+            ServerData.encodeElement(elementList[i]);
         }
-        ServerData.updateList(this.allElements, element);
+    }
+
+    private static encodeElement(element: DataListElement) {
+        element.name = encodeURIComponent(element.name);
+        for (let s = 0; s < element.seasons.length; s++) {
+            element.seasons[s].url = encodeURIComponent(element.seasons[s].url);
+            element.seasons[s].thumbnail = encodeURIComponent(element.seasons[s].thumbnail);
+            for (let ep = 0; ep < element.seasons[s].episodes.length; ep++) {
+                element.seasons[s].episodes[ep].url = encodeURIComponent(element.seasons[s].episodes[ep].url);
+                element.seasons[s].episodes[ep].name = encodeURIComponent(element.seasons[s].episodes[ep].name);
+            }
+        }
+    }
+
+    private splitInThreeLists() {
+        for (let i = 0; i < this.allElements.length; i++) {
+            switch (this.allElements[i].list) {
+                case ListID.WATCHED:
+                    this.watched.push(i);
+                    break;
+                case ListID.PLAYLIST:
+                    this.playList.push(i);
+                    break;
+                case ListID.NOT_WATCHED:
+                    this.notWatched.push(i);
+                    break;
+            }
+        }
     }
 
     private sendAjaxRequest(url: string, data: any, onError: Function, onSuccess: Function) {
@@ -147,10 +172,10 @@ class ServerData {
         http.send('data=' + JSON.stringify(data));
     }
 
-    private static updateList(list: DataListElement[], element: DataListElement) {
-        for (let i = 0; i < list.length; i++) {
-            if (list[i].id === element.id) {
-                list[i] = element;
+    private updateList(element: DataListElement) {
+        for (let i = 0; i < this.allElements.length; i++) {
+            if (this.allElements[i].id === element.id) {
+                this.allElements[i] = element;
                 return;
             }
         }

@@ -23,6 +23,9 @@ if(!isset($_POST['data'])) {
 
 try {
     $parsedData = json_decode($_POST['data'], true);
+    if($parsedData === null) {
+        throw new Exception('json_decode returned null');
+    }
 } catch (Exception $e) {
     echo json_encode([
         'error' => [

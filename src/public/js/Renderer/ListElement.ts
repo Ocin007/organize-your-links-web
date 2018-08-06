@@ -5,29 +5,30 @@ class ListElement {
     private maxCount: number;
     private success: boolean;
     private htmlListElement: HTMLDivElement;
+    private data: DataListElement;
 
     constructor(
-        private data: DataListElement,
-        private listId: ListID,
+        private dataIndex: number,
         private serverData: ServerData,
         private detailPage: PageDetail,
         private pageList: PageList
     ) {
+        const element = this.serverData.getListElement(this.dataIndex);
         [
             this.sIndex,
             this.epIndex,
             this.epCount,
             this.maxCount,
             this.success
-        ] = ListElement.getIndicesAndCountOfFirstNotWatched(this.data);
+        ] = ListElement.getIndicesAndCountOfFirstNotWatched(element);
     }
 
     getId() {
-        return this.data.id;
+        return this.serverData.getListElement(this.dataIndex).id;
     }
 
     getName() {
-        return this.data.name;
+        return this.serverData.getListElement(this.dataIndex).name;
     }
 
     getElement() {
@@ -35,6 +36,7 @@ class ListElement {
     }
 
     generateNewElement() {
+        this.data = this.serverData.getListElement(this.dataIndex);
         const listElement = document.createElement('div');
         listElement.id = this.getId();
         listElement.classList.add('list-element');
@@ -64,7 +66,7 @@ class ListElement {
     private generateButtonContainer(): [HTMLDivElement, HTMLImageElement] {
         const container = document.createElement('div');
         container.classList.add('list-button-container');
-        switch (this.listId) {
+        switch (this.data.list) {
             case ListID.WATCHED:
                 container.appendChild(this.arrowRightButton());
                 break;

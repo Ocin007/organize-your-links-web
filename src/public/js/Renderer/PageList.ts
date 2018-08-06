@@ -23,13 +23,14 @@ class PageList {
 
     generateMap() {
         this.dataList = {};
-        const dataList = this.serverData.getList(this.listID);
-        for (let i = 0; i < dataList.length; i++) {
-            let firstChar = dataList[i].name.charAt(0).toUpperCase();
+        const indexList = this.serverData.getIndexList(this.listID);
+        for (let i = 0; i < indexList.length; i++) {
+            let element = this.serverData.getListElement(indexList[i]);
+            let firstChar = element.name.charAt(0).toUpperCase();
             if (this.dataList[firstChar] === undefined) {
-                this.dataList[firstChar] = [new ListElement(dataList[i], this.listID, this.serverData, this.detailPage, this)];
+                this.dataList[firstChar] = [new ListElement(indexList[i], this.serverData, this.detailPage, this)];
             } else {
-                this.dataList[firstChar].push(new ListElement(dataList[i], this.listID, this.serverData, this.detailPage, this));
+                this.dataList[firstChar].push(new ListElement(indexList[i], this.serverData, this.detailPage, this));
             }
         }
     }

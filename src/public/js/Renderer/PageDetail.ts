@@ -1,15 +1,18 @@
 class PageDetail {
 
-    private readonly thumbnail: HTMLImageElement;
-    private pageNumber: HTMLParagraphElement;
+    private thumbnail: HTMLImageElement;
+    private detailContainer: HTMLElement;
+
+    private pageNumberElement: HTMLParagraphElement;
     private infoSeasonContainer: HTMLElement;
-    private readonly detailContainer: HTMLElement;
 
     private infoList: HTMLParagraphElement;
     private infoProgress: HTMLParagraphElement;
     private infoNotWatched: HTMLParagraphElement;
     private infoWatched: HTMLParagraphElement;
     private infoMaxAmount: HTMLParagraphElement;
+
+    private seasonUrl: string = '';
 
     private sIndex: number;
     private epIndex: number;
@@ -21,10 +24,7 @@ class PageDetail {
         private pageElement: HTMLElement,
         private tabElement: HTMLElement,
         private serverData: ServerData
-    ) {
-        this.thumbnail = PageDetail.createImg('', 'thumbnail');
-        this.detailContainer = PageDetail.createDiv('detail-container');
-    }
+    ) {}
 
     showElement() {
         this.pageElement.style.display = 'flex';
@@ -40,6 +40,12 @@ class PageDetail {
 
     initPage() {
         this.pageElement.innerHTML = '';
+        this.thumbnail = PageDetail.createImg('', 'thumbnail');
+        const instance = this;
+        this.thumbnail.addEventListener('click', function () {
+            window.open(instance.seasonUrl);
+        });
+        this.detailContainer = PageDetail.createDiv('detail-container');
         const thumbnailAndDetails = PageDetail.createDiv('big-thumbnail');
         thumbnailAndDetails.appendChild(this.thumbnail);
         const buttonContainer = this.generateButtonContainer();
@@ -56,13 +62,8 @@ class PageDetail {
     renderPage(data: DataListElement) {
         this.setFlags(data);
         this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
-        const instance = this;
-        const thumbnailFunc = function () {
-            window.open(data.seasons[instance.sIndex].url);
-        };
-        this.thumbnail.removeEventListener('click', thumbnailFunc);
-        this.thumbnail.addEventListener('click', thumbnailFunc);
-        this.pageNumber.innerHTML = (this.serverData.getIndexOfELement(data)+1).toString();
+        this.seasonUrl = data.seasons[this.sIndex].url;
+        this.pageNumberElement.innerHTML = (this.serverData.getIndexOfELement(data)+1).toString();
         this.setInfoValues(data);
         this.renderDetailsContainer(data);
     }
@@ -215,7 +216,7 @@ class PageDetail {
         const right = PageDetail.createDiv('align-right');
         const count = document.createElement('p');
         right.appendChild(count);
-        this.pageNumber = count;
+        this.pageNumberElement = count;
         container.appendChild(right);
         const node = document.createElement('p');
         node.innerHTML = 'von';
