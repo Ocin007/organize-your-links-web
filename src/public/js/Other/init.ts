@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         details.hideElement();
         details.initPage();
+        details.renderPage(serverData.getListElement(0));
     });
     tabWatched.addEventListener('click', function () {
         if(navMap !== undefined) {

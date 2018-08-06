@@ -220,18 +220,22 @@ class PageDetail implements Slideable {
             setAttributes(!oldBool);
             instance.updateInfo(data);
             instance.updateThumbnail(data);
-            instance.serverData.put([data]);
+            instance.serverData.put([data], function () {
+                instance.listElementMap[data.id].renderPageList();
+            });
             //TODO: watched button
         });
         return watchedStatus;
     }
 
     private updateInfo(data: DataListElement) {
-        //TODO
+        this.setFlags(data);
+        this.setInfoValues(data);
     }
 
     private updateThumbnail(data: DataListElement) {
-        //TODO
+        this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
+        this.seasonUrl = data.seasons[this.sIndex].url;
     }
 
     private arrowLeftButton() {

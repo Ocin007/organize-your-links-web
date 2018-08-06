@@ -43,6 +43,11 @@ class ListElement {
         this.pageList.showElement();
     }
 
+    renderPageList() {
+        this.pageList.generateMap();
+        this.pageList.renderList();
+    }
+
     generateNewElement() {
         this.data = this.serverData.getListElement(this.dataIndex);
         const listElement = document.createElement('div');

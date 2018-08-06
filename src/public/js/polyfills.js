@@ -209,6 +209,10 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.showPageList = function () {
         this.pageList.showElement();
     };
+    ListElement.prototype.renderPageList = function () {
+        this.pageList.generateMap();
+        this.pageList.renderList();
+    };
     ListElement.prototype.generateNewElement = function () {
         this.data = this.serverData.getListElement(this.dataIndex);
         var listElement = document.createElement('div');
@@ -616,16 +620,20 @@ var PageDetail = /** @class */ (function () {
             setAttributes(!oldBool);
             instance.updateInfo(data);
             instance.updateThumbnail(data);
-            instance.serverData.put([data]);
+            instance.serverData.put([data], function () {
+                instance.listElementMap[data.id].renderPageList();
+            });
             //TODO: watched button
         });
         return watchedStatus;
     };
     PageDetail.prototype.updateInfo = function (data) {
-        //TODO
+        this.setFlags(data);
+        this.setInfoValues(data);
     };
     PageDetail.prototype.updateThumbnail = function (data) {
-        //TODO
+        this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
+        this.seasonUrl = data.seasons[this.sIndex].url;
     };
     PageDetail.prototype.arrowLeftButton = function () {
         var instance = this;
@@ -1034,6 +1042,7 @@ document.addEventListener('DOMContentLoaded', function () {
         notWatched.renderList();
         details.hideElement();
         details.initPage();
+        details.renderPage(serverData.getListElement(0));
     });
     tabWatched.addEventListener('click', function () {
         if (navMap !== undefined) {
