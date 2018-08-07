@@ -4,6 +4,7 @@ let playlist: PageList;
 let watched: PageList;
 let notWatched: PageList;
 let details: PageDetail;
+let optionPage: PageOptions;
 let navMap;
 document.addEventListener('DOMContentLoaded', function () {
     serverData = new ServerData();
@@ -11,16 +12,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const watchedElement = document.getElementById('watched');
     const notWatchedElement = document.getElementById('not-watched');
     const detailsElement = document.getElementById('details');
+    const opacityLayer = document.getElementById('opacity-layer');
+    const pageOption = document.getElementById('page-option');
 
     const tabWatched = document.getElementById('tab-watched');
     const tabPlaylist = document.getElementById('tab-playlist');
     const tabNotWatched = document.getElementById('tab-not-watched');
     const tabDetails = document.getElementById('tab-details');
+    const tabOptions = document.getElementById('option-button');
 
     details = new PageDetail(detailsElement, tabDetails, serverData);
     playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details);
     watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details);
     notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details);
+    optionPage = new PageOptions(opacityLayer, pageOption);
     serverData.get(function () {
         navMap = {
             1: watched,
@@ -85,6 +90,13 @@ document.addEventListener('DOMContentLoaded', function () {
         playlist.hideElement();
         notWatched.hideElement();
         details.showElement();
+    });
+    tabOptions.addEventListener('click', function () {
+        optionPage.renderPage();
+        optionPage.showElement();
+        if(navMap !== undefined) {
+            slideOpenOptions(optionPage.getOptionContainer());
+        }
     });
 });
 //*/

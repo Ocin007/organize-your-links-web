@@ -873,6 +873,13 @@ var PageList = /** @class */ (function () {
     PageList.prototype.getPageElement = function () {
         return this.pageElement;
     };
+    PageList.prototype.foreachListElement = function (callback) {
+        for (var key in this.dataList) {
+            for (var i = 0; i < this.dataList[key].length; i++) {
+                callback(this.dataList[key][i]);
+            }
+        }
+    };
     PageList.prototype.generateMap = function () {
         this.dataList = {};
         var indexList = this.serverData.getIndexList(this.listID);
@@ -914,6 +921,48 @@ var PageList = /** @class */ (function () {
     return PageList;
 }());
 //# sourceMappingURL=PageList.js.map
+var PageOptions = /** @class */ (function () {
+    function PageOptions(opacityLayer, optionContainer) {
+        this.opacityLayer = opacityLayer;
+        this.optionContainer = optionContainer;
+        var instance = this;
+        // this.optionContainer.style.right = (-1*this.optionContainer.getBoundingClientRect().width)+'px';
+        this.opacityLayer.addEventListener('click', function () {
+            slideCloseOptions(instance.optionContainer);
+            instance.hideElement();
+        });
+    }
+    PageOptions.prototype.showElement = function () {
+        this.opacityLayer.style.visibility = 'visible';
+    };
+    PageOptions.prototype.hideElement = function () {
+        this.opacityLayer.style.visibility = 'hidden';
+    };
+    PageOptions.prototype.getOptionContainer = function () {
+        return this.optionContainer;
+    };
+    PageOptions.prototype.renderPage = function () {
+        this.optionContainer.innerHTML = '';
+        this.activePage = navMap[navMap.active];
+        if (navMap.active === 1 || navMap.active === 2 || navMap.active === 3) {
+            this.renderForPageList();
+        }
+        else {
+            this.renderNoContent();
+        }
+    };
+    PageOptions.prototype.renderForPageList = function () {
+        //TODO: render options
+    };
+    PageOptions.prototype.renderNoContent = function () {
+        var p = document.createElement('p');
+        p.classList.add('opt-label');
+        p.innerHTML = 'Für diese Seite sind keine Optionen verfügbar.';
+        this.optionContainer.appendChild(p);
+    };
+    return PageOptions;
+}());
+//# sourceMappingURL=PageOptions.js.map
 /*
 var myWindow;
 
@@ -1224,6 +1273,14 @@ function slideListElementRight(listElement, callback) {
         html.style.left = currentRange + 'px';
     }, 10);
 }
+function slideOpenOptions(element) {
+    navMap.flag = false;
+    element.style.right = '0px';
+}
+function slideCloseOptions(element) {
+    navMap.flag = true;
+    element.style.right = '-25%';
+}
 //# sourceMappingURL=style.js.map
 //*
 var serverData;
@@ -1231,6 +1288,7 @@ var playlist;
 var watched;
 var notWatched;
 var details;
+var optionPage;
 var navMap;
 document.addEventListener('DOMContentLoaded', function () {
     serverData = new ServerData();
@@ -1238,14 +1296,18 @@ document.addEventListener('DOMContentLoaded', function () {
     var watchedElement = document.getElementById('watched');
     var notWatchedElement = document.getElementById('not-watched');
     var detailsElement = document.getElementById('details');
+    var opacityLayer = document.getElementById('opacity-layer');
+    var pageOption = document.getElementById('page-option');
     var tabWatched = document.getElementById('tab-watched');
     var tabPlaylist = document.getElementById('tab-playlist');
     var tabNotWatched = document.getElementById('tab-not-watched');
     var tabDetails = document.getElementById('tab-details');
+    var tabOptions = document.getElementById('option-button');
     details = new PageDetail(detailsElement, tabDetails, serverData);
     playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details);
     watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details);
     notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details);
+    optionPage = new PageOptions(opacityLayer, pageOption);
     serverData.get(function () {
         navMap = {
             1: watched,
@@ -1306,6 +1368,13 @@ document.addEventListener('DOMContentLoaded', function () {
         playlist.hideElement();
         notWatched.hideElement();
         details.showElement();
+    });
+    tabOptions.addEventListener('click', function () {
+        optionPage.renderPage();
+        optionPage.showElement();
+        if (navMap !== undefined) {
+            slideOpenOptions(optionPage.getOptionContainer());
+        }
     });
 });
 //*/ 

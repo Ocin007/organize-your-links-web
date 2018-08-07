@@ -5,6 +5,7 @@
     <title>Organize your Links</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/listElement.css">
+    <link rel="stylesheet" href="css/optionPage.css">
     <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
     <script src="js/polyfills.js"></script>
 </head>
@@ -19,8 +20,59 @@
             <div id="tab-not-watched" class="tab font-light-green">Noch nicht gesehen</div>
             <div id="tab-details" class="tab font-light-green">Details</div>
         </nav>
+        <div id="option-button" class="option-button">
+            <div class="option-label"></div>
+        </div>
     </header>
-<div id="body-content">
+    <div id="opacity-layer" class="opacity-layer"></div>
+
+
+    <div id="page-option" class="option-container shadow-bottom">
+        <h3 class="opt-label font-green">Aktion für alle Folgen ausführen</h3>
+        <div class="opt-action-container">
+            <div class="opt-action list-button-container no-border">
+                <img src="img/play.ico" alt="play">
+                <p>Folgen in Tab öffnen</p>
+            </div>
+            <div class="opt-action list-button-container">
+                <img src="img/close.ico" alt="close-tab">
+                <p>Geöffnete Tabs schließen</p>
+            </div>
+            <div class="opt-action list-button-container">
+                <img src="img/watched.ico" alt="watched">
+                <p>Folgen als gesehen markieren</p>
+            </div>
+            <div class="opt-action list-button-container">
+                <img src="img/not-watched.ico" alt="not-watched">
+                <p>Folgen als nicht gesehen markieren</p>
+            </div>
+            <div class="opt-action list-button-container add-sub">
+                <img src="img/add-button.ico" alt="add">
+                <p>Alle eine Folge weiter</p>
+            </div>
+            <div class="opt-action list-button-container add-sub">
+                <img src="img/subtr-button.ico" alt="subtr">
+                <p>Alle eine Folge zurück</p>
+            </div>
+            <div class="opt-action list-button-container">
+                <img src="img/arrow-left.ico" alt="arrow-left">
+                <p>Verschiebene alle abgeschlossenen Serien</p>
+            </div>
+            <div class="opt-action list-button-container">
+                <img src="img/arrow-right.ico" alt="arrow-right">
+                <p>Verschiebe alle nicht angefangenen Serien</p>
+            </div>
+        </div>
+        <div class="count-actions">
+            <p>-</p>
+            <p>von</p>
+            <p>-</p>
+            <p>ausgeführt.</p>
+        </div>
+    </div>
+
+
+    <div id="body-content">
     <div id="watched" class="page page-list"></div>
     <div id="playlist" class="page page-list">
         <!--

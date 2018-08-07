@@ -41,6 +41,14 @@ class PageList implements Slideable {
         return this.pageElement;
     }
 
+    foreachListElement(callback: Function) {
+        for (let key in this.dataList) {
+            for (let i = 0; i < this.dataList[key].length; i++) {
+                callback(this.dataList[key][i]);
+            }
+        }
+    }
+
     generateMap() {
         this.dataList = {};
         const indexList = this.serverData.getIndexList(this.listID);

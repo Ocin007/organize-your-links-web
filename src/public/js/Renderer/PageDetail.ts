@@ -415,7 +415,7 @@ class PageDetail implements Slideable {
         return img;
     }
 
-    private static createDiv(str: string) {
+    static createDiv(str: string) {
         const div = document.createElement('div');
         div.classList.add(str);
         return div;

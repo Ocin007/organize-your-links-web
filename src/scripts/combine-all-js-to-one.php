@@ -31,7 +31,7 @@ foreach ($tsconfig['include'] as $tsDir) {
     for($i = 2; $i < count($files); $i++) {
         $fileEnding = substr($files[$i], count($files[$i]) - 4, 3);
         if($fileEnding === '.js') {
-            echo '  append '.$files[$i].' to polyfills.js'.PHP_EOL;
+            echo '      append '.$files[$i].' to polyfills.js'.PHP_EOL;
             $completeFileName = JS_DIR.'/'.$dir.'/'.$files[$i];
             $data = file_get_contents($completeFileName);
             file_put_contents(POLYFILLS, $data.PHP_EOL, FILE_APPEND);

@@ -316,3 +316,13 @@ function slideListElementRight(listElement: ListElement, callback: Function) {
         html.style.left = currentRange+'px';
     }, 10);
 }
+
+function slideOpenOptions(element: HTMLElement) {
+    navMap.flag = false;
+    element.style.right = '0px';
+}
+
+function slideCloseOptions(element: HTMLElement) {
+    navMap.flag = true;
+    element.style.right = '-25%';
+}
