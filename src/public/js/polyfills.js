@@ -94,6 +94,24 @@ var ServerData = /** @class */ (function () {
         }
         return -1;
     };
+    ServerData.prototype.splitInThreeLists = function () {
+        this.watched = [];
+        this.playList = [];
+        this.notWatched = [];
+        for (var i = 0; i < this.allElements.length; i++) {
+            switch (this.allElements[i].list) {
+                case ListID.WATCHED:
+                    this.watched.push(i);
+                    break;
+                case ListID.PLAYLIST:
+                    this.playList.push(i);
+                    break;
+                case ListID.NOT_WATCHED:
+                    this.notWatched.push(i);
+                    break;
+            }
+        }
+    };
     ServerData.prototype.decodeAllElements = function () {
         for (var i = 0; i < this.allElements.length; i++) {
             this.decodeElement(i);
@@ -124,21 +142,6 @@ var ServerData = /** @class */ (function () {
             for (var ep = 0; ep < element.seasons[s].episodes.length; ep++) {
                 element.seasons[s].episodes[ep].url = encodeURIComponent(element.seasons[s].episodes[ep].url);
                 element.seasons[s].episodes[ep].name = encodeURIComponent(element.seasons[s].episodes[ep].name);
-            }
-        }
-    };
-    ServerData.prototype.splitInThreeLists = function () {
-        for (var i = 0; i < this.allElements.length; i++) {
-            switch (this.allElements[i].list) {
-                case ListID.WATCHED:
-                    this.watched.push(i);
-                    break;
-                case ListID.PLAYLIST:
-                    this.playList.push(i);
-                    break;
-                case ListID.NOT_WATCHED:
-                    this.notWatched.push(i);
-                    break;
             }
         }
     };
@@ -263,13 +266,39 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.arrowLeftButton = function () {
         var instance = this;
         return ListElement.generateButton('img/arrow-left.ico', 'arrow-left', function () {
-            //TODO: arrow left
+            if (!navMap.flag) {
+                return;
+            }
+            slideListElementLeft(instance, function () {
+                var element = instance.serverData.getListElement(instance.dataIndex);
+                element.list--;
+                instance.serverData.put([element], function () {
+                    instance.serverData.splitInThreeLists();
+                    navMap[element.list].generateMap();
+                    navMap[element.list].renderList();
+                    navMap[element.list + 1].generateMap();
+                    navMap[element.list + 1].renderList();
+                });
+            });
         });
     };
     ListElement.prototype.arrowRightButton = function () {
         var instance = this;
         return ListElement.generateButton('img/arrow-right.ico', 'arrow-right', function () {
-            //TODO: arrow right
+            if (!navMap.flag) {
+                return;
+            }
+            slideListElementRight(instance, function () {
+                var element = instance.serverData.getListElement(instance.dataIndex);
+                element.list++;
+                instance.serverData.put([element], function () {
+                    instance.serverData.splitInThreeLists();
+                    navMap[element.list].generateMap();
+                    navMap[element.list].renderList();
+                    navMap[element.list - 1].generateMap();
+                    navMap[element.list - 1].renderList();
+                });
+            });
         });
     };
     ListElement.prototype.playButton = function () {
@@ -781,6 +810,7 @@ var PageDetail = /** @class */ (function () {
         }
         var result = ((count / this.maxCount) * 100).toFixed(1);
         this.infoProgress.innerHTML = result + '%';
+        //TODO: infoProgress farbe
         this.infoNotWatched.innerHTML = (this.maxCount - count).toString();
         this.infoWatched.innerHTML = count.toString();
         this.setInfoListValue(data.list);
@@ -920,6 +950,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 document.addEventListener('keydown', function (ev) {
+    if (!navMap.flag) {
+        return;
+    }
     if (ev.keyCode === 39 && navMap.active < 4) {
         animationSlideLeft(navMap[navMap.active], navMap[navMap.active + 1]);
         navMap.active++;
@@ -930,6 +963,7 @@ document.addEventListener('keydown', function (ev) {
     }
 });
 function animationSlideLeft(hide, show) {
+    navMap.flag = false;
     show.activateTab();
     hide.deactivateTab();
     var toHide = hide.getPageElement();
@@ -943,6 +977,7 @@ function animationSlideLeft(hide, show) {
             hide.hidePage();
             toHide.style.left = '0px';
             toShow.style.left = '0px';
+            navMap.flag = true;
             return;
         }
         slideRange -= 80;
@@ -954,6 +989,7 @@ function animationSlideLeft(hide, show) {
     }, 10);
 }
 function animationSlideRight(hide, show) {
+    navMap.flag = false;
     show.activateTab();
     hide.deactivateTab();
     var toHide = hide.getPageElement();
@@ -967,6 +1003,7 @@ function animationSlideRight(hide, show) {
             hide.hidePage();
             toHide.style.left = '0px';
             toShow.style.left = '0px';
+            navMap.flag = true;
             return;
         }
         slideRange += 80;
@@ -981,11 +1018,17 @@ function slideToWatched() {
     if (navMap.active === 1) {
         return;
     }
+    if (!navMap.flag) {
+        return;
+    }
     animationSlideRight(navMap[navMap.active], watched);
     navMap.active = 1;
 }
 function slideToPlaylist() {
     if (navMap.active === 2) {
+        return;
+    }
+    if (!navMap.flag) {
         return;
     }
     if (navMap.active > 2) {
@@ -1000,6 +1043,9 @@ function slideToNotWatched() {
     if (navMap.active === 3) {
         return;
     }
+    if (!navMap.flag) {
+        return;
+    }
     if (navMap.active > 3) {
         animationSlideRight(navMap[navMap.active], notWatched);
     }
@@ -1012,8 +1058,171 @@ function slideToDetails() {
     if (navMap.active === 4) {
         return;
     }
+    if (!navMap.flag) {
+        return;
+    }
     animationSlideLeft(navMap[navMap.active], details);
     navMap.active = 4;
+}
+function resizeSegment(parent, callback) {
+    var currentHeight = parent.parentElement.getBoundingClientRect().height;
+    var heightRange;
+    var newHeight;
+    var noElements = (parent.children.length === 1);
+    if (noElements) {
+        heightRange = currentHeight;
+        newHeight = 0;
+    }
+    else {
+        heightRange = 168;
+        newHeight = currentHeight - heightRange;
+    }
+    var stepHeight = heightRange * (5 / 100);
+    var interval = setInterval(function () {
+        if (currentHeight - stepHeight <= newHeight) {
+            clearInterval(interval);
+            parent.parentElement.style.height = newHeight + 'px';
+            if (noElements) {
+                parent.parentElement.style.visibility = 'hidden';
+            }
+            callback();
+            navMap.flag = true;
+        }
+        currentHeight -= stepHeight;
+        parent.parentElement.style.height = currentHeight + 'px';
+    }, 10);
+}
+function reorderSiblings(html, slideRangeForDiagonal, callback) {
+    var startIndex = 1;
+    for (var i = 0; i < html.parentElement.children.length; i++) {
+        if (html.parentElement.children[i].id === html.id) {
+            startIndex = i + 1;
+            break;
+        }
+    }
+    var bool = false;
+    var slideRightMax = slideRangeForDiagonal;
+    var newCallback = function () {
+        if (bool) {
+            resizeSegment(html.parentElement, callback);
+        }
+        else {
+            callback();
+            navMap.flag = true;
+        }
+    };
+    if (startIndex === html.parentElement.children.length) {
+        if (slideRangeForDiagonal === 0) {
+            resizeSegment(html.parentElement, callback);
+            return;
+        }
+        callback();
+        navMap.flag = true;
+        return;
+    }
+    for (var i = startIndex; i < html.parentElement.children.length; i++) {
+        var current = html.parentElement.children[i];
+        if (current.getBoundingClientRect().left <= 35) {
+            if (i + 1 === html.parentElement.children.length) {
+                bool = true;
+                moveSiblingDiagonal(current, slideRightMax, newCallback);
+            }
+            else {
+                moveSiblingDiagonal(current, slideRightMax);
+            }
+        }
+        else {
+            slideRightMax = current.getBoundingClientRect().left - 35;
+            if (i + 1 === html.parentElement.children.length) {
+                moveSiblingLeft(current, newCallback);
+            }
+            else {
+                moveSiblingLeft(current);
+            }
+        }
+    }
+}
+function moveSiblingLeft(element, callback) {
+    element.style.position = 'relative';
+    var leftRange = 365;
+    var stepRange = leftRange * (5 / 100);
+    var current = 0;
+    var interval = setInterval(function () {
+        if (current + stepRange >= leftRange) {
+            clearInterval(interval);
+            element.style.right = leftRange + 'px';
+            if (callback !== undefined) {
+                callback();
+            }
+        }
+        current += stepRange;
+        element.style.right = current + 'px';
+    }, 10);
+}
+function moveSiblingDiagonal(element, slideRightMax, callback) {
+    element.style.position = 'relative';
+    var topRange = 168;
+    var stepRangeTop = topRange * (5 / 100);
+    var stepRangeRight = slideRightMax * (5 / 100);
+    var currentTop = 0;
+    var currentRight = 0;
+    var interval = setInterval(function () {
+        if (currentTop + stepRangeTop >= topRange) {
+            element.style.bottom = topRange + 'px';
+            currentTop = topRange;
+        }
+        if (currentRight + stepRangeRight >= slideRightMax) {
+            element.style.left = slideRightMax + 'px';
+            currentRight = slideRightMax;
+        }
+        if (currentTop === topRange && currentRight === slideRightMax) {
+            clearInterval(interval);
+            if (callback !== undefined) {
+                callback();
+            }
+            return;
+        }
+        currentTop += stepRangeTop;
+        currentRight += stepRangeRight;
+        element.style.bottom = currentTop + 'px';
+        element.style.left = currentRight + 'px';
+    }, 10);
+}
+function slideListElementLeft(listElement, callback) {
+    navMap.flag = false;
+    var html = listElement.getElement();
+    html.style.position = 'relative';
+    var slideRangeForDiagonal = html.getBoundingClientRect().left - 35;
+    var slideRange = html.getBoundingClientRect().right + 10;
+    var stepRange = slideRange * (5 / 100);
+    var currentRange = 0;
+    var interval = setInterval(function () {
+        if (currentRange >= slideRange) {
+            clearInterval(interval);
+            reorderSiblings(html, slideRangeForDiagonal, callback);
+            return;
+        }
+        currentRange += stepRange;
+        html.style.right = currentRange + 'px';
+    }, 10);
+}
+function slideListElementRight(listElement, callback) {
+    navMap.flag = false;
+    var html = listElement.getElement();
+    html.style.position = 'relative';
+    var slideRangeForDiagonal = html.getBoundingClientRect().left - 35;
+    var slideRange = (innerWidth - html.getBoundingClientRect().left) + 10;
+    var stepRange = slideRange * (5 / 100);
+    var currentRange = 0;
+    var interval = setInterval(function () {
+        if (currentRange >= slideRange) {
+            clearInterval(interval);
+            reorderSiblings(html, slideRangeForDiagonal, callback);
+            return;
+        }
+        currentRange += stepRange;
+        html.style.left = currentRange + 'px';
+    }, 10);
 }
 //# sourceMappingURL=style.js.map
 //*
@@ -1043,7 +1252,8 @@ document.addEventListener('DOMContentLoaded', function () {
             2: playlist,
             3: notWatched,
             4: details,
-            active: 2
+            active: 2,
+            flag: true
         };
         playlist.generateMap();
         playlist.renderList();

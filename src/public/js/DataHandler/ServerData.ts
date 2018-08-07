@@ -99,6 +99,25 @@ class ServerData {
         return -1;
     }
 
+    splitInThreeLists() {
+        this.watched = [];
+        this.playList = [];
+        this.notWatched = [];
+        for (let i = 0; i < this.allElements.length; i++) {
+            switch (this.allElements[i].list) {
+                case ListID.WATCHED:
+                    this.watched.push(i);
+                    break;
+                case ListID.PLAYLIST:
+                    this.playList.push(i);
+                    break;
+                case ListID.NOT_WATCHED:
+                    this.notWatched.push(i);
+                    break;
+            }
+        }
+    }
+
     private decodeAllElements() {
         for (let i = 0; i < this.allElements.length; i++) {
             this.decodeElement(i);
@@ -132,22 +151,6 @@ class ServerData {
             for (let ep = 0; ep < element.seasons[s].episodes.length; ep++) {
                 element.seasons[s].episodes[ep].url = encodeURIComponent(element.seasons[s].episodes[ep].url);
                 element.seasons[s].episodes[ep].name = encodeURIComponent(element.seasons[s].episodes[ep].name);
-            }
-        }
-    }
-
-    private splitInThreeLists() {
-        for (let i = 0; i < this.allElements.length; i++) {
-            switch (this.allElements[i].list) {
-                case ListID.WATCHED:
-                    this.watched.push(i);
-                    break;
-                case ListID.PLAYLIST:
-                    this.playList.push(i);
-                    break;
-                case ListID.NOT_WATCHED:
-                    this.notWatched.push(i);
-                    break;
             }
         }
     }

@@ -102,14 +102,40 @@ class ListElement {
     private arrowLeftButton() {
         const instance = this;
         return ListElement.generateButton('img/arrow-left.ico', 'arrow-left', function () {
-            //TODO: arrow left
+            if(!navMap.flag) {
+                return;
+            }
+            slideListElementLeft(instance, function () {
+                const element = instance.serverData.getListElement(instance.dataIndex);
+                element.list--;
+                instance.serverData.put([element], function () {
+                    instance.serverData.splitInThreeLists();
+                    navMap[element.list].generateMap();
+                    navMap[element.list].renderList();
+                    navMap[element.list + 1].generateMap();
+                    navMap[element.list + 1].renderList();
+                });
+            });
         });
     }
 
     private arrowRightButton() {
         const instance = this;
         return ListElement.generateButton('img/arrow-right.ico', 'arrow-right', function () {
-            //TODO: arrow right
+            if(!navMap.flag) {
+                return;
+            }
+            slideListElementRight(instance, function () {
+                const element = instance.serverData.getListElement(instance.dataIndex);
+                element.list++;
+                instance.serverData.put([element], function () {
+                    instance.serverData.splitInThreeLists();
+                    navMap[element.list].generateMap();
+                    navMap[element.list].renderList();
+                    navMap[element.list - 1].generateMap();
+                    navMap[element.list - 1].renderList();
+                });
+            });
         });
     }
 

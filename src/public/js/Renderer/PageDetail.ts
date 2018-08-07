@@ -390,6 +390,7 @@ class PageDetail implements Slideable {
         }
         let result = ((count/this.maxCount)*100).toFixed(1);
         this.infoProgress.innerHTML = result+'%';
+        //TODO: infoProgress farbe
         this.infoNotWatched.innerHTML = (this.maxCount-count).toString();
         this.infoWatched.innerHTML = count.toString();
         this.setInfoListValue(data.list);

@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function () {
             2: playlist,
             3: notWatched,
             4: details,
-            active: 2
+            active: 2,
+            flag: true
         };
 
         playlist.generateMap();
