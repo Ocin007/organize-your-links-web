@@ -1,10 +1,10 @@
 class PageOptions {
 
-    private activePage: any;
+    private activePage: ForeachElement;
     private countCurrent: HTMLParagraphElement;
     private countMax: HTMLParagraphElement;
 
-    constructor(private opacityLayer: HTMLElement, private optionContainer: HTMLElement) {
+    constructor(private opacityLayer: HTMLElement, private optionContainer: HTMLElement, private serverData: ServerData) {
         const instance = this;
         this.opacityLayer.addEventListener('click', function () {
             slideCloseOptions(instance.optionContainer);
@@ -24,7 +24,7 @@ class PageOptions {
         return this.optionContainer;
     }
 
-    renderPage(activePage: any, activeFlag: number) {
+    renderPage(activePage: ForeachElement, activeFlag: number) {
         this.optionContainer.innerHTML = '';
         this.activePage = activePage;
         if(activeFlag === 2) {
@@ -113,8 +113,25 @@ class PageOptions {
             container.classList.add(token);
         }
         const img = PageDetail.createImg(src, alt);
+        const instance = this;
         img.addEventListener('click', function () {
-            callback();
+            const changedElements = [];
+            let countAll = 0;
+            let countSuccess = 0;
+            instance.activePage.foreachListElement(function (element: ListElement) {
+                countAll++;
+                let data = callback(instance, element);
+                if(data === undefined) {
+                    return;
+                }
+                countSuccess++;
+                if(data !== true) {
+                    changedElements.push(data);
+                }
+            });
+            instance.countCurrent.innerHTML = countSuccess.toString();
+            instance.countMax.innerHTML = countAll.toString();
+            instance.serverData.put(changedElements);
         });
         container.appendChild(img);
         const labelElement = document.createElement('p');
@@ -123,35 +140,41 @@ class PageOptions {
         return container;
     }
 
-    private playButton() {
-        //TODO: playButton
+    private playButton(instance: PageOptions, element: ListElement) {
+        if(!element.currentEpWatched()) {
+            return element.playButton();
+        }
     }
 
-    private closeTabButton() {
-        //TODO: closeTabButton
+    private closeTabButton(instance: PageOptions, element: ListElement) {
+        return element.closeTabButton();
     }
 
-    private watchedButton() {
-        //TODO: watchedButton
+    private watchedButton(instance: PageOptions, element: ListElement) {
+        return element.watchedButton();
     }
 
-    private notWatchedButton() {
-        //TODO: notWatchedButton
+    private notWatchedButton(instance: PageOptions, element: ListElement) {
+        return element.notWatchedButton();
     }
 
-    private addButton() {
-        //TODO: addButton
+    private addButton(instance: PageOptions, element: ListElement) {
+        return element.addButton();
     }
 
-    private subtrButton() {
-        //TODO: subtrButton
+    private subtrButton(instance: PageOptions, element: ListElement) {
+        return element.subtrButton();
     }
 
-    private arrowLeftButton() {
+    private arrowLeftButton(instance: PageOptions, element: ListElement) {
         //TODO: arrowLeftButton
+        navMap.flag = true;
+        return element.arrowLeftButton(5/100, function () {
+
+        });
     }
 
-    private arrowRightButton() {
+    private arrowRightButton(instance: PageOptions, element: ListElement) {
         //TODO: arrowRightButton
     }
 }

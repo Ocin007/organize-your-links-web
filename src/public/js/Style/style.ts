@@ -1,15 +1,3 @@
-/*
-var myWindow;
-
-function openWin() {
-    myWindow = window.open("", "myWindow", "width=200,height=100");
-    myWindow.document.write("<p>This is 'myWindow'</p>");
-}
-
-function closeWin() {
-    myWindow.close();
-}
-*/
 document.addEventListener('DOMContentLoaded', function () {
     window.onscroll = function () {
         myFunction()
@@ -36,8 +24,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+let blockKeyboardNav = false;
 document.addEventListener('keydown', function (ev: any) {
-    if(!navMap.flag) {
+    if(!navMap.flag || blockKeyboardNav) {
         return;
     }
     if(ev.keyCode === 39 && navMap.active < 4) {
@@ -156,7 +145,7 @@ function slideToDetails() {
     navMap.active = 4;
 }
 
-function resizeSegment(parent: HTMLElement, callback: Function) {
+function resizeSegment(parent: HTMLElement, relSpeed: number, callback: Function) {
     let currentHeight = parent.parentElement.getBoundingClientRect().height;
     let heightRange;
     let newHeight;
@@ -168,7 +157,7 @@ function resizeSegment(parent: HTMLElement, callback: Function) {
         heightRange = 168;
         newHeight = currentHeight - heightRange;
     }
-    const stepHeight = heightRange * (5/100);
+    const stepHeight = heightRange * relSpeed;
     const interval = setInterval(function () {
         if(currentHeight - stepHeight <= newHeight) {
             clearInterval(interval);
@@ -176,15 +165,15 @@ function resizeSegment(parent: HTMLElement, callback: Function) {
             if(noElements) {
                 parent.parentElement.style.visibility = 'hidden';
             }
-            callback();
             navMap.flag = true;
+            callback();
         }
         currentHeight -= stepHeight;
         parent.parentElement.style.height = currentHeight+'px';
     }, 10);
 }
 
-function reorderSiblings(html: HTMLElement, slideRangeForDiagonal: number, callback: Function) {
+function reorderSiblings(html: HTMLElement, slideRangeForDiagonal: number, relSpeed: number, callback: Function) {
     let startIndex = 1;
     for (let i = 0; i < html.parentElement.children.length; i++) {
         if(html.parentElement.children[i].id === html.id) {
@@ -196,19 +185,19 @@ function reorderSiblings(html: HTMLElement, slideRangeForDiagonal: number, callb
     let slideRightMax = slideRangeForDiagonal;
     const newCallback = function () {
         if(bool) {
-            resizeSegment(html.parentElement, callback);
+            resizeSegment(html.parentElement, relSpeed, callback);
         } else {
-            callback();
             navMap.flag = true;
+            callback();
         }
     };
     if(startIndex === html.parentElement.children.length) {
         if(slideRangeForDiagonal === 0) {
-            resizeSegment(html.parentElement, callback);
+            resizeSegment(html.parentElement, relSpeed, callback);
             return;
         }
-        callback();
         navMap.flag = true;
+        callback();
         return;
     }
     for (let i = startIndex; i < html.parentElement.children.length; i++) {
@@ -216,25 +205,25 @@ function reorderSiblings(html: HTMLElement, slideRangeForDiagonal: number, callb
         if(current.getBoundingClientRect().left <= 35) {
             if(i + 1 === html.parentElement.children.length) {
                 bool = true;
-                moveSiblingDiagonal(current, slideRightMax, newCallback);
+                moveSiblingDiagonal(current, slideRightMax, relSpeed, newCallback);
             } else {
-                moveSiblingDiagonal(current, slideRightMax);
+                moveSiblingDiagonal(current, slideRightMax, relSpeed);
             }
         } else {
             slideRightMax = current.getBoundingClientRect().left-35;
             if(i + 1 === html.parentElement.children.length) {
-                moveSiblingLeft(current, newCallback);
+                moveSiblingLeft(current, relSpeed, newCallback);
             } else {
-                moveSiblingLeft(current);
+                moveSiblingLeft(current, relSpeed);
             }
         }
     }
 }
 
-function moveSiblingLeft(element: any, callback?: Function) {
+function moveSiblingLeft(element: any, relSpeed: number, callback?: Function) {
     element.style.position = 'relative';
     const leftRange = 365;
-    const stepRange = leftRange * (5/100);
+    const stepRange = leftRange * relSpeed;
     let current = 0;
     const interval = setInterval(function () {
         if(current + stepRange >= leftRange) {
@@ -249,11 +238,11 @@ function moveSiblingLeft(element: any, callback?: Function) {
     }, 10);
 }
 
-function moveSiblingDiagonal(element: any, slideRightMax: number, callback?: Function) {
+function moveSiblingDiagonal(element: any, slideRightMax: number, relSpeed: number, callback?: Function) {
     element.style.position = 'relative';
     const topRange = 168;
-    const stepRangeTop = topRange * (5/100);
-    const stepRangeRight = slideRightMax * (5/100);
+    const stepRangeTop = topRange * relSpeed;
+    const stepRangeRight = slideRightMax * relSpeed;
     let currentTop = 0;
     let currentRight = 0;
     const interval = setInterval(function () {
@@ -279,18 +268,18 @@ function moveSiblingDiagonal(element: any, slideRightMax: number, callback?: Fun
     }, 10);
 }
 
-function slideListElementLeft(listElement: ListElement, callback: Function) {
+function slideListElementLeft(listElement: ListElement, relSpeed: number, callback: Function) {
     navMap.flag = false;
     const html = listElement.getElement();
     html.style.position = 'relative';
     const slideRangeForDiagonal = html.getBoundingClientRect().left-35;
     const slideRange = html.getBoundingClientRect().right+10;
-    const stepRange = slideRange * (5/100);
+    const stepRange = slideRange * relSpeed;
     let currentRange = 0;
     const interval = setInterval(function () {
         if(currentRange >= slideRange) {
             clearInterval(interval);
-            reorderSiblings(html, slideRangeForDiagonal, callback);
+            reorderSiblings(html, slideRangeForDiagonal, relSpeed, callback);
             return;
         }
         currentRange += stepRange;
@@ -298,18 +287,18 @@ function slideListElementLeft(listElement: ListElement, callback: Function) {
     }, 10);
 }
 
-function slideListElementRight(listElement: ListElement, callback: Function) {
+function slideListElementRight(listElement: ListElement, relSpeed: number, callback: Function) {
     navMap.flag = false;
     const html = listElement.getElement();
     html.style.position = 'relative';
     const slideRangeForDiagonal = html.getBoundingClientRect().left-35;
     const slideRange = (innerWidth - html.getBoundingClientRect().left)+10;
-    const stepRange = slideRange * (5/100);
+    const stepRange = slideRange * relSpeed;
     let currentRange = 0;
     const interval = setInterval(function () {
         if(currentRange >= slideRange) {
             clearInterval(interval);
-            reorderSiblings(html, slideRangeForDiagonal, callback);
+            reorderSiblings(html, slideRangeForDiagonal, relSpeed, callback);
             return;
         }
         currentRange += stepRange;
@@ -318,11 +307,13 @@ function slideListElementRight(listElement: ListElement, callback: Function) {
 }
 
 function slideOpenOptions(element: HTMLElement) {
-    navMap.flag = false;
+    // navMap.flag = false;
+    blockKeyboardNav = true;
     element.style.right = '0px';
 }
 
 function slideCloseOptions(element: HTMLElement) {
-    navMap.flag = true;
+    // navMap.flag = true;
+    blockKeyboardNav = false;
     element.style.right = '-25%';
 }

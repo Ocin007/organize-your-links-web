@@ -66,6 +66,10 @@ class PageDetail implements Slideable, ForeachElement {
 
     }
 
+    getDataList() {
+
+    }
+
     registerListElement(id: string, listElement: ListElement) {
         this.listElementMap[id] = listElement;
     }

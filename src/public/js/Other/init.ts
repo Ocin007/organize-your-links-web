@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
     playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details);
     watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details);
     notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details);
-    optionPage = new PageOptions(opacityLayer, pageOption);
+    optionPage = new PageOptions(opacityLayer, pageOption, serverData);
     serverData.get(function () {
         navMap = {
             1: watched,
