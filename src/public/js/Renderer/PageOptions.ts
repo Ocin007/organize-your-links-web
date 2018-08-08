@@ -4,7 +4,6 @@ class PageOptions {
 
     constructor(private opacityLayer: HTMLElement, private optionContainer: HTMLElement) {
         const instance = this;
-        // this.optionContainer.style.right = (-1*this.optionContainer.getBoundingClientRect().width)+'px';
         this.opacityLayer.addEventListener('click', function () {
             slideCloseOptions(instance.optionContainer);
             instance.hideElement();

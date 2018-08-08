@@ -148,6 +148,16 @@ img {
 .info-wrapper p {
     margin: 0;
 }
+.info-progress {
+    background-color: #3c3f41;
+    padding: 3px 5px 1px;
+    border-radius: 5px;
+    width: 55px;
+    text-align: right;
+}
+.info-episodes-per-season {
+    border-top: 1px solid #adadad;
+}
 .detail-container {
     margin-left: 20px;
     margin-right: 20px;

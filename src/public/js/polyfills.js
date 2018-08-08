@@ -763,21 +763,22 @@ var PageDetail = /** @class */ (function () {
         var standard = document.createElement('div');
         var _a = PageDetail.generateInfoWrapper('Liste', ''), infoList = _a[0], p1 = _a[1];
         var _b = PageDetail.generateInfoWrapper('Fortschritt', ''), infoProgress = _b[0], p2 = _b[1];
-        var _c = PageDetail.generateInfoWrapper('Noch nicht geschaut', ''), infoNotWatched = _c[0], p3 = _c[1];
-        var _d = PageDetail.generateInfoWrapper('Bereits geschaut', ''), infoWatched = _d[0], p4 = _d[1];
+        var _c = PageDetail.generateInfoWrapper('Bereits geschaut', ''), infoWatched = _c[0], p3 = _c[1];
+        var _d = PageDetail.generateInfoWrapper('Noch nicht geschaut', ''), infoNotWatched = _d[0], p4 = _d[1];
         var _e = PageDetail.generateInfoWrapper('# Folgen insgesamt', ''), infoMaxAmount = _e[0], p5 = _e[1];
+        p2.classList.add('info-progress');
         this.infoList = p1;
         this.infoProgress = p2;
-        this.infoNotWatched = p3;
-        this.infoWatched = p4;
+        this.infoWatched = p3;
+        this.infoNotWatched = p4;
         this.infoMaxAmount = p5;
         standard.appendChild(infoList);
         standard.appendChild(infoProgress);
-        standard.appendChild(infoNotWatched);
         standard.appendChild(infoWatched);
+        standard.appendChild(infoNotWatched);
         standard.appendChild(infoMaxAmount);
         container.appendChild(standard);
-        this.infoSeasonContainer = document.createElement('div');
+        this.infoSeasonContainer = PageDetail.createDiv('info-episodes-per-season');
         container.appendChild(this.infoSeasonContainer);
         return container;
     };
@@ -810,7 +811,8 @@ var PageDetail = /** @class */ (function () {
         }
         var result = ((count / this.maxCount) * 100).toFixed(1);
         this.infoProgress.innerHTML = result + '%';
-        //TODO: infoProgress farbe
+        var _a = PageDetail.calculateColor(parseFloat(result)), r = _a[0], g = _a[1];
+        this.infoProgress.style.color = 'rgb(' + r + ', ' + g + ', 0)';
         this.infoNotWatched.innerHTML = (this.maxCount - count).toString();
         this.infoWatched.innerHTML = count.toString();
         this.setInfoListValue(data.list);
@@ -837,6 +839,19 @@ var PageDetail = /** @class */ (function () {
         div.classList.add(str);
         return div;
     };
+    PageDetail.calculateColor = function (result) {
+        var r, g;
+        if (result <= 50) {
+            r = PageDetail.colorBrightness;
+            g = (result / 50) * PageDetail.colorBrightness;
+        }
+        else {
+            r = ((100 - result) / 50) * PageDetail.colorBrightness;
+            g = PageDetail.colorBrightness;
+        }
+        return [r, g];
+    };
+    PageDetail.colorBrightness = 255;
     return PageDetail;
 }());
 //# sourceMappingURL=PageDetail.js.map

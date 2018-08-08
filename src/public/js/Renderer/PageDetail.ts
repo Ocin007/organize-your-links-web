@@ -1,5 +1,7 @@
 class PageDetail implements Slideable {
 
+    private static readonly colorBrightness = 255;
+
     private thumbnail: HTMLImageElement;
     private detailContainer: HTMLElement;
 
@@ -341,21 +343,22 @@ class PageDetail implements Slideable {
         const standard = document.createElement('div');
         const [infoList, p1] = PageDetail.generateInfoWrapper('Liste', '');
         const [infoProgress, p2] = PageDetail.generateInfoWrapper('Fortschritt', '');
-        const [infoNotWatched, p3] = PageDetail.generateInfoWrapper('Noch nicht geschaut', '');
-        const [infoWatched, p4] = PageDetail.generateInfoWrapper('Bereits geschaut', '');
+        const [infoWatched, p3] = PageDetail.generateInfoWrapper('Bereits geschaut', '');
+        const [infoNotWatched, p4] = PageDetail.generateInfoWrapper('Noch nicht geschaut', '');
         const [infoMaxAmount, p5] = PageDetail.generateInfoWrapper('# Folgen insgesamt', '');
+        p2.classList.add('info-progress');
         this.infoList = p1;
         this.infoProgress = p2;
-        this.infoNotWatched = p3;
-        this.infoWatched = p4;
+        this.infoWatched = p3;
+        this.infoNotWatched = p4;
         this.infoMaxAmount = p5;
         standard.appendChild(infoList);
         standard.appendChild(infoProgress);
-        standard.appendChild(infoNotWatched);
         standard.appendChild(infoWatched);
+        standard.appendChild(infoNotWatched);
         standard.appendChild(infoMaxAmount);
         container.appendChild(standard);
-        this.infoSeasonContainer = document.createElement('div');
+        this.infoSeasonContainer = PageDetail.createDiv('info-episodes-per-season');
         container.appendChild(this.infoSeasonContainer);
         return container;
     }
@@ -390,7 +393,8 @@ class PageDetail implements Slideable {
         }
         let result = ((count/this.maxCount)*100).toFixed(1);
         this.infoProgress.innerHTML = result+'%';
-        //TODO: infoProgress farbe
+        const [r, g] = PageDetail.calculateColor(parseFloat(result));
+        this.infoProgress.style.color = 'rgb('+r+', '+g+', 0)';
         this.infoNotWatched.innerHTML = (this.maxCount-count).toString();
         this.infoWatched.innerHTML = count.toString();
         this.setInfoListValue(data.list);
@@ -419,5 +423,17 @@ class PageDetail implements Slideable {
         const div = document.createElement('div');
         div.classList.add(str);
         return div;
+    }
+
+    private static calculateColor(result: number) {
+        let r, g;
+        if(result <= 50) {
+            r = PageDetail.colorBrightness;
+            g = (result/50) * PageDetail.colorBrightness;
+        } else {
+            r = ((100-result)/50) * PageDetail.colorBrightness;
+            g = PageDetail.colorBrightness;
+        }
+        return [r, g];
     }
 }
