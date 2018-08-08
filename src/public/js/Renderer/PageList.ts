@@ -1,4 +1,4 @@
-class PageList implements Slideable {
+class PageList implements Slideable, ForeachElement {
     private dataList: Object;
 
     constructor(

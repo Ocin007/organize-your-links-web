@@ -1,4 +1,4 @@
-class PageDetail implements Slideable {
+class PageDetail implements Slideable, ForeachElement {
 
     private static readonly colorBrightness = 255;
 
@@ -60,6 +60,10 @@ class PageDetail implements Slideable {
 
     getPageElement() {
         return this.pageElement;
+    }
+
+    foreachListElement(callback: Function, opt?: any) {
+
     }
 
     registerListElement(id: string, listElement: ListElement) {
@@ -412,7 +416,7 @@ class PageDetail implements Slideable {
         return [wrapper, p];
     }
 
-    private static createImg(src: string, alt: string) {
+    static createImg(src: string, alt: string) {
         const img = document.createElement('img');
         img.src = src;
         img.alt = alt;

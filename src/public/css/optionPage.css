@@ -57,10 +57,14 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: center;
 }
 .count-actions p {
     color: #629755;
+    margin-left: 10px;
+}
+.count-number-field {
+
 }
 .option-container {
     height: 75%;
@@ -80,7 +84,6 @@
 }
 .opt-label {
     text-align: center;
-    color: #629755;
     margin-top: 50px;
 }
 .opt-action-container {
@@ -97,6 +100,10 @@
 }
 .no-border {
     border: none;
+}
+.no-content {
+    margin-top: 50px;
+    color: #629755;
 }
 .opt-action {
     justify-content: left;

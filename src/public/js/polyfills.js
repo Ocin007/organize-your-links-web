@@ -6,6 +6,7 @@ var ListID;
 })(ListID || (ListID = {}));
 //# sourceMappingURL=ListID.js.map
 //# sourceMappingURL=DataListElement.js.map
+//# sourceMappingURL=ForeachElement.js.map
 //# sourceMappingURL=Slideable.js.map
 var ServerData = /** @class */ (function () {
     function ServerData() {
@@ -505,6 +506,8 @@ var PageDetail = /** @class */ (function () {
     PageDetail.prototype.getPageElement = function () {
         return this.pageElement;
     };
+    PageDetail.prototype.foreachListElement = function (callback, opt) {
+    };
     PageDetail.prototype.registerListElement = function (id, listElement) {
         this.listElementMap[id] = listElement;
     };
@@ -941,7 +944,6 @@ var PageOptions = /** @class */ (function () {
         this.opacityLayer = opacityLayer;
         this.optionContainer = optionContainer;
         var instance = this;
-        // this.optionContainer.style.right = (-1*this.optionContainer.getBoundingClientRect().width)+'px';
         this.opacityLayer.addEventListener('click', function () {
             slideCloseOptions(instance.optionContainer);
             instance.hideElement();
@@ -956,24 +958,106 @@ var PageOptions = /** @class */ (function () {
     PageOptions.prototype.getOptionContainer = function () {
         return this.optionContainer;
     };
-    PageOptions.prototype.renderPage = function () {
+    PageOptions.prototype.renderPage = function (activePage, activeFlag) {
         this.optionContainer.innerHTML = '';
-        this.activePage = navMap[navMap.active];
-        if (navMap.active === 1 || navMap.active === 2 || navMap.active === 3) {
-            this.renderForPageList();
+        this.activePage = activePage;
+        if (activeFlag === 2) {
+            this.renderForPlayList();
         }
         else {
             this.renderNoContent();
         }
     };
-    PageOptions.prototype.renderForPageList = function () {
-        //TODO: render options
+    PageOptions.prototype.renderForPlayList = function () {
+        var label = PageOptions.createLabel();
+        var actionContainer = this.createActionsContainer();
+        var countActions = this.createCountContainer();
+        this.optionContainer.appendChild(label);
+        this.optionContainer.appendChild(actionContainer);
+        this.optionContainer.appendChild(countActions);
     };
     PageOptions.prototype.renderNoContent = function () {
         var p = document.createElement('p');
-        p.classList.add('opt-label');
+        p.classList.add('no-content');
         p.innerHTML = 'Für diese Seite sind keine Optionen verfügbar.';
         this.optionContainer.appendChild(p);
+    };
+    PageOptions.createLabel = function () {
+        var label = document.createElement('h3');
+        label.classList.add('opt-label');
+        label.classList.add('font-green');
+        label.innerHTML = 'Aktion für alle Folgen ausführen';
+        return label;
+    };
+    PageOptions.prototype.createActionsContainer = function () {
+        var container = PageDetail.createDiv('opt-action-container');
+        container.appendChild(this.createAction('img/play.ico', 'play', 'Ungesehene Folgen in Tab öffnen', this.playButton, 'no-border'));
+        container.appendChild(this.createAction('img/close.ico', 'close-tab', 'Geöffnete Tabs schließen', this.closeTabButton));
+        container.appendChild(this.createAction('img/watched.ico', 'watched', 'Folgen als gesehen markieren', this.watchedButton));
+        container.appendChild(this.createAction('img/not-watched.ico', 'not-watched', 'Folgen als nicht gesehen markieren', this.notWatchedButton));
+        container.appendChild(this.createAction('img/add-button.ico', 'add', 'Alle eine Folge weiter', this.addButton, 'add-sub'));
+        container.appendChild(this.createAction('img/subtr-button.ico', 'subtr', 'Alle eine Folge zurück', this.subtrButton, 'add-sub'));
+        container.appendChild(this.createAction('img/arrow-left.ico', 'arrow-left', 'Verschiebene alle abgeschlossenen Serien', this.arrowLeftButton));
+        container.appendChild(this.createAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht angefangenen Serien', this.arrowRightButton));
+        return container;
+    };
+    PageOptions.prototype.createCountContainer = function () {
+        var container = PageDetail.createDiv('count-actions');
+        this.countCurrent = document.createElement('p');
+        this.countCurrent.innerHTML = '-';
+        this.countCurrent.classList.add('count-number-field');
+        var node1 = document.createElement('p');
+        node1.innerHTML = 'von';
+        this.countMax = document.createElement('p');
+        this.countMax.innerHTML = '-';
+        this.countMax.classList.add('count-number-field');
+        var node2 = document.createElement('p');
+        node2.innerHTML = 'ausgeführt.';
+        container.appendChild(this.countCurrent);
+        container.appendChild(node1);
+        container.appendChild(this.countMax);
+        container.appendChild(node2);
+        return container;
+    };
+    PageOptions.prototype.createAction = function (src, alt, label, callback, token) {
+        var container = PageDetail.createDiv('opt-action');
+        container.classList.add('list-button-container');
+        if (token !== undefined) {
+            container.classList.add(token);
+        }
+        var img = PageDetail.createImg(src, alt);
+        img.addEventListener('click', function () {
+            callback();
+        });
+        container.appendChild(img);
+        var labelElement = document.createElement('p');
+        labelElement.innerHTML = label;
+        container.appendChild(labelElement);
+        return container;
+    };
+    PageOptions.prototype.playButton = function () {
+        //TODO: playButton
+    };
+    PageOptions.prototype.closeTabButton = function () {
+        //TODO: closeTabButton
+    };
+    PageOptions.prototype.watchedButton = function () {
+        //TODO: watchedButton
+    };
+    PageOptions.prototype.notWatchedButton = function () {
+        //TODO: notWatchedButton
+    };
+    PageOptions.prototype.addButton = function () {
+        //TODO: addButton
+    };
+    PageOptions.prototype.subtrButton = function () {
+        //TODO: subtrButton
+    };
+    PageOptions.prototype.arrowLeftButton = function () {
+        //TODO: arrowLeftButton
+    };
+    PageOptions.prototype.arrowRightButton = function () {
+        //TODO: arrowRightButton
     };
     return PageOptions;
 }());
@@ -1385,7 +1469,7 @@ document.addEventListener('DOMContentLoaded', function () {
         details.showElement();
     });
     tabOptions.addEventListener('click', function () {
-        optionPage.renderPage();
+        optionPage.renderPage(navMap[navMap.active], navMap.active);
         optionPage.showElement();
         if (navMap !== undefined) {
             slideOpenOptions(optionPage.getOptionContainer());

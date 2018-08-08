@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
         details.showElement();
     });
     tabOptions.addEventListener('click', function () {
-        optionPage.renderPage();
+        optionPage.renderPage(navMap[navMap.active], navMap.active);
         optionPage.showElement();
         if(navMap !== undefined) {
             slideOpenOptions(optionPage.getOptionContainer());
