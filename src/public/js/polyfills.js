@@ -1,3 +1,11 @@
+var FilterType;
+(function (FilterType) {
+    FilterType[FilterType["ALL_WATCHED"] = 1] = "ALL_WATCHED";
+    FilterType[FilterType["NO_WATCHED"] = 2] = "NO_WATCHED";
+    FilterType[FilterType["NOT_ALL_WATCHED"] = 3] = "NOT_ALL_WATCHED";
+    FilterType[FilterType["NOT_NO_WATCHED"] = 4] = "NOT_NO_WATCHED";
+})(FilterType || (FilterType = {}));
+//# sourceMappingURL=FilterType.js.map
 var ListID;
 (function (ListID) {
     ListID[ListID["WATCHED"] = 1] = "WATCHED";
@@ -237,6 +245,26 @@ var ListElement = /** @class */ (function () {
         }
         return true;
     };
+    /*
+        someEpWatched() {
+            let foundWatched = false;
+            let foundNotWatched = false;
+            for (let s = 0; s < this.data.seasons.length; s++) {
+                for (let ep = 0; ep < this.data.seasons[s].episodes.length; ep++) {
+                    if(this.data.seasons[s].episodes[ep].watched) {
+                        foundWatched = true;
+                    }
+                    if(!this.data.seasons[s].episodes[ep].watched) {
+                        foundNotWatched = true;
+                    }
+                    if(foundWatched && foundNotWatched) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    */
     ListElement.prototype.showPageList = function () {
         this.pageList.showElement();
     };
@@ -511,6 +539,7 @@ var ListElement = /** @class */ (function () {
         count.appendChild(countMax);
         addSub.appendChild(count);
         var instance = this;
+        //TODO: add sub mousedown
         addSub.appendChild(ListElement.generateButton('img/add-button.ico', 'add', function () {
             instance.addButton();
         }));
@@ -1073,13 +1102,24 @@ var PageOptions = /** @class */ (function () {
         if (activeFlag === 2) {
             this.renderForPlayList();
         }
+        else if (activeFlag === 1) {
+            this.renderForWatched();
+        }
         else {
             this.renderNoContent();
         }
     };
     PageOptions.prototype.renderForPlayList = function () {
         var label = PageOptions.createLabel();
-        var actionContainer = this.createActionsContainer();
+        var actionContainer = this.createActionsContainerForPlaylist();
+        var countActions = this.createCountContainer();
+        this.optionContainer.appendChild(label);
+        this.optionContainer.appendChild(actionContainer);
+        this.optionContainer.appendChild(countActions);
+    };
+    PageOptions.prototype.renderForWatched = function () {
+        var label = PageOptions.createLabel();
+        var actionContainer = this.createActionsContainerForWatched();
         var countActions = this.createCountContainer();
         this.optionContainer.appendChild(label);
         this.optionContainer.appendChild(actionContainer);
@@ -1098,7 +1138,7 @@ var PageOptions = /** @class */ (function () {
         label.innerHTML = 'Aktion für alle Folgen ausführen';
         return label;
     };
-    PageOptions.prototype.createActionsContainer = function () {
+    PageOptions.prototype.createActionsContainerForPlaylist = function () {
         var container = PageDetail.createDiv('opt-action-container');
         container.appendChild(this.createAction('img/play.ico', 'play', 'Ungesehene Folgen in Tab öffnen', PageOptions.playButton, 'no-border'));
         container.appendChild(this.createAction('img/close.ico', 'close-tab', 'Geöffnete Tabs schließen', PageOptions.closeTabButton));
@@ -1106,12 +1146,19 @@ var PageOptions = /** @class */ (function () {
         container.appendChild(this.createAction('img/not-watched.ico', 'not-watched', 'Folgen als nicht gesehen markieren', PageOptions.notWatchedButton));
         container.appendChild(this.createAction('img/add-button.ico', 'add', 'Alle eine Folge weiter', PageOptions.addButton, 'add-sub'));
         container.appendChild(this.createAction('img/subtr-button.ico', 'subtr', 'Alle eine Folge zurück', PageOptions.subtrButton, 'add-sub'));
-        container.appendChild(this.createArrowAction('img/arrow-left.ico', 'arrow-left', 'Verschiebene alle abgeschlossenen Serien', this.arrowLeftButton, true));
-        container.appendChild(this.createArrowAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht angefangenen Serien', this.arrowRightButton, false));
+        container.appendChild(this.createArrowAction('img/arrow-left.ico', 'arrow-left', 'Verschiebe alle abgeschlossenen Serien', this.arrowLeftButton, FilterType.ALL_WATCHED));
+        container.appendChild(this.createArrowAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht angefangenen Serien', this.arrowRightButton, FilterType.NO_WATCHED));
+        return container;
+    };
+    PageOptions.prototype.createActionsContainerForWatched = function () {
+        var container = PageDetail.createDiv('opt-action-container');
+        container.appendChild(this.createArrowAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht abgeschlossenen Serien', this.arrowRightButton, FilterType.NOT_ALL_WATCHED));
         return container;
     };
     PageOptions.prototype.createCountContainer = function () {
         var container = PageDetail.createDiv('count-actions');
+        var node0 = document.createElement('p');
+        node0.innerHTML = 'Aktion für';
         this.countCurrent = document.createElement('p');
         this.countCurrent.innerHTML = '-';
         this.countCurrent.classList.add('count-number-field');
@@ -1121,7 +1168,8 @@ var PageOptions = /** @class */ (function () {
         this.countMax.innerHTML = this.activePage.getDataIndexList().length.toString();
         this.countMax.classList.add('count-number-field');
         var node2 = document.createElement('p');
-        node2.innerHTML = 'ausgeführt.';
+        node2.innerHTML = 'Folgen ausgeführt.';
+        container.appendChild(node0);
         container.appendChild(this.countCurrent);
         container.appendChild(node1);
         container.appendChild(this.countMax);
@@ -1149,31 +1197,41 @@ var PageOptions = /** @class */ (function () {
             instance.serverData.put(changedElements);
         }, token);
     };
-    PageOptions.prototype.createArrowAction = function (src, alt, label, callback, bool) {
+    PageOptions.prototype.createArrowAction = function (src, alt, label, callback, filterType) {
         var instance = this;
         return this.createActionContainer(src, alt, label, function () {
             if (instance.arrowActionIsActive) {
                 return;
             }
             instance.arrowActionIsActive = true;
-            instance.elementIndexList = instance.getIndexListOfWatched(bool);
+            instance.elementIndexList = instance.getIndexListOfWatched(filterType);
             instance.currentArrayIndex = 0;
             instance.countCurrent.innerHTML = '0';
             callback(instance);
         });
     };
-    PageOptions.prototype.getIndexListOfWatched = function (bool) {
+    PageOptions.prototype.getIndexListOfWatched = function (filterType) {
         var indexList = this.activePage.getDataIndexList();
         var newList = [];
         for (var i = 0; i < indexList.length; i++) {
             var currentElement = this.activePage.getElementWithDataIndex(indexList[i]);
-            if (bool) {
+            if (filterType === FilterType.ALL_WATCHED) {
                 if (currentElement.allEpWatched()) {
                     newList.push(indexList[i]);
                 }
             }
-            else {
+            else if (filterType === FilterType.NO_WATCHED) {
                 if (currentElement.noEpWatched()) {
+                    newList.push(indexList[i]);
+                }
+            }
+            else if (filterType === FilterType.NOT_ALL_WATCHED) {
+                if (!currentElement.allEpWatched()) {
+                    newList.push(indexList[i]);
+                }
+            }
+            else if (filterType === FilterType.NOT_NO_WATCHED) {
+                if (!currentElement.noEpWatched()) {
                     newList.push(indexList[i]);
                 }
             }

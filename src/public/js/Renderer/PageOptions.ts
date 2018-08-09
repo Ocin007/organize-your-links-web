@@ -34,6 +34,8 @@ class PageOptions {
         this.activePage = activePage;
         if(activeFlag === 2) {
             this.renderForPlayList();
+        } else if(activeFlag === 1) {
+            this.renderForWatched();
         } else {
             this.renderNoContent();
         }
@@ -41,7 +43,16 @@ class PageOptions {
 
     private renderForPlayList() {
         const label = PageOptions.createLabel();
-        const actionContainer = this.createActionsContainer();
+        const actionContainer = this.createActionsContainerForPlaylist();
+        const countActions = this.createCountContainer();
+        this.optionContainer.appendChild(label);
+        this.optionContainer.appendChild(actionContainer);
+        this.optionContainer.appendChild(countActions);
+    }
+
+    private renderForWatched() {
+        const label = PageOptions.createLabel();
+        const actionContainer = this.createActionsContainerForWatched();
         const countActions = this.createCountContainer();
         this.optionContainer.appendChild(label);
         this.optionContainer.appendChild(actionContainer);
@@ -63,7 +74,7 @@ class PageOptions {
         return label;
     }
 
-    private createActionsContainer() {
+    private createActionsContainerForPlaylist() {
         const container = PageDetail.createDiv('opt-action-container');
         container.appendChild(this.createAction(
             'img/play.ico', 'play', 'Ungesehene Folgen in Tab öffnen', PageOptions.playButton, 'no-border'
@@ -83,13 +94,27 @@ class PageOptions {
         container.appendChild(this.createAction(
             'img/subtr-button.ico', 'subtr', 'Alle eine Folge zurück', PageOptions.subtrButton, 'add-sub'
         ));
-        container.appendChild(this.createArrowAction('img/arrow-left.ico', 'arrow-left', 'Verschiebene alle abgeschlossenen Serien', this.arrowLeftButton, true));
-        container.appendChild(this.createArrowAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht angefangenen Serien', this.arrowRightButton, false));
+        container.appendChild(this.createArrowAction(
+            'img/arrow-left.ico', 'arrow-left', 'Verschiebe alle abgeschlossenen Serien', this.arrowLeftButton, FilterType.ALL_WATCHED
+        ));
+        container.appendChild(this.createArrowAction(
+            'img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht angefangenen Serien', this.arrowRightButton, FilterType.NO_WATCHED
+        ));
+        return container;
+    }
+
+    private createActionsContainerForWatched() {
+        const container = PageDetail.createDiv('opt-action-container');
+        container.appendChild(this.createArrowAction(
+            'img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht abgeschlossenen Serien', this.arrowRightButton, FilterType.NOT_ALL_WATCHED
+        ));
         return container;
     }
 
     private createCountContainer() {
         const container = PageDetail.createDiv('count-actions');
+        const node0 = document.createElement('p');
+        node0.innerHTML = 'Aktion für';
         this.countCurrent = document.createElement('p');
         this.countCurrent.innerHTML = '-';
         this.countCurrent.classList.add('count-number-field');
@@ -99,7 +124,8 @@ class PageOptions {
         this.countMax.innerHTML = this.activePage.getDataIndexList().length.toString();
         this.countMax.classList.add('count-number-field');
         const node2 = document.createElement('p');
-        node2.innerHTML = 'ausgeführt.';
+        node2.innerHTML = 'Folgen ausgeführt.';
+        container.appendChild(node0);
         container.appendChild(this.countCurrent);
         container.appendChild(node1);
         container.appendChild(this.countMax);
@@ -129,31 +155,39 @@ class PageOptions {
         }, token);
     }
 
-    private createArrowAction(src: string, alt: string, label: string, callback: Function, bool: boolean) {
+    private createArrowAction(src: string, alt: string, label: string, callback: Function, filterType: FilterType) {
         const instance = this;
         return this.createActionContainer(src, alt, label, function () {
             if(instance.arrowActionIsActive) {
                 return;
             }
             instance.arrowActionIsActive = true;
-            instance.elementIndexList = instance.getIndexListOfWatched(bool);
+            instance.elementIndexList = instance.getIndexListOfWatched(filterType);
             instance.currentArrayIndex = 0;
             instance.countCurrent.innerHTML = '0';
             callback(instance);
         });
     }
 
-    private getIndexListOfWatched(bool: boolean) {
+    private getIndexListOfWatched(filterType: FilterType) {
         const indexList = this.activePage.getDataIndexList();
         const newList = [];
         for (let i = 0; i < indexList.length; i++) {
             let currentElement = this.activePage.getElementWithDataIndex(indexList[i]);
-            if(bool) {
+            if(filterType === FilterType.ALL_WATCHED) {
                 if(currentElement.allEpWatched()) {
                     newList.push(indexList[i]);
                 }
-            } else {
+            } else if(filterType === FilterType.NO_WATCHED) {
                 if(currentElement.noEpWatched()) {
+                    newList.push(indexList[i]);
+                }
+            } else if(filterType === FilterType.NOT_ALL_WATCHED) {
+                if(!currentElement.allEpWatched()) {
+                    newList.push(indexList[i]);
+                }
+            } else if(filterType === FilterType.NOT_NO_WATCHED) {
+                if(!currentElement.noEpWatched()) {
                     newList.push(indexList[i]);
                 }
             }

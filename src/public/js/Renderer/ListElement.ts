@@ -375,6 +375,7 @@ class ListElement {
         count.appendChild(countMax);
         addSub.appendChild(count);
         const instance = this;
+        //TODO: add sub mousedown
         addSub.appendChild(ListElement.generateButton('img/add-button.ico', 'add', function () {
             instance.addButton();
         }));
