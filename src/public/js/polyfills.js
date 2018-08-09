@@ -4,6 +4,7 @@ var FilterType;
     FilterType[FilterType["NO_WATCHED"] = 2] = "NO_WATCHED";
     FilterType[FilterType["NOT_ALL_WATCHED"] = 3] = "NOT_ALL_WATCHED";
     FilterType[FilterType["NOT_NO_WATCHED"] = 4] = "NOT_NO_WATCHED";
+    FilterType[FilterType["ALL"] = 5] = "ALL";
 })(FilterType || (FilterType = {}));
 //# sourceMappingURL=FilterType.js.map
 var ListID;
@@ -1149,17 +1150,21 @@ var PageOptions = /** @class */ (function () {
         container.appendChild(this.createAction('img/subtr-button.ico', 'subtr', 'Alle eine Folge zurück', PageOptions.subtrButton, 'add-sub'));
         container.appendChild(this.createArrowAction('img/arrow-left.ico', 'arrow-left', 'Verschiebe alle abgeschlossenen Serien', this.arrowLeftButton, FilterType.ALL_WATCHED));
         container.appendChild(this.createArrowAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht angefangenen Serien', this.arrowRightButton, FilterType.NO_WATCHED));
+        container.appendChild(this.createArrowAction('img/arrow-left.ico', 'arrow-left', 'Verschiebe alle Serien', this.arrowLeftButton, FilterType.ALL));
+        container.appendChild(this.createArrowAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle Serien', this.arrowRightButton, FilterType.ALL));
         return container;
     };
     PageOptions.prototype.createActionsContainerForWatched = function () {
         var container = PageDetail.createDiv('opt-action-container');
         container.appendChild(this.createArrowAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht abgeschlossenen Serien', this.arrowRightButton, FilterType.NOT_ALL_WATCHED));
+        container.appendChild(this.createArrowAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle Serien', this.arrowRightButton, FilterType.ALL));
         return container;
     };
     PageOptions.prototype.createActionsContainerForNotWatched = function () {
         var container = PageDetail.createDiv('opt-action-container');
         container.appendChild(this.createArrowAction('img/arrow-left.ico', 'arrow-left', 'Verschiebe alle angefangenen Serien', this.arrowLeftButton, FilterType.NOT_NO_WATCHED));
         container.appendChild(this.createSpecialArrowAction('img/arrow-left.ico', 'arrow-left', this.arrowLeftButton, 'random-input'));
+        container.appendChild(this.createArrowAction('img/arrow-left.ico', 'arrow-left', 'Verschiebe alle Serien', this.arrowLeftButton, FilterType.ALL));
         return container;
     };
     PageOptions.prototype.createCountContainer = function () {
@@ -1297,6 +1302,9 @@ var PageOptions = /** @class */ (function () {
                 if (!currentElement.noEpWatched()) {
                     newList.push(indexList[i]);
                 }
+            }
+            else if (filterType === FilterType.ALL) {
+                return indexList;
             }
         }
         return newList;

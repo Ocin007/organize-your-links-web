@@ -113,6 +113,12 @@ class PageOptions {
         container.appendChild(this.createArrowAction(
             'img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht angefangenen Serien', this.arrowRightButton, FilterType.NO_WATCHED
         ));
+        container.appendChild(this.createArrowAction(
+            'img/arrow-left.ico', 'arrow-left', 'Verschiebe alle Serien', this.arrowLeftButton, FilterType.ALL
+        ));
+        container.appendChild(this.createArrowAction(
+            'img/arrow-right.ico', 'arrow-right', 'Verschiebe alle Serien', this.arrowRightButton, FilterType.ALL
+        ));
         return container;
     }
 
@@ -120,6 +126,9 @@ class PageOptions {
         const container = PageDetail.createDiv('opt-action-container');
         container.appendChild(this.createArrowAction(
             'img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht abgeschlossenen Serien', this.arrowRightButton, FilterType.NOT_ALL_WATCHED
+        ));
+        container.appendChild(this.createArrowAction(
+            'img/arrow-right.ico', 'arrow-right', 'Verschiebe alle Serien', this.arrowRightButton, FilterType.ALL
         ));
         return container;
     }
@@ -131,6 +140,9 @@ class PageOptions {
         ));
         container.appendChild(this.createSpecialArrowAction(
             'img/arrow-left.ico', 'arrow-left', this.arrowLeftButton, 'random-input'
+        ));
+        container.appendChild(this.createArrowAction(
+            'img/arrow-left.ico', 'arrow-left', 'Verschiebe alle Serien', this.arrowLeftButton, FilterType.ALL
         ));
         return container;
     }
@@ -270,6 +282,8 @@ class PageOptions {
                 if(!currentElement.noEpWatched()) {
                     newList.push(indexList[i]);
                 }
+            } else if(filterType === FilterType.ALL) {
+                return indexList;
             }
         }
         return newList;
