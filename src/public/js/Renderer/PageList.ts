@@ -49,8 +49,26 @@ class PageList implements Slideable, ForeachElement {
         }
     }
 
-    getDataList() {
-        return this.dataList;
+    getDataIndexList() {
+        const list = [];
+        this.foreachListElement(function (element) {
+            list.push(element.getDataIndex());
+        });
+        return list;
+    }
+
+    getListId() {
+        return this.listID;
+    }
+
+    getElementWithDataIndex(dataIndex: number) {
+        let elementWithDataIndex: ListElement = undefined;
+        this.foreachListElement(function (element) {
+            if(element.getDataIndex() === dataIndex) {
+                elementWithDataIndex = element;
+            }
+        });
+        return elementWithDataIndex;
     }
 
     generateMap() {

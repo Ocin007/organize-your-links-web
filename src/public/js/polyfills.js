@@ -199,6 +199,9 @@ var ListElement = /** @class */ (function () {
         _a = ListElement.getIndicesAndCountOfFirstNotWatched(element), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
         var _a;
     }
+    ListElement.prototype.getDataIndex = function () {
+        return this.dataIndex;
+    };
     ListElement.prototype.getId = function () {
         return this.serverData.getListElement(this.dataIndex).id;
     };
@@ -213,6 +216,26 @@ var ListElement = /** @class */ (function () {
     };
     ListElement.prototype.currentEpWatched = function () {
         return this.data.seasons[this.sIndex].episodes[this.epIndex].watched;
+    };
+    ListElement.prototype.allEpWatched = function () {
+        for (var s = this.data.seasons.length - 1; s > -1; s--) {
+            for (var ep = this.data.seasons[s].episodes.length - 1; ep > -1; ep--) {
+                if (!this.data.seasons[s].episodes[ep].watched) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+    ListElement.prototype.noEpWatched = function () {
+        for (var s = 0; s < this.data.seasons.length; s++) {
+            for (var ep = 0; ep < this.data.seasons[s].episodes.length; ep++) {
+                if (this.data.seasons[s].episodes[ep].watched) {
+                    return false;
+                }
+            }
+        }
+        return true;
     };
     ListElement.prototype.showPageList = function () {
         this.pageList.showElement();
@@ -279,15 +302,18 @@ var ListElement = /** @class */ (function () {
         return success;
     };
     ListElement.prototype.arrowLeftButton = function (relSpeed, callback) {
-        //TODO: arrowLeftButton
         if (!navMap.flag) {
             return;
         }
         slideListElementLeft(this, relSpeed, callback);
         return this.data;
     };
-    ListElement.prototype.arrowRightButton = function () {
-        //TODO: arrowRightButton
+    ListElement.prototype.arrowRightButton = function (relSpeed, callback) {
+        if (!navMap.flag) {
+            return;
+        }
+        slideListElementRight(this, relSpeed, callback);
+        return this.data;
     };
     ListElement.prototype.generateNewElement = function () {
         this.data = this.serverData.getListElement(this.dataIndex);
@@ -342,33 +368,36 @@ var ListElement = /** @class */ (function () {
                 var element = instance.serverData.getListElement(instance.dataIndex);
                 element.list--;
                 instance.serverData.put([element], function () {
-                    instance.serverData.splitInThreeLists();
-                    navMap[element.list].generateMap();
-                    navMap[element.list].renderList();
-                    navMap[element.list + 1].generateMap();
-                    navMap[element.list + 1].renderList();
+                    instance.renderAfterArrowLeft(element.list);
                 });
             });
         });
     };
+    ListElement.prototype.renderAfterArrowLeft = function (newListId) {
+        this.serverData.splitInThreeLists();
+        navMap[newListId].generateMap();
+        navMap[newListId].renderList();
+        navMap[newListId + 1].generateMap();
+        navMap[newListId + 1].renderList();
+    };
     ListElement.prototype.createArrowRightButton = function () {
         var instance = this;
         return ListElement.generateButton('img/arrow-right.ico', 'arrow-right', function () {
-            if (!navMap.flag) {
-                return;
-            }
-            slideListElementRight(instance, 5 / 100, function () {
+            instance.arrowRightButton(5 / 100, function () {
                 var element = instance.serverData.getListElement(instance.dataIndex);
                 element.list++;
                 instance.serverData.put([element], function () {
-                    instance.serverData.splitInThreeLists();
-                    navMap[element.list].generateMap();
-                    navMap[element.list].renderList();
-                    navMap[element.list - 1].generateMap();
-                    navMap[element.list - 1].renderList();
+                    instance.renderAfterArrowRight(element.list);
                 });
             });
         });
+    };
+    ListElement.prototype.renderAfterArrowRight = function (newListId) {
+        this.serverData.splitInThreeLists();
+        navMap[newListId].generateMap();
+        navMap[newListId].renderList();
+        navMap[newListId - 1].generateMap();
+        navMap[newListId - 1].renderList();
     };
     ListElement.prototype.createPlayButton = function () {
         var instance = this;
@@ -481,7 +510,6 @@ var ListElement = /** @class */ (function () {
         count.appendChild(node);
         count.appendChild(countMax);
         addSub.appendChild(count);
-        //TODO: funktionen addsub auslagern
         var instance = this;
         addSub.appendChild(ListElement.generateButton('img/add-button.ico', 'add', function () {
             instance.addButton();
@@ -561,7 +589,11 @@ var PageDetail = /** @class */ (function () {
     };
     PageDetail.prototype.foreachListElement = function (callback, opt) {
     };
-    PageDetail.prototype.getDataList = function () {
+    PageDetail.prototype.getDataIndexList = function () {
+    };
+    PageDetail.prototype.getListId = function () {
+    };
+    PageDetail.prototype.getElementWithDataIndex = function (dataIndex) {
     };
     PageDetail.prototype.registerListElement = function (id, listElement) {
         this.listElementMap[id] = listElement;
@@ -953,8 +985,24 @@ var PageList = /** @class */ (function () {
             }
         }
     };
-    PageList.prototype.getDataList = function () {
-        return this.dataList;
+    PageList.prototype.getDataIndexList = function () {
+        var list = [];
+        this.foreachListElement(function (element) {
+            list.push(element.getDataIndex());
+        });
+        return list;
+    };
+    PageList.prototype.getListId = function () {
+        return this.listID;
+    };
+    PageList.prototype.getElementWithDataIndex = function (dataIndex) {
+        var elementWithDataIndex = undefined;
+        this.foreachListElement(function (element) {
+            if (element.getDataIndex() === dataIndex) {
+                elementWithDataIndex = element;
+            }
+        });
+        return elementWithDataIndex;
     };
     PageList.prototype.generateMap = function () {
         this.dataList = {};
@@ -1002,6 +1050,8 @@ var PageOptions = /** @class */ (function () {
         this.opacityLayer = opacityLayer;
         this.optionContainer = optionContainer;
         this.serverData = serverData;
+        this.arrowActionIsActive = false;
+        this.changedDataList = [];
         var instance = this;
         this.opacityLayer.addEventListener('click', function () {
             slideCloseOptions(instance.optionContainer);
@@ -1050,14 +1100,14 @@ var PageOptions = /** @class */ (function () {
     };
     PageOptions.prototype.createActionsContainer = function () {
         var container = PageDetail.createDiv('opt-action-container');
-        container.appendChild(this.createAction('img/play.ico', 'play', 'Ungesehene Folgen in Tab öffnen', this.playButton, 'no-border'));
-        container.appendChild(this.createAction('img/close.ico', 'close-tab', 'Geöffnete Tabs schließen', this.closeTabButton));
-        container.appendChild(this.createAction('img/watched.ico', 'watched', 'Folgen als gesehen markieren', this.watchedButton));
-        container.appendChild(this.createAction('img/not-watched.ico', 'not-watched', 'Folgen als nicht gesehen markieren', this.notWatchedButton));
-        container.appendChild(this.createAction('img/add-button.ico', 'add', 'Alle eine Folge weiter', this.addButton, 'add-sub'));
-        container.appendChild(this.createAction('img/subtr-button.ico', 'subtr', 'Alle eine Folge zurück', this.subtrButton, 'add-sub'));
-        container.appendChild(this.createAction('img/arrow-left.ico', 'arrow-left', 'Verschiebene alle abgeschlossenen Serien', this.arrowLeftButton));
-        container.appendChild(this.createAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht angefangenen Serien', this.arrowRightButton));
+        container.appendChild(this.createAction('img/play.ico', 'play', 'Ungesehene Folgen in Tab öffnen', PageOptions.playButton, 'no-border'));
+        container.appendChild(this.createAction('img/close.ico', 'close-tab', 'Geöffnete Tabs schließen', PageOptions.closeTabButton));
+        container.appendChild(this.createAction('img/watched.ico', 'watched', 'Folgen als gesehen markieren', PageOptions.watchedButton));
+        container.appendChild(this.createAction('img/not-watched.ico', 'not-watched', 'Folgen als nicht gesehen markieren', PageOptions.notWatchedButton));
+        container.appendChild(this.createAction('img/add-button.ico', 'add', 'Alle eine Folge weiter', PageOptions.addButton, 'add-sub'));
+        container.appendChild(this.createAction('img/subtr-button.ico', 'subtr', 'Alle eine Folge zurück', PageOptions.subtrButton, 'add-sub'));
+        container.appendChild(this.createArrowAction('img/arrow-left.ico', 'arrow-left', 'Verschiebene alle abgeschlossenen Serien', this.arrowLeftButton, true));
+        container.appendChild(this.createArrowAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht angefangenen Serien', this.arrowRightButton, false));
         return container;
     };
     PageOptions.prototype.createCountContainer = function () {
@@ -1068,7 +1118,7 @@ var PageOptions = /** @class */ (function () {
         var node1 = document.createElement('p');
         node1.innerHTML = 'von';
         this.countMax = document.createElement('p');
-        this.countMax.innerHTML = '-';
+        this.countMax.innerHTML = this.activePage.getDataIndexList().length.toString();
         this.countMax.classList.add('count-number-field');
         var node2 = document.createElement('p');
         node2.innerHTML = 'ausgeführt.';
@@ -1079,20 +1129,14 @@ var PageOptions = /** @class */ (function () {
         return container;
     };
     PageOptions.prototype.createAction = function (src, alt, label, callback, token) {
-        var container = PageDetail.createDiv('opt-action');
-        container.classList.add('list-button-container');
-        if (token !== undefined) {
-            container.classList.add(token);
-        }
-        var img = PageDetail.createImg(src, alt);
         var instance = this;
-        img.addEventListener('click', function () {
+        return this.createActionContainer(src, alt, label, function () {
             var changedElements = [];
             var countAll = 0;
             var countSuccess = 0;
             instance.activePage.foreachListElement(function (element) {
                 countAll++;
-                var data = callback(instance, element);
+                var data = callback(element);
                 if (data === undefined) {
                     return;
                 }
@@ -1102,8 +1146,49 @@ var PageOptions = /** @class */ (function () {
                 }
             });
             instance.countCurrent.innerHTML = countSuccess.toString();
-            instance.countMax.innerHTML = countAll.toString();
             instance.serverData.put(changedElements);
+        }, token);
+    };
+    PageOptions.prototype.createArrowAction = function (src, alt, label, callback, bool) {
+        var instance = this;
+        return this.createActionContainer(src, alt, label, function () {
+            if (instance.arrowActionIsActive) {
+                return;
+            }
+            instance.arrowActionIsActive = true;
+            instance.elementIndexList = instance.getIndexListOfWatched(bool);
+            instance.currentArrayIndex = 0;
+            instance.countCurrent.innerHTML = '0';
+            callback(instance);
+        });
+    };
+    PageOptions.prototype.getIndexListOfWatched = function (bool) {
+        var indexList = this.activePage.getDataIndexList();
+        var newList = [];
+        for (var i = 0; i < indexList.length; i++) {
+            var currentElement = this.activePage.getElementWithDataIndex(indexList[i]);
+            if (bool) {
+                if (currentElement.allEpWatched()) {
+                    newList.push(indexList[i]);
+                }
+            }
+            else {
+                if (currentElement.noEpWatched()) {
+                    newList.push(indexList[i]);
+                }
+            }
+        }
+        return newList;
+    };
+    PageOptions.prototype.createActionContainer = function (src, alt, label, callback, token) {
+        var container = PageDetail.createDiv('opt-action');
+        container.classList.add('list-button-container');
+        if (token !== undefined) {
+            container.classList.add(token);
+        }
+        var img = PageDetail.createImg(src, alt);
+        img.addEventListener('click', function () {
+            callback();
         });
         container.appendChild(img);
         var labelElement = document.createElement('p');
@@ -1111,34 +1196,74 @@ var PageOptions = /** @class */ (function () {
         container.appendChild(labelElement);
         return container;
     };
-    PageOptions.prototype.playButton = function (instance, element) {
+    PageOptions.playButton = function (element) {
         if (!element.currentEpWatched()) {
             return element.playButton();
         }
     };
-    PageOptions.prototype.closeTabButton = function (instance, element) {
+    PageOptions.closeTabButton = function (element) {
         return element.closeTabButton();
     };
-    PageOptions.prototype.watchedButton = function (instance, element) {
+    PageOptions.watchedButton = function (element) {
         return element.watchedButton();
     };
-    PageOptions.prototype.notWatchedButton = function (instance, element) {
+    PageOptions.notWatchedButton = function (element) {
         return element.notWatchedButton();
     };
-    PageOptions.prototype.addButton = function (instance, element) {
+    PageOptions.addButton = function (element) {
         return element.addButton();
     };
-    PageOptions.prototype.subtrButton = function (instance, element) {
+    PageOptions.subtrButton = function (element) {
         return element.subtrButton();
     };
-    PageOptions.prototype.arrowLeftButton = function (instance, element) {
-        //TODO: arrowLeftButton
-        navMap.flag = true;
-        return element.arrowLeftButton(5 / 100, function () {
-        });
+    PageOptions.prototype.arrowLeftButton = function (instance) {
+        if (instance.currentArrayIndex < instance.elementIndexList.length) {
+            var dataIndex = instance.elementIndexList[instance.currentArrayIndex];
+            var currentElement_1 = instance.activePage.getElementWithDataIndex(dataIndex);
+            var data = currentElement_1.arrowLeftButton(10 / 100, function () {
+                currentElement_1.renderAfterArrowLeft(instance.activePage.getListId() - 1);
+                instance.countCurrent.innerHTML = instance.currentArrayIndex.toString();
+                instance.arrowLeftButton(instance);
+            });
+            instance.currentArrayIndex++;
+            if (data !== undefined) {
+                data.list--;
+                instance.changedDataList.push(data);
+            }
+        }
+        else {
+            instance.updateChangedData(function () {
+                instance.arrowActionIsActive = false;
+            });
+        }
     };
-    PageOptions.prototype.arrowRightButton = function (instance, element) {
-        //TODO: arrowRightButton
+    PageOptions.prototype.arrowRightButton = function (instance) {
+        if (instance.currentArrayIndex < instance.elementIndexList.length) {
+            var dataIndex = instance.elementIndexList[instance.currentArrayIndex];
+            var currentElement_2 = instance.activePage.getElementWithDataIndex(dataIndex);
+            var data = currentElement_2.arrowRightButton(10 / 100, function () {
+                currentElement_2.renderAfterArrowRight(instance.activePage.getListId() + 1);
+                instance.countCurrent.innerHTML = instance.currentArrayIndex.toString();
+                instance.arrowRightButton(instance);
+            });
+            instance.currentArrayIndex++;
+            if (data !== undefined) {
+                data.list++;
+                instance.changedDataList.push(data);
+            }
+        }
+        else {
+            instance.updateChangedData(function () {
+                instance.arrowActionIsActive = false;
+            });
+        }
+    };
+    PageOptions.prototype.updateChangedData = function (callback) {
+        var instance = this;
+        this.serverData.put(this.changedDataList, function () {
+            instance.changedDataList = [];
+            callback();
+        });
     };
     return PageOptions;
 }());

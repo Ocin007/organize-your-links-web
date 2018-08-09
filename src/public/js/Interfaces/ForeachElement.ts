@@ -1,4 +1,6 @@
 interface ForeachElement {
     foreachListElement(callback: Function, opt?: any);
-    getDataList();
+    getDataIndexList();
+    getListId();
+    getElementWithDataIndex(dataIndex: number);
 }

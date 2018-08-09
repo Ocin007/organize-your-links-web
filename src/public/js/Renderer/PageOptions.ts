@@ -4,6 +4,11 @@ class PageOptions {
     private countCurrent: HTMLParagraphElement;
     private countMax: HTMLParagraphElement;
 
+    private arrowActionIsActive: boolean = false;
+    private elementIndexList: number[];
+    private changedDataList: DataListElement[] = [];
+    private currentArrayIndex: number;
+
     constructor(private opacityLayer: HTMLElement, private optionContainer: HTMLElement, private serverData: ServerData) {
         const instance = this;
         this.opacityLayer.addEventListener('click', function () {
@@ -61,29 +66,25 @@ class PageOptions {
     private createActionsContainer() {
         const container = PageDetail.createDiv('opt-action-container');
         container.appendChild(this.createAction(
-            'img/play.ico', 'play', 'Ungesehene Folgen in Tab öffnen', this.playButton, 'no-border'
+            'img/play.ico', 'play', 'Ungesehene Folgen in Tab öffnen', PageOptions.playButton, 'no-border'
         ));
         container.appendChild(this.createAction(
-            'img/close.ico', 'close-tab', 'Geöffnete Tabs schließen', this.closeTabButton
+            'img/close.ico', 'close-tab', 'Geöffnete Tabs schließen', PageOptions.closeTabButton
         ));
         container.appendChild(this.createAction(
-            'img/watched.ico', 'watched', 'Folgen als gesehen markieren', this.watchedButton
+            'img/watched.ico', 'watched', 'Folgen als gesehen markieren', PageOptions.watchedButton
         ));
         container.appendChild(this.createAction(
-            'img/not-watched.ico', 'not-watched', 'Folgen als nicht gesehen markieren', this.notWatchedButton
+            'img/not-watched.ico', 'not-watched', 'Folgen als nicht gesehen markieren', PageOptions.notWatchedButton
         ));
         container.appendChild(this.createAction(
-            'img/add-button.ico', 'add', 'Alle eine Folge weiter', this.addButton, 'add-sub'
+            'img/add-button.ico', 'add', 'Alle eine Folge weiter', PageOptions.addButton, 'add-sub'
         ));
         container.appendChild(this.createAction(
-            'img/subtr-button.ico', 'subtr', 'Alle eine Folge zurück', this.subtrButton, 'add-sub'
+            'img/subtr-button.ico', 'subtr', 'Alle eine Folge zurück', PageOptions.subtrButton, 'add-sub'
         ));
-        container.appendChild(this.createAction(
-            'img/arrow-left.ico', 'arrow-left', 'Verschiebene alle abgeschlossenen Serien', this.arrowLeftButton
-        ));
-        container.appendChild(this.createAction(
-            'img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht angefangenen Serien', this.arrowRightButton
-        ));
+        container.appendChild(this.createArrowAction('img/arrow-left.ico', 'arrow-left', 'Verschiebene alle abgeschlossenen Serien', this.arrowLeftButton, true));
+        container.appendChild(this.createArrowAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht angefangenen Serien', this.arrowRightButton, false));
         return container;
     }
 
@@ -95,7 +96,7 @@ class PageOptions {
         const node1 = document.createElement('p');
         node1.innerHTML = 'von';
         this.countMax = document.createElement('p');
-        this.countMax.innerHTML = '-';
+        this.countMax.innerHTML = this.activePage.getDataIndexList().length.toString();
         this.countMax.classList.add('count-number-field');
         const node2 = document.createElement('p');
         node2.innerHTML = 'ausgeführt.';
@@ -107,20 +108,14 @@ class PageOptions {
     }
 
     private createAction(src: string, alt: string, label: string, callback: Function, token?: string) {
-        const container = PageDetail.createDiv('opt-action');
-        container.classList.add('list-button-container');
-        if(token !== undefined) {
-            container.classList.add(token);
-        }
-        const img = PageDetail.createImg(src, alt);
         const instance = this;
-        img.addEventListener('click', function () {
+        return this.createActionContainer(src, alt, label, function () {
             const changedElements = [];
             let countAll = 0;
             let countSuccess = 0;
             instance.activePage.foreachListElement(function (element: ListElement) {
                 countAll++;
-                let data = callback(instance, element);
+                let data = callback(element);
                 if(data === undefined) {
                     return;
                 }
@@ -130,8 +125,51 @@ class PageOptions {
                 }
             });
             instance.countCurrent.innerHTML = countSuccess.toString();
-            instance.countMax.innerHTML = countAll.toString();
             instance.serverData.put(changedElements);
+        }, token);
+    }
+
+    private createArrowAction(src: string, alt: string, label: string, callback: Function, bool: boolean) {
+        const instance = this;
+        return this.createActionContainer(src, alt, label, function () {
+            if(instance.arrowActionIsActive) {
+                return;
+            }
+            instance.arrowActionIsActive = true;
+            instance.elementIndexList = instance.getIndexListOfWatched(bool);
+            instance.currentArrayIndex = 0;
+            instance.countCurrent.innerHTML = '0';
+            callback(instance);
+        });
+    }
+
+    private getIndexListOfWatched(bool: boolean) {
+        const indexList = this.activePage.getDataIndexList();
+        const newList = [];
+        for (let i = 0; i < indexList.length; i++) {
+            let currentElement = this.activePage.getElementWithDataIndex(indexList[i]);
+            if(bool) {
+                if(currentElement.allEpWatched()) {
+                    newList.push(indexList[i]);
+                }
+            } else {
+                if(currentElement.noEpWatched()) {
+                    newList.push(indexList[i]);
+                }
+            }
+        }
+        return newList;
+    }
+
+    private createActionContainer(src: string, alt: string, label: string, callback: Function, token?: string) {
+        const container = PageDetail.createDiv('opt-action');
+        container.classList.add('list-button-container');
+        if(token !== undefined) {
+            container.classList.add(token);
+        }
+        const img = PageDetail.createImg(src, alt);
+        img.addEventListener('click', function () {
+            callback();
         });
         container.appendChild(img);
         const labelElement = document.createElement('p');
@@ -140,41 +178,79 @@ class PageOptions {
         return container;
     }
 
-    private playButton(instance: PageOptions, element: ListElement) {
+    private static playButton(element: ListElement) {
         if(!element.currentEpWatched()) {
             return element.playButton();
         }
     }
 
-    private closeTabButton(instance: PageOptions, element: ListElement) {
+    private static closeTabButton(element: ListElement) {
         return element.closeTabButton();
     }
 
-    private watchedButton(instance: PageOptions, element: ListElement) {
+    private static watchedButton(element: ListElement) {
         return element.watchedButton();
     }
 
-    private notWatchedButton(instance: PageOptions, element: ListElement) {
+    private static notWatchedButton(element: ListElement) {
         return element.notWatchedButton();
     }
 
-    private addButton(instance: PageOptions, element: ListElement) {
+    private static addButton(element: ListElement) {
         return element.addButton();
     }
 
-    private subtrButton(instance: PageOptions, element: ListElement) {
+    private static subtrButton(element: ListElement) {
         return element.subtrButton();
     }
 
-    private arrowLeftButton(instance: PageOptions, element: ListElement) {
-        //TODO: arrowLeftButton
-        navMap.flag = true;
-        return element.arrowLeftButton(5/100, function () {
-
-        });
+    private arrowLeftButton(instance: PageOptions) {
+        if(instance.currentArrayIndex < instance.elementIndexList.length) {
+            let dataIndex = instance.elementIndexList[instance.currentArrayIndex];
+            let currentElement = instance.activePage.getElementWithDataIndex(dataIndex);
+            let data = currentElement.arrowLeftButton(10/100, function () {
+                currentElement.renderAfterArrowLeft(instance.activePage.getListId()-1);
+                instance.countCurrent.innerHTML = instance.currentArrayIndex.toString();
+                instance.arrowLeftButton(instance);
+            });
+            instance.currentArrayIndex++;
+            if(data !== undefined) {
+                data.list--;
+                instance.changedDataList.push(data);
+            }
+        } else {
+            instance.updateChangedData(function () {
+                instance.arrowActionIsActive = false;
+            });
+        }
     }
 
-    private arrowRightButton(instance: PageOptions, element: ListElement) {
-        //TODO: arrowRightButton
+    private arrowRightButton(instance: PageOptions) {
+        if(instance.currentArrayIndex < instance.elementIndexList.length) {
+            let dataIndex = instance.elementIndexList[instance.currentArrayIndex];
+            let currentElement = instance.activePage.getElementWithDataIndex(dataIndex);
+            let data = currentElement.arrowRightButton(10/100, function () {
+                currentElement.renderAfterArrowRight(instance.activePage.getListId()+1);
+                instance.countCurrent.innerHTML = instance.currentArrayIndex.toString();
+                instance.arrowRightButton(instance);
+            });
+            instance.currentArrayIndex++;
+            if(data !== undefined) {
+                data.list++;
+                instance.changedDataList.push(data);
+            }
+        } else {
+            instance.updateChangedData(function () {
+                instance.arrowActionIsActive = false;
+            });
+        }
+    }
+
+    private updateChangedData(callback: Function) {
+        const instance = this;
+        this.serverData.put(this.changedDataList, function () {
+            instance.changedDataList = [];
+            callback();
+        });
     }
 }

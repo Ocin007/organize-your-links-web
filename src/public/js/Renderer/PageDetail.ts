@@ -66,7 +66,15 @@ class PageDetail implements Slideable, ForeachElement {
 
     }
 
-    getDataList() {
+    getDataIndexList() {
+
+    }
+
+    getListId() {
+
+    }
+
+    getElementWithDataIndex(dataIndex: number) {
 
     }
 

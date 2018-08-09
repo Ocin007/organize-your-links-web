@@ -29,6 +29,10 @@ class ListElement {
         ] = ListElement.getIndicesAndCountOfFirstNotWatched(element);
     }
 
+    getDataIndex() {
+        return this.dataIndex;
+    }
+
     getId() {
         return this.serverData.getListElement(this.dataIndex).id;
     }
@@ -47,6 +51,28 @@ class ListElement {
 
     currentEpWatched() {
         return this.data.seasons[this.sIndex].episodes[this.epIndex].watched;
+    }
+
+    allEpWatched() {
+        for (let s = this.data.seasons.length-1; s > -1; s--) {
+            for (let ep = this.data.seasons[s].episodes.length-1; ep > -1; ep--) {
+                if(!this.data.seasons[s].episodes[ep].watched) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    noEpWatched() {
+        for (let s = 0; s < this.data.seasons.length; s++) {
+            for (let ep = 0; ep < this.data.seasons[s].episodes.length; ep++) {
+                if(this.data.seasons[s].episodes[ep].watched) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     showPageList() {
@@ -120,7 +146,6 @@ class ListElement {
     }
 
     arrowLeftButton(relSpeed: number, callback: Function) {
-        //TODO: arrowLeftButton
         if(!navMap.flag) {
             return;
         }
@@ -128,8 +153,12 @@ class ListElement {
         return this.data;
     }
 
-    arrowRightButton() {
-        //TODO: arrowRightButton
+    arrowRightButton(relSpeed: number, callback: Function) {
+        if(!navMap.flag) {
+            return;
+        }
+        slideListElementRight(this, relSpeed, callback);
+        return this.data;
     }
 
     generateNewElement() {
@@ -189,34 +218,39 @@ class ListElement {
                 const element = instance.serverData.getListElement(instance.dataIndex);
                 element.list--;
                 instance.serverData.put([element], function () {
-                    instance.serverData.splitInThreeLists();
-                    navMap[element.list].generateMap();
-                    navMap[element.list].renderList();
-                    navMap[element.list + 1].generateMap();
-                    navMap[element.list + 1].renderList();
+                    instance.renderAfterArrowLeft(element.list);
                 });
             });
         });
     }
 
+    renderAfterArrowLeft(newListId: ListID) {
+        this.serverData.splitInThreeLists();
+        navMap[newListId].generateMap();
+        navMap[newListId].renderList();
+        navMap[newListId + 1].generateMap();
+        navMap[newListId + 1].renderList();
+    }
+
     private createArrowRightButton() {
         const instance = this;
         return ListElement.generateButton('img/arrow-right.ico', 'arrow-right', function () {
-            if(!navMap.flag) {
-                return;
-            }
-            slideListElementRight(instance, 5/100, function () {
+            instance.arrowRightButton(5/100, function () {
                 const element = instance.serverData.getListElement(instance.dataIndex);
                 element.list++;
                 instance.serverData.put([element], function () {
-                    instance.serverData.splitInThreeLists();
-                    navMap[element.list].generateMap();
-                    navMap[element.list].renderList();
-                    navMap[element.list - 1].generateMap();
-                    navMap[element.list - 1].renderList();
+                    instance.renderAfterArrowRight(element.list);
                 });
             });
         });
+    }
+
+    renderAfterArrowRight(newListId: ListID) {
+        this.serverData.splitInThreeLists();
+        navMap[newListId].generateMap();
+        navMap[newListId].renderList();
+        navMap[newListId - 1].generateMap();
+        navMap[newListId - 1].renderList();
     }
 
     private createPlayButton() {
@@ -340,7 +374,6 @@ class ListElement {
         count.appendChild(node);
         count.appendChild(countMax);
         addSub.appendChild(count);
-        //TODO: funktionen addsub auslagern
         const instance = this;
         addSub.appendChild(ListElement.generateButton('img/add-button.ico', 'add', function () {
             instance.addButton();
