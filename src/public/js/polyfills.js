@@ -687,22 +687,62 @@ var PageDetail = /** @class */ (function () {
         var segment = PageDetail.createDiv('list-segment');
         var label = document.createElement('h2');
         label.innerHTML = 'Season ' + (sIndex + 1);
+        var watchedSeason;
+        if (PageDetail.checkSeasonWatched(sIndex, data)) {
+            watchedSeason = PageDetail.createImg('img/watched.ico', 'watched');
+        }
+        else {
+            watchedSeason = PageDetail.createImg('img/not-watched.ico', 'not-watched');
+        }
+        label.appendChild(watchedSeason);
         segment.appendChild(label);
         var epContainer = PageDetail.createDiv('episode-container');
         epContainer.classList.add('background-gray');
+        var seasonElements = [];
         for (var ep = 0; ep < data.seasons[sIndex].episodes.length; ep++) {
-            epContainer.appendChild(this.createEpisode(sIndex, ep, data));
+            var _a = this.createEpisode(sIndex, ep, data, watchedSeason), episode = _a[0], watchedButton = _a[1];
+            epContainer.appendChild(episode);
+            seasonElements.push([episode, watchedButton]);
         }
+        var instance = this;
+        watchedSeason.addEventListener('click', function () {
+            var oldBool = PageDetail.checkSeasonWatched(sIndex, data);
+            if (oldBool) {
+                watchedSeason.src = 'img/not-watched.ico';
+                watchedSeason.alt = 'not-watched';
+            }
+            else {
+                watchedSeason.src = 'img/watched.ico';
+                watchedSeason.alt = 'watched';
+            }
+            for (var ep = 0; ep < seasonElements.length; ep++) {
+                PageDetail.setAttributes(!oldBool, seasonElements[ep][0], seasonElements[ep][1]);
+                data.seasons[sIndex].episodes[ep].watched = !oldBool;
+            }
+            instance.updateInfo(data);
+            instance.updateThumbnail(data);
+            instance.serverData.put([data], function () {
+                instance.listElementMap[data.id].renderPageList();
+            });
+        });
         segment.appendChild(epContainer);
         return segment;
     };
-    PageDetail.prototype.createEpisode = function (sIndex, epIndex, data) {
+    PageDetail.checkSeasonWatched = function (sIndex, data) {
+        for (var ep = 0; ep < data.seasons[sIndex].episodes.length; ep++) {
+            if (!data.seasons[sIndex].episodes[ep].watched) {
+                return false;
+            }
+        }
+        return true;
+    };
+    PageDetail.prototype.createEpisode = function (sIndex, epIndex, data, watchedSeason) {
         var episode = PageDetail.createDiv('episode-detail');
-        var buttonContainer = this.generateEpisodeButtons(sIndex, epIndex, data, episode);
+        var _a = this.generateEpisodeButtons(sIndex, epIndex, data, episode, watchedSeason), buttonContainer = _a[0], watchedButton = _a[1];
         episode.appendChild(buttonContainer);
         var epLabel = PageDetail.generateEpisodeLabel(epIndex, data.seasons[sIndex].episodes[epIndex].name);
         episode.appendChild(epLabel);
-        return episode;
+        return [episode, watchedButton];
     };
     PageDetail.generateEpisodeLabel = function (epIndex, name) {
         var container = PageDetail.createDiv('episode-label');
@@ -715,11 +755,12 @@ var PageDetail = /** @class */ (function () {
         container.appendChild(label);
         return container;
     };
-    PageDetail.prototype.generateEpisodeButtons = function (sIndex, epIndex, data, episode) {
+    PageDetail.prototype.generateEpisodeButtons = function (sIndex, epIndex, data, episode, watchedSeason) {
         var container = PageDetail.createDiv('episode-button-container');
         container.appendChild(this.playButton(sIndex, epIndex, data));
-        container.appendChild(this.watchedButton(sIndex, epIndex, data, episode));
-        return container;
+        var watchedButton = this.watchedButton(sIndex, epIndex, data, episode, watchedSeason);
+        container.appendChild(watchedButton);
+        return [container, watchedButton];
     };
     PageDetail.prototype.generateButtonContainer = function () {
         var container = PageDetail.createDiv('list-button-container');
@@ -734,35 +775,36 @@ var PageDetail = /** @class */ (function () {
             window.open(data.seasons[sIndex].episodes[epIndex].url);
         });
     };
-    PageDetail.prototype.watchedButton = function (sIndex, epIndex, data, episode) {
+    PageDetail.prototype.watchedButton = function (sIndex, epIndex, data, episode, watchedSeason) {
         var watchedStatus = document.createElement('img');
-        var setAttributes = function (bool) {
-            if (bool) {
-                watchedStatus.src = 'img/watched.ico';
-                watchedStatus.alt = 'watched';
-                episode.classList.remove('font-green');
-                episode.classList.add('font-light-green');
-            }
-            else {
-                watchedStatus.src = 'img/not-watched.ico';
-                watchedStatus.alt = 'not-watched';
-                episode.classList.remove('font-light-green');
-                episode.classList.add('font-green');
-            }
-        };
-        setAttributes(data.seasons[sIndex].episodes[epIndex].watched);
+        PageDetail.setAttributes(data.seasons[sIndex].episodes[epIndex].watched, episode, watchedStatus);
         var instance = this;
         watchedStatus.addEventListener('click', function () {
             var oldBool = data.seasons[sIndex].episodes[epIndex].watched;
             data.seasons[sIndex].episodes[epIndex].watched = !oldBool;
-            setAttributes(!oldBool);
+            PageDetail.setAttributes(!oldBool, episode, watchedStatus);
             instance.updateInfo(data);
             instance.updateThumbnail(data);
+            PageDetail.updateWatchedSeason(watchedSeason, data, sIndex);
             instance.serverData.put([data], function () {
                 instance.listElementMap[data.id].renderPageList();
             });
         });
         return watchedStatus;
+    };
+    PageDetail.setAttributes = function (bool, episode, watchedStatus) {
+        if (bool) {
+            watchedStatus.src = 'img/watched.ico';
+            watchedStatus.alt = 'watched';
+            episode.classList.remove('font-green');
+            episode.classList.add('font-light-green');
+        }
+        else {
+            watchedStatus.src = 'img/not-watched.ico';
+            watchedStatus.alt = 'not-watched';
+            episode.classList.remove('font-light-green');
+            episode.classList.add('font-green');
+        }
     };
     PageDetail.prototype.updateInfo = function (data) {
         this.setFlags(data);
@@ -771,6 +813,16 @@ var PageDetail = /** @class */ (function () {
     PageDetail.prototype.updateThumbnail = function (data) {
         this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
         this.seasonUrl = data.seasons[this.sIndex].url;
+    };
+    PageDetail.updateWatchedSeason = function (watchedSeason, data, sIndex) {
+        if (PageDetail.checkSeasonWatched(sIndex, data)) {
+            watchedSeason.src = 'img/watched.ico';
+            watchedSeason.alt = 'watched';
+        }
+        else {
+            watchedSeason.src = 'img/not-watched.ico';
+            watchedSeason.alt = 'not-watched';
+        }
     };
     PageDetail.prototype.arrowLeftButton = function () {
         var instance = this;

@@ -161,23 +161,62 @@ class PageDetail implements Slideable, ForeachElement {
         const segment = PageDetail.createDiv('list-segment');
         const label = document.createElement('h2');
         label.innerHTML = 'Season '+(sIndex+1);
+        let watchedSeason;
+        if(PageDetail.checkSeasonWatched(sIndex, data)) {
+            watchedSeason = PageDetail.createImg('img/watched.ico', 'watched');
+        } else {
+            watchedSeason = PageDetail.createImg('img/not-watched.ico', 'not-watched');
+        }
+        label.appendChild(watchedSeason);
         segment.appendChild(label);
         const epContainer = PageDetail.createDiv('episode-container');
         epContainer.classList.add('background-gray');
+        const seasonElements = [];
         for (let ep = 0; ep < data.seasons[sIndex].episodes.length; ep++) {
-            epContainer.appendChild(this.createEpisode(sIndex, ep, data));
+            let [episode, watchedButton] = this.createEpisode(sIndex, ep, data, watchedSeason);
+            epContainer.appendChild(episode);
+            seasonElements.push([episode, watchedButton]);
         }
+        const instance = this;
+        watchedSeason.addEventListener('click', function () {
+            const oldBool = PageDetail.checkSeasonWatched(sIndex, data);
+            if(oldBool) {
+                watchedSeason.src = 'img/not-watched.ico';
+                watchedSeason.alt = 'not-watched';
+            } else {
+                watchedSeason.src = 'img/watched.ico';
+                watchedSeason.alt = 'watched';
+            }
+            for (let ep = 0; ep < seasonElements.length; ep++) {
+                PageDetail.setAttributes(!oldBool, seasonElements[ep][0], seasonElements[ep][1]);
+                data.seasons[sIndex].episodes[ep].watched = !oldBool;
+            }
+            instance.updateInfo(data);
+            instance.updateThumbnail(data);
+            instance.serverData.put([data], function () {
+                instance.listElementMap[data.id].renderPageList();
+            });
+        });
         segment.appendChild(epContainer);
         return segment;
     }
 
-    private createEpisode(sIndex: number, epIndex: number, data: DataListElement) {
+    private static checkSeasonWatched(sIndex: number, data: DataListElement) {
+        for (let ep = 0; ep < data.seasons[sIndex].episodes.length; ep++) {
+            if(!data.seasons[sIndex].episodes[ep].watched) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private createEpisode(sIndex: number, epIndex: number, data: DataListElement, watchedSeason: HTMLImageElement) {
         const episode = PageDetail.createDiv('episode-detail');
-        const buttonContainer = this.generateEpisodeButtons(sIndex, epIndex, data, episode);
+        const [buttonContainer, watchedButton] = this.generateEpisodeButtons(sIndex, epIndex, data, episode, watchedSeason);
         episode.appendChild(buttonContainer);
         const epLabel = PageDetail.generateEpisodeLabel(epIndex, data.seasons[sIndex].episodes[epIndex].name);
         episode.appendChild(epLabel);
-        return episode;
+        return [episode, watchedButton];
     }
 
     private static generateEpisodeLabel(epIndex: number, name: string) {
@@ -192,11 +231,12 @@ class PageDetail implements Slideable, ForeachElement {
         return container;
     }
 
-    private generateEpisodeButtons(sIndex: number, epIndex: number, data: DataListElement, episode: HTMLElement) {
+    private generateEpisodeButtons(sIndex: number, epIndex: number, data: DataListElement, episode: HTMLElement, watchedSeason: HTMLImageElement) {
         const container = PageDetail.createDiv('episode-button-container');
         container.appendChild(this.playButton(sIndex, epIndex, data));
-        container.appendChild(this.watchedButton(sIndex, epIndex, data, episode));
-        return container;
+        const watchedButton = this.watchedButton(sIndex, epIndex, data, episode, watchedSeason);
+        container.appendChild(watchedButton);
+        return [container, watchedButton];
     }
 
     private generateButtonContainer() {
@@ -214,34 +254,36 @@ class PageDetail implements Slideable, ForeachElement {
         });
     }
 
-    private watchedButton(sIndex: number, epIndex: number, data: DataListElement, episode: HTMLElement) {
+    private watchedButton(sIndex: number, epIndex: number, data: DataListElement, episode: HTMLElement, watchedSeason: HTMLImageElement) {
         const watchedStatus = document.createElement('img');
-        const setAttributes = function (bool: boolean) {
-            if (bool) {
-                watchedStatus.src = 'img/watched.ico';
-                watchedStatus.alt = 'watched';
-                episode.classList.remove('font-green');
-                episode.classList.add('font-light-green');
-            } else {
-                watchedStatus.src = 'img/not-watched.ico';
-                watchedStatus.alt = 'not-watched';
-                episode.classList.remove('font-light-green');
-                episode.classList.add('font-green');
-            }
-        };
-        setAttributes(data.seasons[sIndex].episodes[epIndex].watched);
+        PageDetail.setAttributes(data.seasons[sIndex].episodes[epIndex].watched, episode, watchedStatus);
         const instance = this;
         watchedStatus.addEventListener('click', function () {
             const oldBool = data.seasons[sIndex].episodes[epIndex].watched;
             data.seasons[sIndex].episodes[epIndex].watched = !oldBool;
-            setAttributes(!oldBool);
+            PageDetail.setAttributes(!oldBool, episode, watchedStatus);
             instance.updateInfo(data);
             instance.updateThumbnail(data);
+            PageDetail.updateWatchedSeason(watchedSeason, data, sIndex);
             instance.serverData.put([data], function () {
                 instance.listElementMap[data.id].renderPageList();
             });
         });
         return watchedStatus;
+    }
+
+    private static setAttributes(bool: boolean, episode: HTMLElement, watchedStatus: HTMLImageElement) {
+        if (bool) {
+            watchedStatus.src = 'img/watched.ico';
+            watchedStatus.alt = 'watched';
+            episode.classList.remove('font-green');
+            episode.classList.add('font-light-green');
+        } else {
+            watchedStatus.src = 'img/not-watched.ico';
+            watchedStatus.alt = 'not-watched';
+            episode.classList.remove('font-light-green');
+            episode.classList.add('font-green');
+        }
     }
 
     private updateInfo(data: DataListElement) {
@@ -252,6 +294,16 @@ class PageDetail implements Slideable, ForeachElement {
     private updateThumbnail(data: DataListElement) {
         this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
         this.seasonUrl = data.seasons[this.sIndex].url;
+    }
+
+    private static updateWatchedSeason(watchedSeason: HTMLImageElement, data: DataListElement, sIndex: number) {
+        if(PageDetail.checkSeasonWatched(sIndex, data)) {
+            watchedSeason.src = 'img/watched.ico';
+            watchedSeason.alt = 'watched';
+        } else {
+            watchedSeason.src = 'img/not-watched.ico';
+            watchedSeason.alt = 'not-watched';
+        }
     }
 
     private arrowLeftButton() {
