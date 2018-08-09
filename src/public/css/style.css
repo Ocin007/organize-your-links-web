@@ -47,6 +47,7 @@ img {
     font-size: 1.5em;
     padding: 10px 20px;
     cursor: pointer;
+    user-select: none;
 }
 .tab:hover {
     color: #78d561;

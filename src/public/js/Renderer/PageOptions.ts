@@ -8,6 +8,8 @@ class PageOptions {
     private elementIndexList: number[];
     private changedDataList: DataListElement[] = [];
     private currentArrayIndex: number;
+    private inputField: HTMLInputElement;
+    private inputFieldValue: number = 1;
 
     constructor(private opacityLayer: HTMLElement, private optionContainer: HTMLElement, private serverData: ServerData) {
         const instance = this;
@@ -36,6 +38,8 @@ class PageOptions {
             this.renderForPlayList();
         } else if(activeFlag === 1) {
             this.renderForWatched();
+        } else if(activeFlag === 3) {
+            this.renderForNotWatched();
         } else {
             this.renderNoContent();
         }
@@ -53,6 +57,15 @@ class PageOptions {
     private renderForWatched() {
         const label = PageOptions.createLabel();
         const actionContainer = this.createActionsContainerForWatched();
+        const countActions = this.createCountContainer();
+        this.optionContainer.appendChild(label);
+        this.optionContainer.appendChild(actionContainer);
+        this.optionContainer.appendChild(countActions);
+    }
+
+    private renderForNotWatched() {
+        const label = PageOptions.createLabel();
+        const actionContainer = this.createActionsContainerForNotWatched();
         const countActions = this.createCountContainer();
         this.optionContainer.appendChild(label);
         this.optionContainer.appendChild(actionContainer);
@@ -107,6 +120,17 @@ class PageOptions {
         const container = PageDetail.createDiv('opt-action-container');
         container.appendChild(this.createArrowAction(
             'img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht abgeschlossenen Serien', this.arrowRightButton, FilterType.NOT_ALL_WATCHED
+        ));
+        return container;
+    }
+
+    private createActionsContainerForNotWatched() {
+        const container = PageDetail.createDiv('opt-action-container');
+        container.appendChild(this.createArrowAction(
+            'img/arrow-left.ico', 'arrow-left', 'Verschiebe alle angefangenen Serien', this.arrowLeftButton, FilterType.NOT_NO_WATCHED
+        ));
+        container.appendChild(this.createSpecialArrowAction(
+            'img/arrow-left.ico', 'arrow-left', this.arrowLeftButton, 'random-input'
         ));
         return container;
     }
@@ -167,6 +191,62 @@ class PageOptions {
             instance.countCurrent.innerHTML = '0';
             callback(instance);
         });
+    }
+
+    private createSpecialArrowAction(src: string, alt: string, callback: Function, token?: string) {
+        const container = PageDetail.createDiv('opt-action');
+        container.classList.add('list-button-container');
+        const img = PageDetail.createImg(src, alt);
+        const instance = this;
+        img.addEventListener('click', function () {
+            if(instance.arrowActionIsActive) {
+                return;
+            }
+            instance.elementIndexList = [];
+            const indexList = instance.activePage.getDataIndexList();
+            let amountElements: number;
+            if(indexList.length < instance.inputFieldValue) {
+                amountElements = indexList.length;
+            } else {
+                amountElements = instance.inputFieldValue;
+            }
+            for (let i = 0; i < amountElements; i++) {
+                let random = Math.floor(Math.random() * (indexList.length-1));
+                instance.elementIndexList.push(indexList[random]);
+                indexList.splice(random, 1);
+            }
+            instance.arrowActionIsActive = true;
+            instance.currentArrayIndex = 0;
+            instance.countCurrent.innerHTML = '0';
+            callback(instance);
+        });
+        container.appendChild(img);
+        const labelContainer = document.createElement('div');
+        if(token !== undefined) {
+            labelContainer.classList.add(token);
+        }
+        const label1 = document.createElement('label');
+        label1.htmlFor = 'input-random-number';
+        label1.innerHTML = 'Verschiebe';
+        labelContainer.appendChild(label1);
+        this.inputField = document.createElement('input');
+        this.inputField.id = 'input-random-number';
+        this.inputField.type = 'number';
+        this.inputField.min = '1';
+        this.inputField.value = this.inputFieldValue.toString();
+        this.inputField.addEventListener('input', function () {
+            if(instance.inputField.value === '') {
+                instance.inputFieldValue = 1;
+            }
+            instance.inputFieldValue = parseInt(instance.inputField.value);
+        });
+        labelContainer.appendChild(this.inputField);
+        const label2 = document.createElement('label');
+        label2.htmlFor = 'input-random-number';
+        label2.innerHTML = 'zufällige Serien';
+        labelContainer.appendChild(label2);
+        container.appendChild(labelContainer);
+        return container;
     }
 
     private getIndexListOfWatched(filterType: FilterType) {

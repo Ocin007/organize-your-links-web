@@ -196,6 +196,15 @@ var ServerData = /** @class */ (function () {
     return ServerData;
 }());
 //# sourceMappingURL=ServerData.js.map
+var Settings = /** @class */ (function () {
+    function Settings() {
+    }
+    Settings.load = function () {
+        //TODO
+    };
+    return Settings;
+}());
+//# sourceMappingURL=Settings.js.map
 var ListElement = /** @class */ (function () {
     function ListElement(dataIndex, serverData, detailPage, pageList) {
         this.dataIndex = dataIndex;
@@ -245,26 +254,6 @@ var ListElement = /** @class */ (function () {
         }
         return true;
     };
-    /*
-        someEpWatched() {
-            let foundWatched = false;
-            let foundNotWatched = false;
-            for (let s = 0; s < this.data.seasons.length; s++) {
-                for (let ep = 0; ep < this.data.seasons[s].episodes.length; ep++) {
-                    if(this.data.seasons[s].episodes[ep].watched) {
-                        foundWatched = true;
-                    }
-                    if(!this.data.seasons[s].episodes[ep].watched) {
-                        foundNotWatched = true;
-                    }
-                    if(foundWatched && foundNotWatched) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-    */
     ListElement.prototype.showPageList = function () {
         this.pageList.showElement();
     };
@@ -1081,6 +1070,7 @@ var PageOptions = /** @class */ (function () {
         this.serverData = serverData;
         this.arrowActionIsActive = false;
         this.changedDataList = [];
+        this.inputFieldValue = 1;
         var instance = this;
         this.opacityLayer.addEventListener('click', function () {
             slideCloseOptions(instance.optionContainer);
@@ -1105,6 +1095,9 @@ var PageOptions = /** @class */ (function () {
         else if (activeFlag === 1) {
             this.renderForWatched();
         }
+        else if (activeFlag === 3) {
+            this.renderForNotWatched();
+        }
         else {
             this.renderNoContent();
         }
@@ -1120,6 +1113,14 @@ var PageOptions = /** @class */ (function () {
     PageOptions.prototype.renderForWatched = function () {
         var label = PageOptions.createLabel();
         var actionContainer = this.createActionsContainerForWatched();
+        var countActions = this.createCountContainer();
+        this.optionContainer.appendChild(label);
+        this.optionContainer.appendChild(actionContainer);
+        this.optionContainer.appendChild(countActions);
+    };
+    PageOptions.prototype.renderForNotWatched = function () {
+        var label = PageOptions.createLabel();
+        var actionContainer = this.createActionsContainerForNotWatched();
         var countActions = this.createCountContainer();
         this.optionContainer.appendChild(label);
         this.optionContainer.appendChild(actionContainer);
@@ -1153,6 +1154,12 @@ var PageOptions = /** @class */ (function () {
     PageOptions.prototype.createActionsContainerForWatched = function () {
         var container = PageDetail.createDiv('opt-action-container');
         container.appendChild(this.createArrowAction('img/arrow-right.ico', 'arrow-right', 'Verschiebe alle nicht abgeschlossenen Serien', this.arrowRightButton, FilterType.NOT_ALL_WATCHED));
+        return container;
+    };
+    PageOptions.prototype.createActionsContainerForNotWatched = function () {
+        var container = PageDetail.createDiv('opt-action-container');
+        container.appendChild(this.createArrowAction('img/arrow-left.ico', 'arrow-left', 'Verschiebe alle angefangenen Serien', this.arrowLeftButton, FilterType.NOT_NO_WATCHED));
+        container.appendChild(this.createSpecialArrowAction('img/arrow-left.ico', 'arrow-left', this.arrowLeftButton, 'random-input'));
         return container;
     };
     PageOptions.prototype.createCountContainer = function () {
@@ -1209,6 +1216,62 @@ var PageOptions = /** @class */ (function () {
             instance.countCurrent.innerHTML = '0';
             callback(instance);
         });
+    };
+    PageOptions.prototype.createSpecialArrowAction = function (src, alt, callback, token) {
+        var container = PageDetail.createDiv('opt-action');
+        container.classList.add('list-button-container');
+        var img = PageDetail.createImg(src, alt);
+        var instance = this;
+        img.addEventListener('click', function () {
+            if (instance.arrowActionIsActive) {
+                return;
+            }
+            instance.elementIndexList = [];
+            var indexList = instance.activePage.getDataIndexList();
+            var amountElements;
+            if (indexList.length < instance.inputFieldValue) {
+                amountElements = indexList.length;
+            }
+            else {
+                amountElements = instance.inputFieldValue;
+            }
+            for (var i = 0; i < amountElements; i++) {
+                var random = Math.floor(Math.random() * (indexList.length - 1));
+                instance.elementIndexList.push(indexList[random]);
+                indexList.splice(random, 1);
+            }
+            instance.arrowActionIsActive = true;
+            instance.currentArrayIndex = 0;
+            instance.countCurrent.innerHTML = '0';
+            callback(instance);
+        });
+        container.appendChild(img);
+        var labelContainer = document.createElement('div');
+        if (token !== undefined) {
+            labelContainer.classList.add(token);
+        }
+        var label1 = document.createElement('label');
+        label1.htmlFor = 'input-random-number';
+        label1.innerHTML = 'Verschiebe';
+        labelContainer.appendChild(label1);
+        this.inputField = document.createElement('input');
+        this.inputField.id = 'input-random-number';
+        this.inputField.type = 'number';
+        this.inputField.min = '1';
+        this.inputField.value = this.inputFieldValue.toString();
+        this.inputField.addEventListener('input', function () {
+            if (instance.inputField.value === '') {
+                instance.inputFieldValue = 1;
+            }
+            instance.inputFieldValue = parseInt(instance.inputField.value);
+        });
+        labelContainer.appendChild(this.inputField);
+        var label2 = document.createElement('label');
+        label2.htmlFor = 'input-random-number';
+        label2.innerHTML = 'zufällige Serien';
+        labelContainer.appendChild(label2);
+        container.appendChild(labelContainer);
+        return container;
     };
     PageOptions.prototype.getIndexListOfWatched = function (filterType) {
         var indexList = this.activePage.getDataIndexList();
