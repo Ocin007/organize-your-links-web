@@ -1,0 +1,144 @@
+.page-detail {
+    background-color: #dedede;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+}
+.big-thumbnail {
+    display: flex;
+    flex-direction: column;
+    background-color: lightgray;
+    box-shadow: 0 0 5px 0;
+    border-radius: 5px 0 0 5px;
+}
+.big-thumbnail > img {
+    width: 217px;
+    height: 292px;
+    margin: 5px;
+    cursor: pointer;
+}
+.input-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 5px;
+}
+#all-names {
+    height: 100px;
+    max-height: 100px;
+}
+.page-count {
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.page-count p {
+    margin: 5px 5px;
+}
+.page-count div {
+    width: 100%;
+}
+.align-right {
+    text-align: right;
+}
+.align-left {
+    text-align: left;
+}
+.info-container {
+    border-top: 1px solid #adadad;
+    text-align: center;
+}
+.info-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px;
+}
+.info-wrapper p {
+    margin: 0;
+}
+.info-progress {
+    background-color: #3c3f41;
+    padding: 3px 5px 1px;
+    border-radius: 5px;
+    width: 55px;
+    text-align: right;
+}
+.info-episodes-per-season {
+    border-top: 1px solid #adadad;
+}
+.detail-container {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+.title-container {
+    height: 155px;
+    max-height: 155px;
+    display: flex;
+    align-items: center;
+    margin-left: 50px;
+}
+.title-container > h1 {
+    font-size: 3em;
+    cursor: pointer;
+    margin: 0;
+}
+.title-container > h1:hover {
+    text-decoration: underline;
+}
+.episode-container {
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: inset 0 0 20px 0;
+}
+.episode-detail {
+    display: flex;
+    flex-direction: row;
+    font-size: 1.2em;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-radius: 10px;
+}
+.episode-detail:hover {
+    background: radial-gradient(ellipse farthest-corner, #4e5254, #3c3f41);
+}
+.episode-detail:hover p {
+    color: #78d561;
+}
+.episode-detail p:hover {
+    /*text-decoration: underline;*/
+}
+.episode-button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-right: 1px solid #adadad;
+}
+.episode-button-container img {
+    padding: 5px;
+    cursor: pointer;
+}
+.episode-button-container img:hover {
+    /*background-color: #5d6062;*/
+}
+.episode-label {
+    display: flex;
+    flex-direction: row;
+}
+.episode-label p {
+    padding: 0 20px;
+    margin: 0;
+}
+.episode-prefix {
+    font-weight: bold;
+    margin-right: 20px;
+    width: 100px;
+    max-width: 100px;
+    border-right: 1px solid #adadad;
+}

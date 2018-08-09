@@ -1,0 +1,16 @@
+.page-list {
+    display: block;
+}
+.list-segment {
+    display: flex;
+    flex-direction: column;
+}
+.list-segment h2 {
+    border-bottom: 1px solid #adadad;
+    text-indent: 50px;
+}
+.list-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
