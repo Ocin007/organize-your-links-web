@@ -1738,6 +1738,9 @@ var PageSettings = /** @class */ (function () {
             }
             instance.initialDataId = instance.serverData.getListElement(index).id;
         });
+        input.addEventListener('focus', function () {
+            input.value = '';
+        });
         var dataList = document.createElement('dataList');
         dataList.id = 'all-names-settings';
         this.fillWithOptions(dataList);

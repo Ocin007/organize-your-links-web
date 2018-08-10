@@ -185,6 +185,9 @@ class PageSettings {
             }
             instance.initialDataId = instance.serverData.getListElement(index).id;
         });
+        input.addEventListener('focus', function () {
+            input.value = '';
+        });
         const dataList = document.createElement('dataList');
         dataList.id = 'all-names-settings';
         this.fillWithOptions(dataList);
