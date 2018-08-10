@@ -12,21 +12,73 @@ var ListID;
     ListID[ListID["WATCHED"] = 1] = "WATCHED";
     ListID[ListID["PLAYLIST"] = 2] = "PLAYLIST";
     ListID[ListID["NOT_WATCHED"] = 3] = "NOT_WATCHED";
+    ListID[ListID["DETAILS"] = 4] = "DETAILS";
 })(ListID || (ListID = {}));
 //# sourceMappingURL=ListID.js.map
 //# sourceMappingURL=DataListElement.js.map
 //# sourceMappingURL=ForeachElement.js.map
 //# sourceMappingURL=Slideable.js.map
-var ServerData = /** @class */ (function () {
+var AjaxRequest = /** @class */ (function () {
+    function AjaxRequest() {
+    }
+    AjaxRequest.sendAjaxRequest = function (url, data, onError, onSuccess) {
+        var http = new XMLHttpRequest();
+        http.open("POST", url);
+        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        http.addEventListener('load', function () {
+            if (http.status >= 200 && http.status < 300) {
+                try {
+                    onSuccess(http);
+                }
+                catch (e) {
+                    var errWindow = window.open();
+                    errWindow.document.write(http.responseText);
+                    errWindow.document.write(e);
+                    return;
+                }
+            }
+            else {
+                onError(http);
+            }
+        });
+        http.send('data=' + JSON.stringify(data));
+    };
+    AjaxRequest.errFunction = function (http, title) {
+        console.warn('Error: ' + title + ', code: ' + http.status + ' ' + http.statusText);
+        console.log(http.responseText);
+        try {
+            console.log(JSON.parse(http.responseText));
+        }
+        catch (e) {
+            console.log('cannot be parsed');
+        }
+    };
+    return AjaxRequest;
+}());
+//# sourceMappingURL=AjaxRequest.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var ServerData = /** @class */ (function (_super) {
+    __extends(ServerData, _super);
     function ServerData() {
-        this.watched = [];
-        this.playList = [];
-        this.notWatched = [];
-        this.allElements = [];
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.watched = [];
+        _this.playList = [];
+        _this.notWatched = [];
+        _this.allElements = [];
+        return _this;
     }
     ServerData.prototype.get = function (callback) {
         var instance = this;
-        this.sendAjaxRequest('../api/get.php', {}, function (http) {
+        ServerData.sendAjaxRequest('../api/get.php', {}, function (http) {
             ServerData.errFunction(http, 'get');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
@@ -36,7 +88,6 @@ var ServerData = /** @class */ (function () {
                 return;
             }
             instance.allElements = resObj.response;
-            // instance.decodeAllElements();
             instance.splitInThreeLists();
             if (callback !== undefined) {
                 callback();
@@ -46,7 +97,7 @@ var ServerData = /** @class */ (function () {
     ServerData.prototype.put = function (list, callback) {
         var instance = this;
         ServerData.encodeAllElements(list);
-        this.sendAjaxRequest('../api/put.php', list, function (http) {
+        ServerData.sendAjaxRequest('../api/put.php', list, function (http) {
             ServerData.errFunction(http, 'put');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
@@ -155,27 +206,6 @@ var ServerData = /** @class */ (function () {
             }
         }
     };
-    ServerData.prototype.sendAjaxRequest = function (url, data, onError, onSuccess) {
-        var http = new XMLHttpRequest();
-        http.open("POST", url);
-        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        http.addEventListener('load', function () {
-            if (http.status >= 200 && http.status < 300) {
-                try {
-                    onSuccess(http);
-                }
-                catch (e) {
-                    var errWindow = window.open();
-                    errWindow.document.write(http.responseText);
-                    return;
-                }
-            }
-            else {
-                onError(http);
-            }
-        });
-        http.send('data=' + JSON.stringify(data));
-    };
     ServerData.prototype.updateList = function (element) {
         for (var i = 0; i < this.allElements.length; i++) {
             if (this.allElements[i].id === element.id) {
@@ -184,27 +214,76 @@ var ServerData = /** @class */ (function () {
             }
         }
     };
-    ServerData.errFunction = function (http, title) {
-        console.warn('Error: ' + title + ', code: ' + http.status + ' ' + http.statusText);
-        console.log(http.responseText);
-        try {
-            console.log(JSON.parse(http.responseText));
-        }
-        catch (e) {
-            console.log('cannot be parsed');
-        }
-    };
     return ServerData;
-}());
+}(AjaxRequest));
 //# sourceMappingURL=ServerData.js.map
-var Settings = /** @class */ (function () {
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Settings = /** @class */ (function (_super) {
+    __extends(Settings, _super);
     function Settings() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-    Settings.load = function () {
-        //TODO
+    Settings.load = function (callback) {
+        Settings.sendAjaxRequest('../api/loadSettings.php', {}, function (http) {
+            Settings.errFunction(http, 'load');
+        }, function (http) {
+            var resObj = JSON.parse(http.responseText);
+            if (resObj.error !== undefined) {
+                console.warn('Error "get"');
+                console.warn(resObj.error);
+                return;
+            }
+            Settings.setAllSettings(resObj.response);
+            if (callback !== undefined) {
+                callback();
+            }
+        });
+    };
+    Settings.update = function (callback) {
+        var data = Settings.generateSettingsObj();
+        Settings.sendAjaxRequest('../api/updateSettings.php', data, function (http) {
+            Settings.errFunction(http, 'load');
+        }, function (http) {
+            var resObj = JSON.parse(http.responseText);
+            if (resObj.error !== undefined) {
+                console.warn('Error "get"');
+                console.warn(resObj.error);
+                return;
+            }
+            if (callback !== undefined) {
+                callback();
+            }
+        });
+    };
+    Settings.setAllSettings = function (response) {
+        Settings.startPage = response.startPage;
+        Settings.initialDataId = response.initialDataId;
+        Settings.animationSpeedSingle = response.animationSpeedSingle;
+        Settings.animationSpeedMulti = response.animationSpeedMulti;
+        Settings.minSizeOfPlaylist = response.minSizeOfPlaylist;
+        Settings.colorBrightness = response.colorBrightness;
+    };
+    Settings.generateSettingsObj = function () {
+        return {
+            startPage: Settings.startPage,
+            initialDataId: Settings.initialDataId,
+            animationSpeedSingle: Settings.animationSpeedSingle,
+            animationSpeedMulti: Settings.animationSpeedMulti,
+            minSizeOfPlaylist: Settings.minSizeOfPlaylist,
+            colorBrightness: Settings.colorBrightness
+        };
     };
     return Settings;
-}());
+}(AjaxRequest));
 //# sourceMappingURL=Settings.js.map
 var ListElement = /** @class */ (function () {
     function ListElement(dataIndex, serverData, detailPage, pageList) {
@@ -382,7 +461,7 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.createArrowLeftButton = function () {
         var instance = this;
         return ListElement.generateButton('img/arrow-left.ico', 'arrow-left', function () {
-            instance.arrowLeftButton(5 / 100, function () {
+            instance.arrowLeftButton(Settings.animationSpeedSingle, function () {
                 var element = instance.serverData.getListElement(instance.dataIndex);
                 element.list--;
                 instance.serverData.put([element], function () {
@@ -401,7 +480,7 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.createArrowRightButton = function () {
         var instance = this;
         return ListElement.generateButton('img/arrow-right.ico', 'arrow-right', function () {
-            instance.arrowRightButton(5 / 100, function () {
+            instance.arrowRightButton(Settings.animationSpeedSingle, function () {
                 var element = instance.serverData.getListElement(instance.dataIndex);
                 element.list++;
                 instance.serverData.put([element], function () {
@@ -577,6 +656,7 @@ var PageDetail = /** @class */ (function () {
         this.pageElement = pageElement;
         this.tabElement = tabElement;
         this.serverData = serverData;
+        this.colorBrightness = Settings.colorBrightness;
         this.currentIndex = 0;
         this.seasonUrl = '';
         this.listElementMap = {};
@@ -956,6 +1036,7 @@ var PageDetail = /** @class */ (function () {
                 break;
         }
     };
+    //TODO: # folgen season scrollTo();
     PageDetail.prototype.setInfoValues = function (data) {
         var count = 0;
         this.infoSeasonContainer.innerHTML = '';
@@ -972,7 +1053,7 @@ var PageDetail = /** @class */ (function () {
         }
         var result = ((count / this.maxCount) * 100).toFixed(1);
         this.infoProgress.innerHTML = result + '%';
-        var _a = PageDetail.calculateColor(parseFloat(result)), r = _a[0], g = _a[1];
+        var _a = this.calculateColor(parseFloat(result)), r = _a[0], g = _a[1];
         this.infoProgress.style.color = 'rgb(' + r + ', ' + g + ', 0)';
         this.infoNotWatched.innerHTML = (this.maxCount - count).toString();
         this.infoWatched.innerHTML = count.toString();
@@ -1000,19 +1081,18 @@ var PageDetail = /** @class */ (function () {
         div.classList.add(str);
         return div;
     };
-    PageDetail.calculateColor = function (result) {
+    PageDetail.prototype.calculateColor = function (result) {
         var r, g;
         if (result <= 50) {
-            r = PageDetail.colorBrightness;
-            g = (result / 50) * PageDetail.colorBrightness;
+            r = this.colorBrightness;
+            g = (result / 50) * this.colorBrightness;
         }
         else {
-            r = ((100 - result) / 50) * PageDetail.colorBrightness;
-            g = PageDetail.colorBrightness;
+            r = ((100 - result) / 50) * this.colorBrightness;
+            g = this.colorBrightness;
         }
         return [r, g];
     };
-    PageDetail.colorBrightness = 255;
     return PageDetail;
 }());
 //# sourceMappingURL=PageDetail.js.map
@@ -1123,12 +1203,14 @@ var PageOptions = /** @class */ (function () {
         this.serverData = serverData;
         this.arrowActionIsActive = false;
         this.changedDataList = [];
-        this.inputFieldValue = 1;
+        this.inputFieldValue = 0;
+        this.showSettingsFlag = false;
         var instance = this;
         this.opacityLayer.addEventListener('click', function () {
             slideCloseOptions(instance.optionContainer);
             instance.hideElement();
         });
+        this.pageSettings = new PageSettings(this.serverData);
     }
     PageOptions.prototype.showElement = function () {
         this.opacityLayer.style.visibility = 'visible';
@@ -1142,6 +1224,10 @@ var PageOptions = /** @class */ (function () {
     PageOptions.prototype.renderPage = function (activePage, activeFlag) {
         this.optionContainer.innerHTML = '';
         this.activePage = activePage;
+        if (this.showSettingsFlag) {
+            this.renderSettings();
+            return;
+        }
         if (activeFlag === 2) {
             this.renderForPlayList();
         }
@@ -1155,8 +1241,18 @@ var PageOptions = /** @class */ (function () {
             this.renderNoContent();
         }
     };
+    PageOptions.prototype.renderSettings = function () {
+        var label = this.createLabelContainer();
+        var actionContainer = this.pageSettings.renderSettings();
+        var buttonContainer = PageDetail.createDiv('settings-button-container');
+        buttonContainer.appendChild(this.pageSettings.getSaveButton());
+        buttonContainer.appendChild(this.pageSettings.getRevertButton());
+        this.optionContainer.appendChild(label);
+        this.optionContainer.appendChild(actionContainer);
+        this.optionContainer.appendChild(buttonContainer);
+    };
     PageOptions.prototype.renderForPlayList = function () {
-        var label = PageOptions.createLabel();
+        var label = this.createLabelContainer();
         var actionContainer = this.createActionsContainerForPlaylist();
         var countActions = this.createCountContainer();
         this.optionContainer.appendChild(label);
@@ -1164,7 +1260,7 @@ var PageOptions = /** @class */ (function () {
         this.optionContainer.appendChild(countActions);
     };
     PageOptions.prototype.renderForWatched = function () {
-        var label = PageOptions.createLabel();
+        var label = this.createLabelContainer();
         var actionContainer = this.createActionsContainerForWatched();
         var countActions = this.createCountContainer();
         this.optionContainer.appendChild(label);
@@ -1172,7 +1268,18 @@ var PageOptions = /** @class */ (function () {
         this.optionContainer.appendChild(countActions);
     };
     PageOptions.prototype.renderForNotWatched = function () {
-        var label = PageOptions.createLabel();
+        var inputValue = Settings.minSizeOfPlaylist - this.serverData.getIndexList(ListID.PLAYLIST).length;
+        var maxValue = this.activePage.getDataIndexList().length;
+        if (inputValue < 0) {
+            this.inputFieldValue = 0;
+        }
+        else if (inputValue <= maxValue) {
+            this.inputFieldValue = inputValue;
+        }
+        else {
+            this.inputFieldValue = maxValue;
+        }
+        var label = this.createLabelContainer();
         var actionContainer = this.createActionsContainerForNotWatched();
         var countActions = this.createCountContainer();
         this.optionContainer.appendChild(label);
@@ -1185,11 +1292,38 @@ var PageOptions = /** @class */ (function () {
         p.innerHTML = 'Für diese Seite sind keine Optionen verfügbar.';
         this.optionContainer.appendChild(p);
     };
-    PageOptions.createLabel = function () {
+    PageOptions.prototype.createLabelContainer = function () {
+        var container = PageDetail.createDiv('opt-label-container');
+        var triangleLeft = PageDetail.createDiv('dreieck-links');
+        var label;
+        var title1 = 'Aktion für alle Folgen ausführen';
+        var title2 = 'Einstellungen';
+        if (this.showSettingsFlag) {
+            label = PageOptions.createLabel(title2);
+        }
+        else {
+            label = PageOptions.createLabel(title1);
+        }
+        var triangleRight = PageDetail.createDiv('dreieck-rechts');
+        container.appendChild(triangleLeft);
+        container.appendChild(label);
+        container.appendChild(triangleRight);
+        var instance = this;
+        container.addEventListener('click', function () {
+            instance.showSettingsFlag = !instance.showSettingsFlag;
+            slideCloseOptions(instance.optionContainer);
+            setTimeout(function () {
+                instance.renderPage(instance.activePage, navMap.active);
+                slideOpenOptions(instance.optionContainer);
+            }, 200);
+        });
+        return container;
+    };
+    PageOptions.createLabel = function (title) {
         var label = document.createElement('h3');
         label.classList.add('opt-label');
         label.classList.add('font-green');
-        label.innerHTML = 'Aktion für alle Folgen ausführen';
+        label.innerHTML = title;
         return label;
     };
     PageOptions.prototype.createActionsContainerForPlaylist = function () {
@@ -1314,11 +1448,12 @@ var PageOptions = /** @class */ (function () {
         this.inputField = document.createElement('input');
         this.inputField.id = 'input-random-number';
         this.inputField.type = 'number';
-        this.inputField.min = '1';
+        this.inputField.min = '0';
+        this.inputField.max = this.activePage.getDataIndexList().length.toString();
         this.inputField.value = this.inputFieldValue.toString();
         this.inputField.addEventListener('input', function () {
             if (instance.inputField.value === '') {
-                instance.inputFieldValue = 1;
+                instance.inputFieldValue = 0;
             }
             instance.inputFieldValue = parseInt(instance.inputField.value);
         });
@@ -1401,7 +1536,7 @@ var PageOptions = /** @class */ (function () {
         if (instance.currentArrayIndex < instance.elementIndexList.length) {
             var dataIndex = instance.elementIndexList[instance.currentArrayIndex];
             var currentElement_1 = instance.activePage.getElementWithDataIndex(dataIndex);
-            var data = currentElement_1.arrowLeftButton(10 / 100, function () {
+            var data = currentElement_1.arrowLeftButton(Settings.animationSpeedMulti, function () {
                 currentElement_1.renderAfterArrowLeft(instance.activePage.getListId() - 1);
                 instance.countCurrent.innerHTML = instance.currentArrayIndex.toString();
                 instance.arrowLeftButton(instance);
@@ -1422,7 +1557,7 @@ var PageOptions = /** @class */ (function () {
         if (instance.currentArrayIndex < instance.elementIndexList.length) {
             var dataIndex = instance.elementIndexList[instance.currentArrayIndex];
             var currentElement_2 = instance.activePage.getElementWithDataIndex(dataIndex);
-            var data = currentElement_2.arrowRightButton(10 / 100, function () {
+            var data = currentElement_2.arrowRightButton(Settings.animationSpeedMulti, function () {
                 currentElement_2.renderAfterArrowRight(instance.activePage.getListId() + 1);
                 instance.countCurrent.innerHTML = instance.currentArrayIndex.toString();
                 instance.arrowRightButton(instance);
@@ -1449,6 +1584,194 @@ var PageOptions = /** @class */ (function () {
     return PageOptions;
 }());
 //# sourceMappingURL=PageOptions.js.map
+var PageSettings = /** @class */ (function () {
+    function PageSettings(serverData) {
+        this.serverData = serverData;
+        this.settings = {
+            startPage: null,
+            initialDataId: null,
+            animationSpeedSingle: null,
+            animationSpeedMulti: null,
+            minSizeOfPlaylist: null,
+            colorBrightness: null
+        };
+        this.revertSettings();
+        this.actionContainer = document.createElement('div');
+        this.actionContainer.classList.add('opt-action-container');
+    }
+    PageSettings.prototype.renderSettings = function () {
+        this.actionContainer.innerHTML = '';
+        this.actionContainer.appendChild(this.startPageAction());
+        this.actionContainer.appendChild(this.initialDataIdAction());
+        this.actionContainer.appendChild(this.animationSpeedSingleAction());
+        this.actionContainer.appendChild(this.animationSpeedMultiAction());
+        this.actionContainer.appendChild(this.minSizeOfPlaylistAction());
+        this.actionContainer.appendChild(this.colorBrightnessAction());
+        return this.actionContainer;
+    };
+    PageSettings.prototype.getSaveButton = function () {
+        var instance = this;
+        return this.getButton('Speichern', 'button-green', function () {
+            instance.saveSettings();
+        });
+    };
+    PageSettings.prototype.getRevertButton = function () {
+        var instance = this;
+        return this.getButton('Verwerfen', 'button-red', function () {
+            instance.revertSettings();
+            instance.renderSettings();
+        });
+    };
+    PageSettings.prototype.getButton = function (label, token, callback) {
+        var button = document.createElement('div');
+        button.classList.add('custom-button');
+        button.classList.add(token);
+        button.innerHTML = label;
+        button.addEventListener('click', function () {
+            callback();
+        });
+        return button;
+    };
+    PageSettings.prototype.saveSettings = function () {
+        this.updateSettingsObj();
+        Settings.setAllSettings(this.settings);
+        Settings.update(reloadEverything);
+    };
+    PageSettings.prototype.updateSettingsObj = function () {
+        this.settings.startPage = parseInt(this.startPage.value);
+        this.settings.initialDataId = this.initialDataId;
+        this.settings.animationSpeedSingle = parseFloat(this.animationSpeedSingle);
+        this.settings.animationSpeedMulti = parseFloat(this.animationSpeedMulti);
+        this.settings.minSizeOfPlaylist = parseInt(this.minSizeOfPlaylist.value);
+        this.settings.colorBrightness = parseInt(this.colorBrightness.value);
+    };
+    PageSettings.prototype.revertSettings = function () {
+        this.settings.startPage = Settings.startPage;
+        this.settings.initialDataId = Settings.initialDataId;
+        this.settings.animationSpeedSingle = Settings.animationSpeedSingle;
+        this.settings.animationSpeedMulti = Settings.animationSpeedMulti;
+        this.settings.minSizeOfPlaylist = Settings.minSizeOfPlaylist;
+        this.settings.colorBrightness = Settings.colorBrightness;
+    };
+    PageSettings.getActionDiv = function () {
+        var container = document.createElement('div');
+        container.classList.add('opt-action-settings');
+        return container;
+    };
+    PageSettings.getLabel = function (label) {
+        var p = document.createElement('p');
+        p.innerHTML = label;
+        return p;
+    };
+    PageSettings.getAction = function (label, append) {
+        var container = PageSettings.getActionDiv();
+        var labelElement = PageSettings.getLabel(label);
+        container.appendChild(append);
+        container.appendChild(labelElement);
+        return container;
+    };
+    PageSettings.getOptionTag = function (label, value, selected) {
+        var option = document.createElement('option');
+        option.innerHTML = label;
+        option.value = value;
+        option.selected = selected;
+        return option;
+    };
+    PageSettings.prototype.fillWithOptions = function (parent) {
+        var len = this.serverData.getListLen();
+        for (var i = 0; i < len; i++) {
+            var data = this.serverData.getListElement(i);
+            var option = PageSettings.getOptionTag('', data.name, data.id === this.settings.initialDataId);
+            parent.appendChild(option);
+        }
+    };
+    PageSettings.prototype.getRangeControl = function (start, stop, step, value, callback) {
+        var container = document.createElement('div');
+        container.classList.add('opt-range-control');
+        var range = document.createElement('input');
+        range.type = 'range';
+        range.min = start;
+        range.max = stop;
+        range.step = step;
+        range.value = value;
+        var display = document.createElement('p');
+        display.innerHTML = value;
+        range.addEventListener('change', function () {
+            display.innerHTML = range.value;
+            callback(range.value);
+        });
+        container.appendChild(range);
+        container.appendChild(display);
+        return container;
+    };
+    PageSettings.getInputNumber = function (min, max, value) {
+        var input = document.createElement('input');
+        input.classList.add('input-small');
+        input.type = 'number';
+        input.min = min;
+        input.max = max;
+        input.value = value;
+        return input;
+    };
+    PageSettings.prototype.startPageAction = function () {
+        this.startPage = document.createElement('select');
+        this.startPage.appendChild(PageSettings.getOptionTag('Fertig gesehen', ListID.WATCHED.toString(), this.settings.startPage === ListID.WATCHED));
+        this.startPage.appendChild(PageSettings.getOptionTag('Aktuelle Playlist', ListID.PLAYLIST.toString(), this.settings.startPage === ListID.PLAYLIST));
+        this.startPage.appendChild(PageSettings.getOptionTag('Noch nicht gesehen', ListID.NOT_WATCHED.toString(), this.settings.startPage === ListID.NOT_WATCHED));
+        this.startPage.appendChild(PageSettings.getOptionTag('Details', ListID.DETAILS.toString(), this.settings.startPage === ListID.DETAILS));
+        return PageSettings.getAction('Startseite festlegen', this.startPage);
+    };
+    PageSettings.prototype.initialDataIdAction = function () {
+        var container = document.createElement('div');
+        var input = document.createElement('input');
+        input.classList.add('input-wide');
+        input.type = 'search';
+        input.setAttribute('list', 'all-names-settings');
+        this.initialDataId = this.settings.initialDataId;
+        var index = this.serverData.getIndexOfELement({ id: this.initialDataId });
+        input.value = this.serverData.getListElement(index).name;
+        var instance = this;
+        input.addEventListener('input', function (ev) {
+            var index = instance.serverData.getIndexOfElementWithName(ev.target.value);
+            if (index === -1) {
+                return;
+            }
+            instance.initialDataId = instance.serverData.getListElement(index).id;
+        });
+        var dataList = document.createElement('dataList');
+        dataList.id = 'all-names-settings';
+        this.fillWithOptions(dataList);
+        container.appendChild(input);
+        container.appendChild(dataList);
+        return PageSettings.getAction('Serie als Start-Serie bei Details anzeigen', container);
+    };
+    PageSettings.prototype.animationSpeedSingleAction = function () {
+        var instance = this;
+        this.animationSpeedSingle = this.settings.animationSpeedSingle;
+        var rangeControl = this.getRangeControl('0', '1', '0.01', this.settings.animationSpeedSingle.toString(), function (value) {
+            instance.animationSpeedSingle = value;
+        });
+        return PageSettings.getAction('Animationsgeschw. Verschieben einer einzelnen Serie', rangeControl);
+    };
+    PageSettings.prototype.animationSpeedMultiAction = function () {
+        var instance = this;
+        this.animationSpeedMulti = this.settings.animationSpeedMulti;
+        var rangeControl = this.getRangeControl('0', '1', '0.01', this.settings.animationSpeedMulti.toString(), function (value) {
+            instance.animationSpeedMulti = value;
+        });
+        return PageSettings.getAction('Animationsgeschw. Verschieben mehrerer Serien', rangeControl);
+    };
+    PageSettings.prototype.minSizeOfPlaylistAction = function () {
+        this.minSizeOfPlaylist = PageSettings.getInputNumber('0', '', this.settings.minSizeOfPlaylist.toString());
+        return PageSettings.getAction('Mindestanzahl der Serien in Playlist', this.minSizeOfPlaylist);
+    };
+    PageSettings.prototype.colorBrightnessAction = function () {
+        this.colorBrightness = PageSettings.getInputNumber('0', '255', this.settings.colorBrightness.toString());
+        return PageSettings.getAction('Farbhelligkeit, nur für Serienfortschritt', this.colorBrightness);
+    };
+    return PageSettings;
+}());
+//# sourceMappingURL=PageSettings.js.map
 document.addEventListener('DOMContentLoaded', function () {
     window.onscroll = function () {
         myFunction();
@@ -1767,8 +2090,58 @@ var notWatched;
 var details;
 var optionPage;
 var navMap;
-document.addEventListener('DOMContentLoaded', function () {
-    serverData = new ServerData();
+function reloadAllData() {
+    serverData.get(function () {
+        navMap = {
+            1: watched,
+            2: playlist,
+            3: notWatched,
+            4: details,
+            active: Settings.startPage,
+            flag: true
+        };
+        switch (Settings.startPage) {
+            case ListID.WATCHED:
+                watched.showElement();
+                notWatched.hideElement();
+                playlist.hideElement();
+                details.hideElement();
+                break;
+            case ListID.PLAYLIST:
+                playlist.showElement();
+                watched.hideElement();
+                notWatched.hideElement();
+                details.hideElement();
+                break;
+            case ListID.NOT_WATCHED:
+                notWatched.showElement();
+                details.hideElement();
+                playlist.hideElement();
+                watched.hideElement();
+                break;
+            case ListID.DETAILS:
+                details.showElement();
+                notWatched.hideElement();
+                playlist.hideElement();
+                watched.hideElement();
+                break;
+        }
+        playlist.generateMap();
+        playlist.renderList();
+        // watched.hideElement();
+        watched.generateMap();
+        watched.renderList();
+        // notWatched.hideElement();
+        notWatched.generateMap();
+        notWatched.renderList();
+        // details.hideElement();
+        details.initPage();
+        details.renderPage(serverData.getListElement(serverData.getIndexOfELement({
+            id: Settings.initialDataId
+        })));
+    });
+}
+function reloadEverything() {
     var playlistElement = document.getElementById('playlist');
     var watchedElement = document.getElementById('watched');
     var notWatchedElement = document.getElementById('not-watched');
@@ -1780,79 +2153,65 @@ document.addEventListener('DOMContentLoaded', function () {
     var tabNotWatched = document.getElementById('tab-not-watched');
     var tabDetails = document.getElementById('tab-details');
     var tabOptions = document.getElementById('option-button');
-    details = new PageDetail(detailsElement, tabDetails, serverData);
-    playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details);
-    watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details);
-    notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details);
-    optionPage = new PageOptions(opacityLayer, pageOption, serverData);
-    serverData.get(function () {
-        navMap = {
-            1: watched,
-            2: playlist,
-            3: notWatched,
-            4: details,
-            active: 2,
-            flag: true
-        };
-        playlist.generateMap();
-        playlist.renderList();
-        watched.hideElement();
-        watched.generateMap();
-        watched.renderList();
-        notWatched.hideElement();
-        notWatched.generateMap();
-        notWatched.renderList();
-        details.hideElement();
-        details.initPage();
-        details.renderPage(serverData.getListElement(0));
+    Settings.load(function () {
+        serverData = new ServerData();
+        details = new PageDetail(detailsElement, tabDetails, serverData);
+        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details);
+        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details);
+        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details);
+        optionPage = new PageOptions(opacityLayer, pageOption, serverData);
+        reloadAllData();
+        tabWatched.addEventListener('click', function () {
+            if (navMap !== undefined) {
+                slideToWatched();
+                return;
+            }
+            watched.showElement();
+            playlist.hideElement();
+            notWatched.hideElement();
+            details.hideElement();
+        });
+        tabPlaylist.addEventListener('click', function () {
+            if (navMap !== undefined) {
+                slideToPlaylist();
+                return;
+            }
+            watched.hideElement();
+            playlist.showElement();
+            notWatched.hideElement();
+            details.hideElement();
+        });
+        tabNotWatched.addEventListener('click', function () {
+            if (navMap !== undefined) {
+                slideToNotWatched();
+                return;
+            }
+            watched.hideElement();
+            playlist.hideElement();
+            notWatched.showElement();
+            details.hideElement();
+        });
+        tabDetails.addEventListener('click', function () {
+            if (navMap !== undefined) {
+                slideToDetails();
+                return;
+            }
+            watched.hideElement();
+            playlist.hideElement();
+            notWatched.hideElement();
+            details.showElement();
+        });
+        tabOptions.addEventListener('click', function () {
+            optionPage.renderPage(navMap[navMap.active], navMap.active);
+            optionPage.showElement();
+            if (navMap !== undefined) {
+                slideOpenOptions(optionPage.getOptionContainer());
+            }
+        });
     });
-    tabWatched.addEventListener('click', function () {
-        if (navMap !== undefined) {
-            slideToWatched();
-            return;
-        }
-        watched.showElement();
-        playlist.hideElement();
-        notWatched.hideElement();
-        details.hideElement();
-    });
-    tabPlaylist.addEventListener('click', function () {
-        if (navMap !== undefined) {
-            slideToPlaylist();
-            return;
-        }
-        watched.hideElement();
-        playlist.showElement();
-        notWatched.hideElement();
-        details.hideElement();
-    });
-    tabNotWatched.addEventListener('click', function () {
-        if (navMap !== undefined) {
-            slideToNotWatched();
-            return;
-        }
-        watched.hideElement();
-        playlist.hideElement();
-        notWatched.showElement();
-        details.hideElement();
-    });
-    tabDetails.addEventListener('click', function () {
-        if (navMap !== undefined) {
-            slideToDetails();
-            return;
-        }
-        watched.hideElement();
-        playlist.hideElement();
-        notWatched.hideElement();
-        details.showElement();
-    });
-    tabOptions.addEventListener('click', function () {
-        optionPage.renderPage(navMap[navMap.active], navMap.active);
-        optionPage.showElement();
-        if (navMap !== undefined) {
-            slideOpenOptions(optionPage.getOptionContainer());
-        }
-    });
+}
+document.addEventListener('DOMContentLoaded', function () {
+    reloadEverything();
 });
 //*/ 
 //# sourceMappingURL=init.js.map

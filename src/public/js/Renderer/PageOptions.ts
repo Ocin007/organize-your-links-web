@@ -9,7 +9,10 @@ class PageOptions {
     private changedDataList: DataListElement[] = [];
     private currentArrayIndex: number;
     private inputField: HTMLInputElement;
-    private inputFieldValue: number = 1;
+    private inputFieldValue: number = 0;
+
+    private showSettingsFlag = false;
+    private pageSettings: PageSettings;
 
     constructor(private opacityLayer: HTMLElement, private optionContainer: HTMLElement, private serverData: ServerData) {
         const instance = this;
@@ -17,6 +20,7 @@ class PageOptions {
             slideCloseOptions(instance.optionContainer);
             instance.hideElement();
         });
+        this.pageSettings = new PageSettings(this.serverData);
     }
 
     showElement() {
@@ -34,6 +38,10 @@ class PageOptions {
     renderPage(activePage: ForeachElement, activeFlag: number) {
         this.optionContainer.innerHTML = '';
         this.activePage = activePage;
+        if(this.showSettingsFlag) {
+            this.renderSettings();
+            return;
+        }
         if(activeFlag === 2) {
             this.renderForPlayList();
         } else if(activeFlag === 1) {
@@ -45,8 +53,19 @@ class PageOptions {
         }
     }
 
+    private renderSettings() {
+        const label = this.createLabelContainer();
+        const actionContainer = this.pageSettings.renderSettings();
+        const buttonContainer = PageDetail.createDiv('settings-button-container');
+        buttonContainer.appendChild(this.pageSettings.getSaveButton());
+        buttonContainer.appendChild(this.pageSettings.getRevertButton());
+        this.optionContainer.appendChild(label);
+        this.optionContainer.appendChild(actionContainer);
+        this.optionContainer.appendChild(buttonContainer);
+    }
+
     private renderForPlayList() {
-        const label = PageOptions.createLabel();
+        const label = this.createLabelContainer();
         const actionContainer = this.createActionsContainerForPlaylist();
         const countActions = this.createCountContainer();
         this.optionContainer.appendChild(label);
@@ -55,7 +74,7 @@ class PageOptions {
     }
 
     private renderForWatched() {
-        const label = PageOptions.createLabel();
+        const label = this.createLabelContainer();
         const actionContainer = this.createActionsContainerForWatched();
         const countActions = this.createCountContainer();
         this.optionContainer.appendChild(label);
@@ -64,7 +83,16 @@ class PageOptions {
     }
 
     private renderForNotWatched() {
-        const label = PageOptions.createLabel();
+        const inputValue = Settings.minSizeOfPlaylist - this.serverData.getIndexList(ListID.PLAYLIST).length;
+        const maxValue = this.activePage.getDataIndexList().length;
+        if(inputValue < 0) {
+            this.inputFieldValue = 0;
+        } else if(inputValue <= maxValue) {
+            this.inputFieldValue = inputValue;
+        } else {
+            this.inputFieldValue = maxValue;
+        }
+        const label = this.createLabelContainer();
         const actionContainer = this.createActionsContainerForNotWatched();
         const countActions = this.createCountContainer();
         this.optionContainer.appendChild(label);
@@ -79,11 +107,38 @@ class PageOptions {
         this.optionContainer.appendChild(p);
     }
 
-    private static createLabel() {
+    private createLabelContainer() {
+        const container = PageDetail.createDiv('opt-label-container');
+        const triangleLeft = PageDetail.createDiv('dreieck-links');
+        let label;
+        const title1 = 'Aktion für alle Folgen ausführen';
+        const title2 = 'Einstellungen';
+        if(this.showSettingsFlag) {
+            label = PageOptions.createLabel(title2);
+        } else {
+            label = PageOptions.createLabel(title1);
+        }
+        const triangleRight = PageDetail.createDiv('dreieck-rechts');
+        container.appendChild(triangleLeft);
+        container.appendChild(label);
+        container.appendChild(triangleRight);
+        const instance = this;
+        container.addEventListener('click', function () {
+            instance.showSettingsFlag = !instance.showSettingsFlag;
+            slideCloseOptions(instance.optionContainer);
+            setTimeout(function () {
+                instance.renderPage(instance.activePage, navMap.active);
+                slideOpenOptions(instance.optionContainer);
+            }, 200);
+        });
+        return container;
+    }
+
+    private static createLabel(title: string) {
         const label = document.createElement('h3');
         label.classList.add('opt-label');
         label.classList.add('font-green');
-        label.innerHTML = 'Aktion für alle Folgen ausführen';
+        label.innerHTML = title;
         return label;
     }
 
@@ -244,11 +299,12 @@ class PageOptions {
         this.inputField = document.createElement('input');
         this.inputField.id = 'input-random-number';
         this.inputField.type = 'number';
-        this.inputField.min = '1';
+        this.inputField.min = '0';
+        this.inputField.max = this.activePage.getDataIndexList().length.toString();
         this.inputField.value = this.inputFieldValue.toString();
         this.inputField.addEventListener('input', function () {
             if(instance.inputField.value === '') {
-                instance.inputFieldValue = 1;
+                instance.inputFieldValue = 0;
             }
             instance.inputFieldValue = parseInt(instance.inputField.value);
         });
@@ -336,7 +392,7 @@ class PageOptions {
         if(instance.currentArrayIndex < instance.elementIndexList.length) {
             let dataIndex = instance.elementIndexList[instance.currentArrayIndex];
             let currentElement = instance.activePage.getElementWithDataIndex(dataIndex);
-            let data = currentElement.arrowLeftButton(10/100, function () {
+            let data = currentElement.arrowLeftButton(Settings.animationSpeedMulti, function () {
                 currentElement.renderAfterArrowLeft(instance.activePage.getListId()-1);
                 instance.countCurrent.innerHTML = instance.currentArrayIndex.toString();
                 instance.arrowLeftButton(instance);
@@ -357,7 +413,7 @@ class PageOptions {
         if(instance.currentArrayIndex < instance.elementIndexList.length) {
             let dataIndex = instance.elementIndexList[instance.currentArrayIndex];
             let currentElement = instance.activePage.getElementWithDataIndex(dataIndex);
-            let data = currentElement.arrowRightButton(10/100, function () {
+            let data = currentElement.arrowRightButton(Settings.animationSpeedMulti, function () {
                 currentElement.renderAfterArrowRight(instance.activePage.getListId()+1);
                 instance.countCurrent.innerHTML = instance.currentArrayIndex.toString();
                 instance.arrowRightButton(instance);

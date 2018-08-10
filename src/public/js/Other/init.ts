@@ -6,8 +6,65 @@ let notWatched: PageList;
 let details: PageDetail;
 let optionPage: PageOptions;
 let navMap;
-document.addEventListener('DOMContentLoaded', function () {
-    serverData = new ServerData();
+
+function reloadAllData() {
+    serverData.get(function () {
+        navMap = {
+            1: watched,
+            2: playlist,
+            3: notWatched,
+            4: details,
+            active: Settings.startPage,
+            flag: true
+        };
+        switch (Settings.startPage) {
+            case ListID.WATCHED:
+                watched.showElement();
+                notWatched.hideElement();
+                playlist.hideElement();
+                details.hideElement();
+                break;
+            case ListID.PLAYLIST:
+                playlist.showElement();
+                watched.hideElement();
+                notWatched.hideElement();
+                details.hideElement();
+                break;
+            case ListID.NOT_WATCHED:
+                notWatched.showElement();
+                details.hideElement();
+                playlist.hideElement();
+                watched.hideElement();
+                break;
+            case ListID.DETAILS:
+                details.showElement();
+                notWatched.hideElement();
+                playlist.hideElement();
+                watched.hideElement();
+                break;
+        }
+        playlist.generateMap();
+        playlist.renderList();
+
+        // watched.hideElement();
+        watched.generateMap();
+        watched.renderList();
+
+        // notWatched.hideElement();
+        notWatched.generateMap();
+        notWatched.renderList();
+
+        // details.hideElement();
+        details.initPage();
+        details.renderPage(serverData.getListElement(
+            serverData.getIndexOfELement({
+                id: Settings.initialDataId
+            })
+        ));
+    });
+}
+
+function reloadEverything() {
     const playlistElement = document.getElementById('playlist');
     const watchedElement = document.getElementById('watched');
     const notWatchedElement = document.getElementById('not-watched');
@@ -20,83 +77,66 @@ document.addEventListener('DOMContentLoaded', function () {
     const tabNotWatched = document.getElementById('tab-not-watched');
     const tabDetails = document.getElementById('tab-details');
     const tabOptions = document.getElementById('option-button');
+    Settings.load(function () {
+        serverData = new ServerData();
 
-    details = new PageDetail(detailsElement, tabDetails, serverData);
-    playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details);
-    watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details);
-    notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details);
-    optionPage = new PageOptions(opacityLayer, pageOption, serverData);
-    serverData.get(function () {
-        navMap = {
-            1: watched,
-            2: playlist,
-            3: notWatched,
-            4: details,
-            active: 2,
-            flag: true
-        };
+        details = new PageDetail(detailsElement, tabDetails, serverData);
+        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details);
+        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details);
+        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details);
+        optionPage = new PageOptions(opacityLayer, pageOption, serverData);
+        reloadAllData();
+        tabWatched.addEventListener('click', function () {
+            if (navMap !== undefined) {
+                slideToWatched();
+                return;
+            }
+            watched.showElement();
+            playlist.hideElement();
+            notWatched.hideElement();
+            details.hideElement();
+        });
+        tabPlaylist.addEventListener('click', function () {
+            if (navMap !== undefined) {
+                slideToPlaylist();
+                return;
+            }
+            watched.hideElement();
+            playlist.showElement();
+            notWatched.hideElement();
+            details.hideElement();
+        });
+        tabNotWatched.addEventListener('click', function () {
+            if (navMap !== undefined) {
+                slideToNotWatched();
+                return;
+            }
+            watched.hideElement();
+            playlist.hideElement();
+            notWatched.showElement();
+            details.hideElement();
+        });
+        tabDetails.addEventListener('click', function () {
+            if (navMap !== undefined) {
+                slideToDetails();
+                return;
+            }
+            watched.hideElement();
+            playlist.hideElement();
+            notWatched.hideElement();
+            details.showElement();
+        });
+        tabOptions.addEventListener('click', function () {
+            optionPage.renderPage(navMap[navMap.active], navMap.active);
+            optionPage.showElement();
+            if (navMap !== undefined) {
+                slideOpenOptions(optionPage.getOptionContainer());
+            }
+        });
+    });
+}
 
-        playlist.generateMap();
-        playlist.renderList();
-
-        watched.hideElement();
-        watched.generateMap();
-        watched.renderList();
-
-        notWatched.hideElement();
-        notWatched.generateMap();
-        notWatched.renderList();
-
-        details.hideElement();
-        details.initPage();
-        details.renderPage(serverData.getListElement(0));
-    });
-    tabWatched.addEventListener('click', function () {
-        if(navMap !== undefined) {
-            slideToWatched();
-            return;
-        }
-        watched.showElement();
-        playlist.hideElement();
-        notWatched.hideElement();
-        details.hideElement();
-    });
-    tabPlaylist.addEventListener('click', function () {
-        if(navMap !== undefined) {
-            slideToPlaylist();
-            return;
-        }
-        watched.hideElement();
-        playlist.showElement();
-        notWatched.hideElement();
-        details.hideElement();
-    });
-    tabNotWatched.addEventListener('click', function () {
-        if(navMap !== undefined) {
-            slideToNotWatched();
-            return;
-        }
-        watched.hideElement();
-        playlist.hideElement();
-        notWatched.showElement();
-        details.hideElement();
-    });
-    tabDetails.addEventListener('click', function () {
-        if(navMap !== undefined) {
-            slideToDetails();
-            return;
-        }
-        watched.hideElement();
-        playlist.hideElement();
-        notWatched.hideElement();
-        details.showElement();
-    });
-    tabOptions.addEventListener('click', function () {
-        optionPage.renderPage(navMap[navMap.active], navMap.active);
-        optionPage.showElement();
-        if(navMap !== undefined) {
-            slideOpenOptions(optionPage.getOptionContainer());
-        }
-    });
+document.addEventListener('DOMContentLoaded', function () {
+    reloadEverything();
 });
 //*/

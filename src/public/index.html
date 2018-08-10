@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/listElement.css">
     <link rel="stylesheet" href="css/optionPage.css">
+    <link rel="stylesheet" href="css/settingsPage.css">
     <link rel="stylesheet" href="css/detailPage.css">
     <link rel="stylesheet" href="css/pageList.css">
     <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
@@ -14,7 +15,7 @@
 <body class="background-gray">
     <header>
         <div id="header-title" class="background-darkgray shadow-bottom">
-            <h1 class="font-green">Organize your Links</h1>
+            <h1 class="font-green">&lt; Organize your Links /&gt;</h1>
         </div>
         <nav id="nav-tabs" class="background-darkgray shadow-bottom">
             <div id="tab-watched" class="tab font-light-green">Fertig gesehen</div>
@@ -30,8 +31,12 @@
     <div id="opacity-layer" class="opacity-layer"></div>
     <div id="page-option" class="option-container shadow-bottom">
 
-        <!--
-        <h3 class="opt-label font-green">Aktion für alle Folgen ausführen</h3>
+<!--
+        <div class="opt-label-container">
+            <div class="dreieck-links"></div>
+            <h3 class="opt-label font-green">Aktion für alle Folgen ausführen</h3>
+            <div class="dreieck-rechts"></div>
+        </div>
         <div class="opt-action-container">
             <div class="opt-action list-button-container no-border">
                 <img src="img/play.ico" alt="play">
@@ -73,7 +78,7 @@
             <p class="count-number-field">-</p>
             <p>Folgen ausgeführt.</p>
         </div>
-        -->
+-->
 
     </div>
 
@@ -158,6 +163,7 @@
                     <option>d</option>
                 </datalist>
             </div>
+            //TODO: button springe zu aktuelle folge scrollTo
             <div class="info-container">
                 <h3>Details</h3>
                 <div>

@@ -44,4 +44,28 @@ class ListMapValidatorTest extends TestCase
         $errors = $subject->validate($data);
         $this->assertEquals($expectedErrors, $errors);
     }
+
+    public function testValidateUpdateWrong()
+    {
+        $data = [
+            'initialDataId' => 'id40'
+        ];
+        $expectedErrors = [
+            'id' => 'unknown initialDataId'
+        ];
+        $subject = new ListMapValidator(Mode::UPDATE, $this->map);
+        $errors = $subject->validate($data);
+        $this->assertEquals($expectedErrors, $errors);
+    }
+
+    public function testValidateUpdateCorrect()
+    {
+        $data = [
+            'initialDataId' => 'id2'
+        ];
+        $expectedErrors = [];
+        $subject = new ListMapValidator(Mode::UPDATE, $this->map);
+        $errors = $subject->validate($data);
+        $this->assertEquals($expectedErrors, $errors);
+    }
 }

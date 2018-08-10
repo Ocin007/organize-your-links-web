@@ -214,7 +214,7 @@ class ListElement {
     private createArrowLeftButton() {
         const instance = this;
         return ListElement.generateButton('img/arrow-left.ico', 'arrow-left', function () {
-            instance.arrowLeftButton(5/100, function () {
+            instance.arrowLeftButton(Settings.animationSpeedSingle, function () {
                 const element = instance.serverData.getListElement(instance.dataIndex);
                 element.list--;
                 instance.serverData.put([element], function () {
@@ -235,7 +235,7 @@ class ListElement {
     private createArrowRightButton() {
         const instance = this;
         return ListElement.generateButton('img/arrow-right.ico', 'arrow-right', function () {
-            instance.arrowRightButton(5/100, function () {
+            instance.arrowRightButton(Settings.animationSpeedSingle, function () {
                 const element = instance.serverData.getListElement(instance.dataIndex);
                 element.list++;
                 instance.serverData.put([element], function () {

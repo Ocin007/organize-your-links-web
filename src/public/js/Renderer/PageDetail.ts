@@ -1,6 +1,6 @@
 class PageDetail implements Slideable, ForeachElement {
 
-    private static readonly colorBrightness = 255;
+    private readonly colorBrightness = Settings.colorBrightness;
 
     private thumbnail: HTMLImageElement;
     private detailContainer: HTMLElement;
@@ -445,6 +445,7 @@ class PageDetail implements Slideable, ForeachElement {
         }
     }
 
+    //TODO: # folgen season scrollTo();
     private setInfoValues(data: DataListElement) {
         let count = 0;
         this.infoSeasonContainer.innerHTML = '';
@@ -461,7 +462,7 @@ class PageDetail implements Slideable, ForeachElement {
         }
         let result = ((count/this.maxCount)*100).toFixed(1);
         this.infoProgress.innerHTML = result+'%';
-        const [r, g] = PageDetail.calculateColor(parseFloat(result));
+        const [r, g] = this.calculateColor(parseFloat(result));
         this.infoProgress.style.color = 'rgb('+r+', '+g+', 0)';
         this.infoNotWatched.innerHTML = (this.maxCount-count).toString();
         this.infoWatched.innerHTML = count.toString();
@@ -493,14 +494,14 @@ class PageDetail implements Slideable, ForeachElement {
         return div;
     }
 
-    private static calculateColor(result: number) {
+    private calculateColor(result: number) {
         let r, g;
         if(result <= 50) {
-            r = PageDetail.colorBrightness;
-            g = (result/50) * PageDetail.colorBrightness;
+            r = this.colorBrightness;
+            g = (result/50) * this.colorBrightness;
         } else {
-            r = ((100-result)/50) * PageDetail.colorBrightness;
-            g = PageDetail.colorBrightness;
+            r = ((100-result)/50) * this.colorBrightness;
+            g = this.colorBrightness;
         }
         return [r, g];
     }

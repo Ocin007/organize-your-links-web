@@ -33,6 +33,17 @@ class Writer {
         }
     }
 
+    public function updateFile($dataList) {
+        try {
+            $dataStr = json_encode($dataList, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            if(file_put_contents($this->directory, $dataStr) === false) {
+                $this->errorList[] = 'cannot write settings';
+            }
+        } catch (\Exception $e) {
+            $this->errorList[] = $e->getMessage();
+        }
+    }
+
     public function getIdListOfUpdatedFiles() {
         return $this->idList;
     }

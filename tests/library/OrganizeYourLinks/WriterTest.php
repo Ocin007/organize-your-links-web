@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 class WriterTest extends TestCase
 {
     private $listDir = __DIR__.'/../../fixtures/list';
+    private $settings = __DIR__.'/../../fixtures/settings.json';
     private $mapFile = __DIR__.'/../../fixtures/list-map.json';
     private $map;
 
@@ -79,6 +80,23 @@ class WriterTest extends TestCase
         $result = $subject->getIdListOfUpdatedFiles();
         $errors = $subject->getErrorList();
         $this->assertEquals($expectedResult, $result);
+        $this->assertEquals($expectedErrors, $errors);
+    }
+
+    public function testUpdateFile()
+    {
+        $data = [
+            "startPage" => 4,
+            "initialDataId" => 'id2',
+            "animationSpeedSingle" => 0.05,
+            "animationSpeedMulti" => 0.1,
+            "minSizeOfPlaylist" => 10,
+            "colorBrightness" => 255
+        ];
+        $expectedErrors = [];
+        $subject = new Writer($this->settings, $this->map);
+        $subject->updateFile($data);
+        $errors = $subject->getErrorList();
         $this->assertEquals($expectedErrors, $errors);
     }
 }

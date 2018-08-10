@@ -1,16 +1,12 @@
-class ServerData {
+class ServerData extends AjaxRequest {
     private watched: number[] = [];
     private playList: number[] = [];
     private notWatched: number[] = [];
     private allElements: DataListElement[] = [];
 
-    constructor() {
-
-    }
-
     get(callback?: Function) {
         const instance = this;
-        this.sendAjaxRequest('../api/get.php', {}, function (http) {
+        ServerData.sendAjaxRequest('../api/get.php', {}, function (http) {
             ServerData.errFunction(http, 'get');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
@@ -20,7 +16,6 @@ class ServerData {
                 return;
             }
             instance.allElements = resObj.response;
-            // instance.decodeAllElements();
             instance.splitInThreeLists();
             if (callback !== undefined) {
                 callback();
@@ -31,7 +26,7 @@ class ServerData {
     put(list: DataListElement[], callback?: Function) {
         const instance = this;
         ServerData.encodeAllElements(list);
-        this.sendAjaxRequest('../api/put.php', list, function (http) {
+        ServerData.sendAjaxRequest('../api/put.php', list, function (http) {
             ServerData.errFunction(http, 'put');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
@@ -90,7 +85,8 @@ class ServerData {
         return -1;
     }
 
-    getIndexOfELement(data: DataListElement) {
+    getIndexOfELement(data: {id: string}): number
+    getIndexOfELement(data: DataListElement): number {
         for (let i = 0; i < this.allElements.length; i++) {
             if(this.allElements[i].id === data.id) {
                 return i;
@@ -155,42 +151,12 @@ class ServerData {
         }
     }
 
-    private sendAjaxRequest(url: string, data: any, onError: Function, onSuccess: Function) {
-        let http = new XMLHttpRequest();
-        http.open("POST", url);
-        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        http.addEventListener('load', function () {
-            if (http.status >= 200 && http.status < 300) {
-                try {
-                    onSuccess(http);
-                } catch (e) {
-                    const errWindow = window.open();
-                    errWindow.document.write(http.responseText);
-                    return;
-                }
-            } else {
-                onError(http);
-            }
-        });
-        http.send('data=' + JSON.stringify(data));
-    }
-
     private updateList(element: DataListElement) {
         for (let i = 0; i < this.allElements.length; i++) {
             if (this.allElements[i].id === element.id) {
                 this.allElements[i] = element;
                 return;
             }
-        }
-    }
-
-    private static errFunction(http: XMLHttpRequest, title: string) {
-        console.warn('Error: ' + title + ', code: ' + http.status + ' ' + http.statusText);
-        console.log(http.responseText);
-        try {
-            console.log(JSON.parse(http.responseText));
-        } catch (e) {
-            console.log('cannot be parsed');
         }
     }
 }
