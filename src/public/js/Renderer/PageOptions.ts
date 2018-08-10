@@ -48,6 +48,9 @@ class PageOptions {
             this.renderForWatched();
         } else if(activeFlag === 3) {
             this.renderForNotWatched();
+        } else if(activeFlag === 4) {
+            this.showSettingsFlag = true;
+            this.renderSettings();
         } else {
             this.renderNoContent();
         }
