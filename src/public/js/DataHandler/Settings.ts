@@ -6,6 +6,7 @@ class Settings extends AjaxRequest {
     static animationSpeedMulti: number;
     static minSizeOfPlaylist: number;
     static colorBrightness: number;
+    //TODO: titleLanguage (en, de, jpn)
 
     static load(callback?: Function) {
         Settings.sendAjaxRequest('../api/loadSettings.php', {}, function (http) {

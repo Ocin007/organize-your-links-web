@@ -11,6 +11,7 @@ header('Access-Control-Allow-Origin: *');
 
 const LIST_DIR = __DIR__.'/../../data/list';
 
+//TODO: sortieren nach name abh. von settings
 //echo uniqid('', true).PHP_EOL;
 $reader = new Reader();
 $reader->readDir(LIST_DIR);
