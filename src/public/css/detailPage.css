@@ -47,6 +47,17 @@
 .align-left {
     text-align: left;
 }
+.jump-button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+.jump-button-container div {
+    box-shadow: #171717 0 0 5px 0;
+}
 .info-container {
     border-top: 1px solid #adadad;
     text-align: center;

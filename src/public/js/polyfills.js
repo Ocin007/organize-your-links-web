@@ -232,6 +232,7 @@ var Settings = /** @class */ (function (_super) {
     function Settings() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    //TODO: titleLanguage (en, de, jpn)
     Settings.load = function (callback) {
         Settings.sendAjaxRequest('../api/loadSettings.php', {}, function (http) {
             Settings.errFunction(http, 'load');
@@ -660,6 +661,7 @@ var PageDetail = /** @class */ (function () {
         this.currentIndex = 0;
         this.seasonUrl = '';
         this.listElementMap = {};
+        this.episodeList = [];
     }
     PageDetail.prototype.showElement = function () {
         this.showPage();
@@ -713,12 +715,15 @@ var PageDetail = /** @class */ (function () {
         thumbnailAndDetails.appendChild(countContainer);
         var inputContainer = this.generateInputContainer();
         thumbnailAndDetails.appendChild(inputContainer);
+        var jumpButton = this.generateJumpButton();
+        thumbnailAndDetails.appendChild(jumpButton);
         thumbnailAndDetails.appendChild(this.generateInfoContainer());
         this.pageElement.appendChild(thumbnailAndDetails);
         this.pageElement.appendChild(this.detailContainer);
     };
     PageDetail.prototype.renderPage = function (data) {
         this.setFlags(data);
+        this.episodeList = [];
         this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
         this.seasonUrl = data.seasons[this.sIndex].url;
         this.currentIndex = this.serverData.getIndexOfELement(data);
@@ -730,6 +735,7 @@ var PageDetail = /** @class */ (function () {
         _a = ListElement.getIndicesAndCountOfFirstNotWatched(data), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
         var _a;
     };
+    //TODO: name_en, name_de, name_jpn
     PageDetail.prototype.renderDetailsContainer = function (data) {
         this.detailContainer.innerHTML = '';
         var titleContainer = PageDetail.createDiv('title-container');
@@ -822,6 +828,12 @@ var PageDetail = /** @class */ (function () {
         episode.appendChild(buttonContainer);
         var epLabel = PageDetail.generateEpisodeLabel(epIndex, data.seasons[sIndex].episodes[epIndex].name);
         episode.appendChild(epLabel);
+        if (this.episodeList[sIndex] === undefined) {
+            this.episodeList[sIndex] = [episode];
+        }
+        else {
+            this.episodeList[sIndex].push(episode);
+        }
         return [episode, watchedButton];
     };
     PageDetail.generateEpisodeLabel = function (epIndex, name) {
@@ -959,6 +971,7 @@ var PageDetail = /** @class */ (function () {
         container.appendChild(left);
         return container;
     };
+    //TODO: alle namen (en, de, jpn) suchbar
     PageDetail.prototype.generateInputContainer = function () {
         var container = PageDetail.createDiv('input-container');
         var label = document.createElement('label');
@@ -1036,7 +1049,6 @@ var PageDetail = /** @class */ (function () {
                 break;
         }
     };
-    //TODO: # folgen season scrollTo();
     PageDetail.prototype.setInfoValues = function (data) {
         var count = 0;
         this.infoSeasonContainer.innerHTML = '';
@@ -1092,6 +1104,23 @@ var PageDetail = /** @class */ (function () {
             g = this.colorBrightness;
         }
         return [r, g];
+    };
+    PageDetail.prototype.generateJumpButton = function () {
+        var container = PageDetail.createDiv('jump-button-container');
+        var button = PageDetail.createDiv('custom-button');
+        button.classList.add('button-green');
+        button.innerHTML = 'Zur aktuellen Folge';
+        var instance = this;
+        button.addEventListener('click', function () {
+            var firstNotWatched = instance.episodeList[instance.sIndex][instance.epIndex];
+            var height = firstNotWatched.offsetTop - 30;
+            window.scrollTo({
+                top: height,
+                behavior: 'smooth'
+            });
+        });
+        container.appendChild(button);
+        return container;
     };
     return PageDetail;
 }());

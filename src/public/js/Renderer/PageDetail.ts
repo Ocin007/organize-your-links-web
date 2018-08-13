@@ -17,6 +17,7 @@ class PageDetail implements Slideable, ForeachElement {
     private currentIndex: number = 0;
     private seasonUrl: string = '';
     private listElementMap: {} = {};
+    private episodeList: HTMLElement[][] = [];
 
     private sIndex: number;
     private epIndex: number;
@@ -98,6 +99,8 @@ class PageDetail implements Slideable, ForeachElement {
         thumbnailAndDetails.appendChild(countContainer);
         const inputContainer = this.generateInputContainer();
         thumbnailAndDetails.appendChild(inputContainer);
+        const jumpButton = this.generateJumpButton();
+        thumbnailAndDetails.appendChild(jumpButton);
         thumbnailAndDetails.appendChild(this.generateInfoContainer());
         this.pageElement.appendChild(thumbnailAndDetails);
         this.pageElement.appendChild(this.detailContainer);
@@ -105,6 +108,7 @@ class PageDetail implements Slideable, ForeachElement {
 
     renderPage(data: DataListElement) {
         this.setFlags(data);
+        this.episodeList = [];
         this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
         this.seasonUrl = data.seasons[this.sIndex].url;
         this.currentIndex = this.serverData.getIndexOfELement(data);
@@ -122,7 +126,7 @@ class PageDetail implements Slideable, ForeachElement {
             this.success
         ] = ListElement.getIndicesAndCountOfFirstNotWatched(data);
     }
-
+    //TODO: name_en, name_de, name_jpn
     private renderDetailsContainer(data: DataListElement) {
         this.detailContainer.innerHTML = '';
         const titleContainer = PageDetail.createDiv('title-container');
@@ -216,6 +220,11 @@ class PageDetail implements Slideable, ForeachElement {
         episode.appendChild(buttonContainer);
         const epLabel = PageDetail.generateEpisodeLabel(epIndex, data.seasons[sIndex].episodes[epIndex].name);
         episode.appendChild(epLabel);
+        if(this.episodeList[sIndex] === undefined) {
+            this.episodeList[sIndex] = [episode];
+        } else {
+            this.episodeList[sIndex].push(episode);
+        }
         return [episode, watchedButton];
     }
 
@@ -363,7 +372,7 @@ class PageDetail implements Slideable, ForeachElement {
         container.appendChild(left);
         return container;
     }
-
+    //TODO: alle namen (en, de, jpn) suchbar
     private generateInputContainer() {
         const container = PageDetail.createDiv('input-container');
         const label = document.createElement('label');
@@ -445,7 +454,6 @@ class PageDetail implements Slideable, ForeachElement {
         }
     }
 
-    //TODO: # folgen season scrollTo();
     private setInfoValues(data: DataListElement) {
         let count = 0;
         this.infoSeasonContainer.innerHTML = '';
@@ -504,5 +512,23 @@ class PageDetail implements Slideable, ForeachElement {
             g = this.colorBrightness;
         }
         return [r, g];
+    }
+
+    private generateJumpButton() {
+        const container = PageDetail.createDiv('jump-button-container');
+        const button = PageDetail.createDiv('custom-button');
+        button.classList.add('button-green');
+        button.innerHTML = 'Zur aktuellen Folge';
+        const instance = this;
+        button.addEventListener('click', function () {
+            const firstNotWatched = instance.episodeList[instance.sIndex][instance.epIndex];
+            const height = firstNotWatched.offsetTop-30;
+            window.scrollTo({
+                top: height,
+                behavior: 'smooth'
+            });
+        });
+        container.appendChild(button);
+        return container;
     }
 }
