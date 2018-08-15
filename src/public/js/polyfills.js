@@ -2052,6 +2052,9 @@ var PageSettings = /** @class */ (function () {
         this.startPage.appendChild(PageSettings.getOptionTag('Aktuelle Playlist', ListID.PLAYLIST.toString(), this.settings.startPage === ListID.PLAYLIST));
         this.startPage.appendChild(PageSettings.getOptionTag('Noch nicht gesehen', ListID.NOT_WATCHED.toString(), this.settings.startPage === ListID.NOT_WATCHED));
         this.startPage.appendChild(PageSettings.getOptionTag('Details', ListID.DETAILS.toString(), this.settings.startPage === ListID.DETAILS));
+        this.startPage.appendChild(PageSettings.getOptionTag('Neu', ListID.CREATE.toString(), this.settings.startPage === ListID.CREATE));
+        this.startPage.appendChild(PageSettings.getOptionTag('Bearbeiten', ListID.EDIT.toString(), this.settings.startPage === ListID.EDIT));
+        this.startPage.appendChild(PageSettings.getOptionTag('Ranking', ListID.RANKING.toString(), this.settings.startPage === ListID.RANKING));
         return PageSettings.getAction('Startseite festlegen', this.startPage);
     };
     PageSettings.prototype.initialDataIdAction = function () {
