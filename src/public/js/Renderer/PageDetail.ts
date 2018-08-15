@@ -139,19 +139,20 @@ class PageDetail implements Slideable, ForeachElement {
 
     private generateTitleContainer(data: DataListElement) {
         const titleContainer = PageDetail.createDiv('title-container');
-        const titleMain = this.generateMainTitle(data);
+        const lang = PageDetail.calcTitleLang(data);
+        const titleMain = this.generateMainTitle(data, lang);
 
         const titleDE = document.createElement('h5');
-        titleDE.innerHTML = data[TitleLang.DE];
+        titleDE.innerHTML = (data[TitleLang.DE] !== '') ? data[TitleLang.DE] : '-';
         const titleEN = document.createElement('h5');
-        titleEN.innerHTML = data[TitleLang.EN];
+        titleEN.innerHTML = (data[TitleLang.EN] !== '') ? data[TitleLang.EN] : '-';
         const titleJPN = document.createElement('h5');
-        titleJPN.innerHTML = data[TitleLang.JPN];
+        titleJPN.innerHTML = (data[TitleLang.JPN] !== '') ? data[TitleLang.JPN] : '-';
 
         let wrapper1;
         let wrapper2;
-        const wrapperMain = PageDetail.generateTitleWrapper(Settings.titleLanguage, titleMain, 'main-title');
-        switch (Settings.titleLanguage) {
+        const wrapperMain = PageDetail.generateTitleWrapper(lang, titleMain, 'main-title');
+        switch (lang) {
             case TitleLang.DE:
                 wrapper1 = PageDetail.generateTitleWrapper(TitleLang.EN, titleEN);
                 wrapper2 = PageDetail.generateTitleWrapper(TitleLang.JPN, titleJPN);
@@ -193,9 +194,11 @@ class PageDetail implements Slideable, ForeachElement {
         return container;
     }
 
-    private generateMainTitle(data: DataListElement) {
+    private generateMainTitle(data: DataListElement, lang: TitleLang) {
         const title = document.createElement('h1');
-        title.innerHTML = data[Settings.titleLanguage];
+        if(data[lang] !== '') {
+            title.innerHTML = data[lang];
+        }
         const instance = this;
         title.addEventListener('click', function () {
             const listElement = instance.listElementMap[data.id];
@@ -589,5 +592,20 @@ class PageDetail implements Slideable, ForeachElement {
         });
         container.appendChild(button);
         return container;
+    }
+
+    static calcTitleLang(data: DataListElement) {
+        if(data[Settings.titleLanguage] !== '') {
+            return Settings.titleLanguage;
+        }
+        if(data[TitleLang.DE] !== '') {
+            return TitleLang.DE;
+        }
+        if(data[TitleLang.EN] !== '') {
+            return TitleLang.EN;
+        }
+        if(data[TitleLang.JPN] !== '') {
+            return TitleLang.JPN;
+        }
     }
 }

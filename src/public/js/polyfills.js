@@ -147,6 +147,9 @@ var ServerData = /** @class */ (function (_super) {
         return this.allElements[index];
     };
     ServerData.prototype.getIndexOfElementWithName = function (name) {
+        if (name === '') {
+            return -1;
+        }
         for (var i = 0; i < this.allElements.length; i++) {
             var boolDE = this.allElements[i][TitleLang.DE] === name;
             var boolEN = this.allElements[i][TitleLang.EN] === name;
@@ -161,8 +164,18 @@ var ServerData = /** @class */ (function (_super) {
         var list = [];
         var len = this.allElements.length;
         for (var i = 0; i < len; i++) {
+            var helperArray = [];
             var data = this.allElements[i];
-            list = list.concat([data[TitleLang.DE], data[TitleLang.EN], data[TitleLang.JPN]]);
+            if (data[TitleLang.DE] !== '' && helperArray.indexOf(data[TitleLang.DE]) === -1) {
+                helperArray.push(data[TitleLang.DE]);
+            }
+            if (data[TitleLang.EN] !== '' && helperArray.indexOf(data[TitleLang.EN]) === -1) {
+                helperArray.push(data[TitleLang.EN]);
+            }
+            if (data[TitleLang.JPN] !== '' && helperArray.indexOf(data[TitleLang.JPN]) === -1) {
+                helperArray.push(data[TitleLang.JPN]);
+            }
+            list = list.concat(helperArray);
         }
         list.sort(function (a, b) {
             return a.toLowerCase().localeCompare(b.toLowerCase());
@@ -331,7 +344,19 @@ var ListElement = /** @class */ (function () {
         return this.serverData.getListElement(this.dataIndex).id;
     };
     ListElement.prototype.getName = function (lang) {
-        return this.serverData.getListElement(this.dataIndex)[lang];
+        var data = this.serverData.getListElement(this.dataIndex);
+        if (data[lang] !== '') {
+            return data[lang];
+        }
+        if (data[TitleLang.DE] !== '') {
+            return data[TitleLang.DE];
+        }
+        if (data[TitleLang.EN] !== '') {
+            return data[TitleLang.EN];
+        }
+        if (data[TitleLang.JPN] !== '') {
+            return data[TitleLang.JPN];
+        }
     };
     ListElement.prototype.getListId = function () {
         return this.serverData.getListElement(this.dataIndex).list;
@@ -772,17 +797,18 @@ var PageDetail = /** @class */ (function () {
     };
     PageDetail.prototype.generateTitleContainer = function (data) {
         var titleContainer = PageDetail.createDiv('title-container');
-        var titleMain = this.generateMainTitle(data);
+        var lang = PageDetail.calcTitleLang(data);
+        var titleMain = this.generateMainTitle(data, lang);
         var titleDE = document.createElement('h5');
-        titleDE.innerHTML = data[TitleLang.DE];
+        titleDE.innerHTML = (data[TitleLang.DE] !== '') ? data[TitleLang.DE] : '-';
         var titleEN = document.createElement('h5');
-        titleEN.innerHTML = data[TitleLang.EN];
+        titleEN.innerHTML = (data[TitleLang.EN] !== '') ? data[TitleLang.EN] : '-';
         var titleJPN = document.createElement('h5');
-        titleJPN.innerHTML = data[TitleLang.JPN];
+        titleJPN.innerHTML = (data[TitleLang.JPN] !== '') ? data[TitleLang.JPN] : '-';
         var wrapper1;
         var wrapper2;
-        var wrapperMain = PageDetail.generateTitleWrapper(Settings.titleLanguage, titleMain, 'main-title');
-        switch (Settings.titleLanguage) {
+        var wrapperMain = PageDetail.generateTitleWrapper(lang, titleMain, 'main-title');
+        switch (lang) {
             case TitleLang.DE:
                 wrapper1 = PageDetail.generateTitleWrapper(TitleLang.EN, titleEN);
                 wrapper2 = PageDetail.generateTitleWrapper(TitleLang.JPN, titleJPN);
@@ -822,9 +848,11 @@ var PageDetail = /** @class */ (function () {
         container.appendChild(append);
         return container;
     };
-    PageDetail.prototype.generateMainTitle = function (data) {
+    PageDetail.prototype.generateMainTitle = function (data, lang) {
         var title = document.createElement('h1');
-        title.innerHTML = data[Settings.titleLanguage];
+        if (data[lang] !== '') {
+            title.innerHTML = data[lang];
+        }
         var instance = this;
         title.addEventListener('click', function () {
             var listElement = instance.listElementMap[data.id];
@@ -1200,6 +1228,20 @@ var PageDetail = /** @class */ (function () {
         container.appendChild(button);
         return container;
     };
+    PageDetail.calcTitleLang = function (data) {
+        if (data[Settings.titleLanguage] !== '') {
+            return Settings.titleLanguage;
+        }
+        if (data[TitleLang.DE] !== '') {
+            return TitleLang.DE;
+        }
+        if (data[TitleLang.EN] !== '') {
+            return TitleLang.EN;
+        }
+        if (data[TitleLang.JPN] !== '') {
+            return TitleLang.JPN;
+        }
+    };
     return PageDetail;
 }());
 //# sourceMappingURL=PageDetail.js.map
@@ -1267,7 +1309,7 @@ var PageList = /** @class */ (function () {
         var indexList = this.serverData.getIndexList(this.listID);
         for (var i = 0; i < indexList.length; i++) {
             var element = this.serverData.getListElement(indexList[i]);
-            var firstChar = element[Settings.titleLanguage].charAt(0).toUpperCase();
+            var firstChar = element[PageDetail.calcTitleLang(element)].charAt(0).toUpperCase();
             var listElement = new ListElement(indexList[i], this.serverData, this.detailPage, this);
             if (this.dataList[firstChar] === undefined) {
                 this.dataList[firstChar] = [listElement];

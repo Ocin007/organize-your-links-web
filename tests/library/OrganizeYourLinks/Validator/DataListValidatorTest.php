@@ -75,7 +75,7 @@ class DataListValidatorTest extends TestCase
                 'id' => '',
                 'name_de' => '',
                 'name_en' => '',
-                'name_jpn' => '',
+                'name_jpn' => 'japan',
                 'list' => 1,
                 'seasons' => []
             ]
@@ -100,6 +100,7 @@ class DataListValidatorTest extends TestCase
         ];
         $expectedErrors = [
             0 => [
+                'name' => 'no name given',
                 'seasons' => [
                     0 => [
                         'thumbnail' => 'missing',
@@ -119,8 +120,8 @@ class DataListValidatorTest extends TestCase
         $testData = [
             [
                 'id' => '',
-                'name_de' => '',
-                'name_en' => '',
+                'name_de' => 'germany',
+                'name_en' => 'uk',
                 'name_jpn' => '',
                 'list' => 1,
                 'seasons' => [
@@ -158,7 +159,7 @@ class DataListValidatorTest extends TestCase
             [
                 'id' => '',
                 'name_de' => '',
-                'name_en' => '',
+                'name_en' => 'uk',
                 'name_jpn' => '',
                 'list' => 1,
                 'seasons' => [
@@ -239,7 +240,7 @@ class DataListValidatorTest extends TestCase
             [
                 'id' => '',
                 'name_de' => '',
-                'name_en' => '',
+                'name_en' => 'uk',
                 'name_jpn' => '',
                 'list' => 1,
                 'seasons' => [
@@ -279,9 +280,9 @@ class DataListValidatorTest extends TestCase
             ],
             [
                 'id' => '',
-                'name_de' => '',
+                'name_de' => 'de',
                 'name_en' => '',
-                'name_jpn' => '',
+                'name_jpn' => 'japan',
                 'list' => 1,
                 'seasons' => [
                     [

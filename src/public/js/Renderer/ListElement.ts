@@ -38,7 +38,19 @@ class ListElement {
     }
 
     getName(lang: TitleLang) {
-        return this.serverData.getListElement(this.dataIndex)[lang];
+        let data = this.serverData.getListElement(this.dataIndex);
+        if(data[lang] !== '') {
+            return data[lang];
+        }
+        if(data[TitleLang.DE] !== '') {
+            return data[TitleLang.DE];
+        }
+        if(data[TitleLang.EN] !== '') {
+            return data[TitleLang.EN];
+        }
+        if(data[TitleLang.JPN] !== '') {
+            return data[TitleLang.JPN];
+        }
     }
 
     getListId() {

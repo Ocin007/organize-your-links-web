@@ -24,9 +24,7 @@ class DataListValidator implements Validator {
     private function checkElement($data) {
         $errors = [];
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'id', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_de', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_en', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_jpn', 'string'));
+        $errors = array_merge($errors, $this->checkTitle($data));
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'list', 'integer'));
         $seasonErrors = $this->checkForKeyAndType($data, 'seasons', 'array');
         if(count($seasonErrors) === 0) {
@@ -97,6 +95,17 @@ class DataListValidator implements Validator {
         $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'name', 'string'));
         $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'url', 'string'));
         $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'watched', 'boolean'));
+        return $errors;
+    }
+
+    private function checkTitle($data) {
+        $errors = [];
+        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_de', 'string'));
+        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_en', 'string'));
+        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_jpn', 'string'));
+        if(count($errors) === 0 && $data['name_de'] === '' && $data['name_en'] === '' && $data['name_jpn'] === '') {
+            $errors = ['name' => 'no name given'];
+        }
         return $errors;
     }
 }

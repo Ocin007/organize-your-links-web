@@ -77,6 +77,9 @@ class ServerData extends AjaxRequest {
     }
 
     getIndexOfElementWithName(name: string) {
+        if(name === '') {
+            return -1;
+        }
         for (let i = 0; i < this.allElements.length; i++) {
             const boolDE = this.allElements[i][TitleLang.DE] === name;
             const boolEN = this.allElements[i][TitleLang.EN] === name;
@@ -92,8 +95,18 @@ class ServerData extends AjaxRequest {
         let list = [];
         const len = this.allElements.length;
         for (let i = 0; i < len; i++) {
+            let helperArray = [];
             let data = this.allElements[i];
-            list = list.concat([data[TitleLang.DE], data[TitleLang.EN], data[TitleLang.JPN]]);
+            if(data[TitleLang.DE] !== '' && helperArray.indexOf(data[TitleLang.DE]) === -1) {
+                helperArray.push(data[TitleLang.DE]);
+            }
+            if(data[TitleLang.EN] !== '' && helperArray.indexOf(data[TitleLang.EN]) === -1) {
+                helperArray.push(data[TitleLang.EN]);
+            }
+            if(data[TitleLang.JPN] !== '' && helperArray.indexOf(data[TitleLang.JPN]) === -1) {
+                helperArray.push(data[TitleLang.JPN]);
+            }
+            list = list.concat(helperArray);
         }
         list.sort((a: any, b: any) => {
             return a.toLowerCase().localeCompare(b.toLowerCase());
