@@ -37,8 +37,8 @@ class ListElement {
         return this.serverData.getListElement(this.dataIndex).id;
     }
 
-    getName() {
-        return this.serverData.getListElement(this.dataIndex).name;
+    getName(lang: TitleLang) {
+        return this.serverData.getListElement(this.dataIndex)[lang];
     }
 
     getListId() {
@@ -331,7 +331,7 @@ class ListElement {
 
     private generateTitle() {
         const title = document.createElement('h3');
-        title.innerHTML = this.getName();
+        title.innerHTML = this.getName(Settings.titleLanguage);
         const instance = this;
         title.addEventListener('click', function () {
             instance.detailPage.renderPage(instance.data);
@@ -375,7 +375,6 @@ class ListElement {
         count.appendChild(countMax);
         addSub.appendChild(count);
         const instance = this;
-        //TODO: add sub mousedown
         addSub.appendChild(ListElement.generateButton('img/add-button.ico', 'add', function () {
             instance.addButton();
         }));

@@ -15,6 +15,13 @@ var ListID;
     ListID[ListID["DETAILS"] = 4] = "DETAILS";
 })(ListID || (ListID = {}));
 //# sourceMappingURL=ListID.js.map
+var TitleLang;
+(function (TitleLang) {
+    TitleLang["DE"] = "name_de";
+    TitleLang["EN"] = "name_en";
+    TitleLang["JPN"] = "name_jpn";
+})(TitleLang || (TitleLang = {}));
+//# sourceMappingURL=TitleLang.js.map
 //# sourceMappingURL=DataListElement.js.map
 //# sourceMappingURL=ForeachElement.js.map
 //# sourceMappingURL=Slideable.js.map
@@ -141,11 +148,26 @@ var ServerData = /** @class */ (function (_super) {
     };
     ServerData.prototype.getIndexOfElementWithName = function (name) {
         for (var i = 0; i < this.allElements.length; i++) {
-            if (this.allElements[i].name === name) {
+            var boolDE = this.allElements[i][TitleLang.DE] === name;
+            var boolEN = this.allElements[i][TitleLang.EN] === name;
+            var boolJPN = this.allElements[i][TitleLang.JPN] === name;
+            if (boolDE || boolEN || boolJPN) {
                 return i;
             }
         }
         return -1;
+    };
+    ServerData.prototype.getSortedListWithNames = function () {
+        var list = [];
+        var len = this.allElements.length;
+        for (var i = 0; i < len; i++) {
+            var data = this.allElements[i];
+            list = list.concat([data[TitleLang.DE], data[TitleLang.EN], data[TitleLang.JPN]]);
+        }
+        list.sort(function (a, b) {
+            return a.toLowerCase().localeCompare(b.toLowerCase());
+        });
+        return list;
     };
     ServerData.prototype.getIndexOfELement = function (data) {
         for (var i = 0; i < this.allElements.length; i++) {
@@ -180,7 +202,9 @@ var ServerData = /** @class */ (function (_super) {
     };
     ServerData.prototype.decodeElement = function (index) {
         var element = this.allElements[index];
-        element.name = decodeURIComponent(element.name);
+        element.name_de = decodeURIComponent(element.name_de);
+        element.name_en = decodeURIComponent(element.name_en);
+        element.name_jpn = decodeURIComponent(element.name_jpn);
         for (var s = 0; s < element.seasons.length; s++) {
             element.seasons[s].url = decodeURIComponent(element.seasons[s].url);
             element.seasons[s].thumbnail = decodeURIComponent(element.seasons[s].thumbnail);
@@ -196,7 +220,9 @@ var ServerData = /** @class */ (function (_super) {
         }
     };
     ServerData.encodeElement = function (element) {
-        element.name = encodeURIComponent(element.name);
+        element.name_de = encodeURIComponent(element.name_de);
+        element.name_en = encodeURIComponent(element.name_en);
+        element.name_jpn = encodeURIComponent(element.name_jpn);
         for (var s = 0; s < element.seasons.length; s++) {
             element.seasons[s].url = encodeURIComponent(element.seasons[s].url);
             element.seasons[s].thumbnail = encodeURIComponent(element.seasons[s].thumbnail);
@@ -232,7 +258,6 @@ var Settings = /** @class */ (function (_super) {
     function Settings() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    //TODO: titleLanguage (en, de, jpn)
     Settings.load = function (callback) {
         Settings.sendAjaxRequest('../api/loadSettings.php', {}, function (http) {
             Settings.errFunction(http, 'load');
@@ -272,6 +297,7 @@ var Settings = /** @class */ (function (_super) {
         Settings.animationSpeedMulti = response.animationSpeedMulti;
         Settings.minSizeOfPlaylist = response.minSizeOfPlaylist;
         Settings.colorBrightness = response.colorBrightness;
+        Settings.titleLanguage = response.titleLanguage;
     };
     Settings.generateSettingsObj = function () {
         return {
@@ -280,7 +306,8 @@ var Settings = /** @class */ (function (_super) {
             animationSpeedSingle: Settings.animationSpeedSingle,
             animationSpeedMulti: Settings.animationSpeedMulti,
             minSizeOfPlaylist: Settings.minSizeOfPlaylist,
-            colorBrightness: Settings.colorBrightness
+            colorBrightness: Settings.colorBrightness,
+            titleLanguage: Settings.titleLanguage
         };
     };
     return Settings;
@@ -303,8 +330,8 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.getId = function () {
         return this.serverData.getListElement(this.dataIndex).id;
     };
-    ListElement.prototype.getName = function () {
-        return this.serverData.getListElement(this.dataIndex).name;
+    ListElement.prototype.getName = function (lang) {
+        return this.serverData.getListElement(this.dataIndex)[lang];
     };
     ListElement.prototype.getListId = function () {
         return this.serverData.getListElement(this.dataIndex).list;
@@ -569,7 +596,7 @@ var ListElement = /** @class */ (function () {
     };
     ListElement.prototype.generateTitle = function () {
         var title = document.createElement('h3');
-        title.innerHTML = this.getName();
+        title.innerHTML = this.getName(Settings.titleLanguage);
         var instance = this;
         title.addEventListener('click', function () {
             instance.detailPage.renderPage(instance.data);
@@ -609,7 +636,6 @@ var ListElement = /** @class */ (function () {
         count.appendChild(countMax);
         addSub.appendChild(count);
         var instance = this;
-        //TODO: add sub mousedown
         addSub.appendChild(ListElement.generateButton('img/add-button.ico', 'add', function () {
             instance.addButton();
         }));
@@ -672,6 +698,7 @@ var PageDetail = /** @class */ (function () {
         this.deactivateTab();
     };
     PageDetail.prototype.showPage = function () {
+        this.renderPage(this.serverData.getListElement(this.currentIndex));
         this.pageElement.style.display = 'flex';
     };
     PageDetail.prototype.activateTab = function () {
@@ -735,12 +762,69 @@ var PageDetail = /** @class */ (function () {
         _a = ListElement.getIndicesAndCountOfFirstNotWatched(data), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
         var _a;
     };
-    //TODO: name_en, name_de, name_jpn
     PageDetail.prototype.renderDetailsContainer = function (data) {
         this.detailContainer.innerHTML = '';
+        var titleContainer = this.generateTitleContainer(data);
+        this.detailContainer.appendChild(titleContainer);
+        for (var s = 0; s < data.seasons.length; s++) {
+            this.detailContainer.appendChild(this.createSegment(s, data));
+        }
+    };
+    PageDetail.prototype.generateTitleContainer = function (data) {
         var titleContainer = PageDetail.createDiv('title-container');
+        var titleMain = this.generateMainTitle(data);
+        var titleDE = document.createElement('h5');
+        titleDE.innerHTML = data[TitleLang.DE];
+        var titleEN = document.createElement('h5');
+        titleEN.innerHTML = data[TitleLang.EN];
+        var titleJPN = document.createElement('h5');
+        titleJPN.innerHTML = data[TitleLang.JPN];
+        var wrapper1;
+        var wrapper2;
+        var wrapperMain = PageDetail.generateTitleWrapper(Settings.titleLanguage, titleMain, 'main-title');
+        switch (Settings.titleLanguage) {
+            case TitleLang.DE:
+                wrapper1 = PageDetail.generateTitleWrapper(TitleLang.EN, titleEN);
+                wrapper2 = PageDetail.generateTitleWrapper(TitleLang.JPN, titleJPN);
+                break;
+            case TitleLang.EN:
+                wrapper1 = PageDetail.generateTitleWrapper(TitleLang.DE, titleDE);
+                wrapper2 = PageDetail.generateTitleWrapper(TitleLang.JPN, titleJPN);
+                break;
+            case TitleLang.JPN:
+                wrapper1 = PageDetail.generateTitleWrapper(TitleLang.DE, titleDE);
+                wrapper2 = PageDetail.generateTitleWrapper(TitleLang.EN, titleEN);
+                break;
+        }
+        titleContainer.appendChild(wrapperMain);
+        titleContainer.appendChild(wrapper1);
+        titleContainer.appendChild(wrapper2);
+        return titleContainer;
+    };
+    PageDetail.generateTitleWrapper = function (lang, append, token) {
+        var container = PageDetail.createDiv('title-wrapper');
+        if (token !== undefined) {
+            container.classList.add(token);
+        }
+        var img;
+        switch (lang) {
+            case TitleLang.DE:
+                img = PageDetail.createImg('img/germany.png', 'germany');
+                break;
+            case TitleLang.EN:
+                img = PageDetail.createImg('img/uk.png', 'uk');
+                break;
+            case TitleLang.JPN:
+                img = PageDetail.createImg('img/japan.png', 'japan');
+                break;
+        }
+        container.appendChild(img);
+        container.appendChild(append);
+        return container;
+    };
+    PageDetail.prototype.generateMainTitle = function (data) {
         var title = document.createElement('h1');
-        title.innerHTML = data.name;
+        title.innerHTML = data[Settings.titleLanguage];
         var instance = this;
         title.addEventListener('click', function () {
             var listElement = instance.listElementMap[data.id];
@@ -763,11 +847,7 @@ var PageDetail = /** @class */ (function () {
                 });
             }, 120);
         });
-        titleContainer.appendChild(title);
-        this.detailContainer.appendChild(titleContainer);
-        for (var s = 0; s < data.seasons.length; s++) {
-            this.detailContainer.appendChild(this.createSegment(s, data));
-        }
+        return title;
     };
     PageDetail.prototype.createSegment = function (sIndex, data) {
         var segment = PageDetail.createDiv('list-segment');
@@ -971,7 +1051,6 @@ var PageDetail = /** @class */ (function () {
         container.appendChild(left);
         return container;
     };
-    //TODO: alle namen (en, de, jpn) suchbar
     PageDetail.prototype.generateInputContainer = function () {
         var container = PageDetail.createDiv('input-container');
         var label = document.createElement('label');
@@ -1001,11 +1080,10 @@ var PageDetail = /** @class */ (function () {
         return container;
     };
     PageDetail.prototype.fillWithOptions = function (dataList) {
-        var len = this.serverData.getListLen();
-        for (var i = 0; i < len; i++) {
-            var data = this.serverData.getListElement(i);
+        var list = this.serverData.getSortedListWithNames();
+        for (var i = 0; i < list.length; i++) {
             var option = document.createElement('option');
-            option.innerHTML = data.name;
+            option.innerHTML = list[i];
             dataList.appendChild(option);
         }
     };
@@ -1189,7 +1267,7 @@ var PageList = /** @class */ (function () {
         var indexList = this.serverData.getIndexList(this.listID);
         for (var i = 0; i < indexList.length; i++) {
             var element = this.serverData.getListElement(indexList[i]);
-            var firstChar = element.name.charAt(0).toUpperCase();
+            var firstChar = element[Settings.titleLanguage].charAt(0).toUpperCase();
             var listElement = new ListElement(indexList[i], this.serverData, this.detailPage, this);
             if (this.dataList[firstChar] === undefined) {
                 this.dataList[firstChar] = [listElement];
@@ -1626,7 +1704,8 @@ var PageSettings = /** @class */ (function () {
             animationSpeedSingle: null,
             animationSpeedMulti: null,
             minSizeOfPlaylist: null,
-            colorBrightness: null
+            colorBrightness: null,
+            titleLanguage: null
         };
         this.revertSettings();
         this.actionContainer = document.createElement('div');
@@ -1634,6 +1713,7 @@ var PageSettings = /** @class */ (function () {
     }
     PageSettings.prototype.renderSettings = function () {
         this.actionContainer.innerHTML = '';
+        this.actionContainer.appendChild(this.titleLanguageAction());
         this.actionContainer.appendChild(this.startPageAction());
         this.actionContainer.appendChild(this.initialDataIdAction());
         this.actionContainer.appendChild(this.animationSpeedSingleAction());
@@ -1677,6 +1757,7 @@ var PageSettings = /** @class */ (function () {
         this.settings.animationSpeedMulti = parseFloat(this.animationSpeedMulti);
         this.settings.minSizeOfPlaylist = parseInt(this.minSizeOfPlaylist.value);
         this.settings.colorBrightness = parseInt(this.colorBrightness.value);
+        this.settings.titleLanguage = this.titleLanguage;
     };
     PageSettings.prototype.revertSettings = function () {
         this.settings.startPage = Settings.startPage;
@@ -1685,6 +1766,7 @@ var PageSettings = /** @class */ (function () {
         this.settings.animationSpeedMulti = Settings.animationSpeedMulti;
         this.settings.minSizeOfPlaylist = Settings.minSizeOfPlaylist;
         this.settings.colorBrightness = Settings.colorBrightness;
+        this.settings.titleLanguage = Settings.titleLanguage;
     };
     PageSettings.getActionDiv = function () {
         var container = document.createElement('div');
@@ -1711,10 +1793,12 @@ var PageSettings = /** @class */ (function () {
         return option;
     };
     PageSettings.prototype.fillWithOptions = function (parent) {
-        var len = this.serverData.getListLen();
-        for (var i = 0; i < len; i++) {
-            var data = this.serverData.getListElement(i);
-            var option = PageSettings.getOptionTag('', data.name, data.id === this.settings.initialDataId);
+        var list = this.serverData.getSortedListWithNames();
+        for (var i = 0; i < list.length; i++) {
+            var dataIndex = this.serverData.getIndexOfElementWithName(list[i]);
+            var data = this.serverData.getListElement(dataIndex);
+            var selected = (data.id === this.settings.initialDataId && data[this.settings.titleLanguage] === list[i]);
+            var option = PageSettings.getOptionTag('', list[i], selected);
             parent.appendChild(option);
         }
     };
@@ -1746,6 +1830,24 @@ var PageSettings = /** @class */ (function () {
         input.value = value;
         return input;
     };
+    PageSettings.prototype.getRadioInput = function (src, alt, lang) {
+        var div = document.createElement('div');
+        div.classList.add('opt-single-radio');
+        var img = PageDetail.createImg(src, alt);
+        var input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'titleLanguage';
+        input.value = lang;
+        input.checked = this.settings.titleLanguage === lang;
+        div.appendChild(img);
+        div.appendChild(input);
+        var instance = this;
+        div.addEventListener('click', function () {
+            instance.titleLanguage = lang;
+            input.checked = true;
+        });
+        return div;
+    };
     PageSettings.prototype.startPageAction = function () {
         this.startPage = document.createElement('select');
         this.startPage.appendChild(PageSettings.getOptionTag('Fertig gesehen', ListID.WATCHED.toString(), this.settings.startPage === ListID.WATCHED));
@@ -1762,7 +1864,7 @@ var PageSettings = /** @class */ (function () {
         input.setAttribute('list', 'all-names-settings');
         this.initialDataId = this.settings.initialDataId;
         var index = this.serverData.getIndexOfELement({ id: this.initialDataId });
-        input.value = this.serverData.getListElement(index).name;
+        input.value = this.serverData.getListElement(index)[this.settings.titleLanguage];
         var instance = this;
         input.addEventListener('input', function (ev) {
             var index = instance.serverData.getIndexOfElementWithName(ev.target.value);
@@ -1805,6 +1907,19 @@ var PageSettings = /** @class */ (function () {
         this.colorBrightness = PageSettings.getInputNumber('0', '255', this.settings.colorBrightness.toString());
         return PageSettings.getAction('Farbhelligkeit, nur für Serienfortschritt', this.colorBrightness);
     };
+    PageSettings.prototype.titleLanguageAction = function () {
+        var radioContainer = document.createElement('div');
+        radioContainer.classList.add('opt-range-control');
+        radioContainer.classList.add('opt-radio-buttons');
+        this.titleLanguage = this.settings.titleLanguage;
+        var divDE = this.getRadioInput('img/germany.png', 'germany', TitleLang.DE);
+        var divEN = this.getRadioInput('img/uk.png', 'uk', TitleLang.EN);
+        var divJPN = this.getRadioInput('img/japan.png', 'japan', TitleLang.JPN);
+        radioContainer.appendChild(divDE);
+        radioContainer.appendChild(divEN);
+        radioContainer.appendChild(divJPN);
+        return PageSettings.getAction('Titelsprache auswählen', radioContainer);
+    };
     return PageSettings;
 }());
 //# sourceMappingURL=PageSettings.js.map
@@ -1836,13 +1951,25 @@ document.addEventListener('keydown', function (ev) {
     if (!navMap.flag || blockKeyboardNav) {
         return;
     }
-    if (ev.keyCode === 39 && navMap.active < 4) {
-        animationSlideLeft(navMap[navMap.active], navMap[navMap.active + 1]);
-        navMap.active++;
+    if (ev.keyCode === 39) {
+        if (navMap.active < 4) {
+            animationSlideLeft(navMap[navMap.active], navMap[navMap.active + 1]);
+            navMap.active++;
+        }
+        else {
+            animationSlideLeft(navMap[4], navMap[1]);
+            navMap.active = 1;
+        }
     }
-    if (ev.keyCode === 37 && navMap.active > 1) {
-        animationSlideRight(navMap[navMap.active], navMap[navMap.active - 1]);
-        navMap.active--;
+    if (ev.keyCode === 37) {
+        if (navMap.active > 1) {
+            animationSlideRight(navMap[navMap.active], navMap[navMap.active - 1]);
+            navMap.active--;
+        }
+        else {
+            animationSlideRight(navMap[1], navMap[4]);
+            navMap.active = 4;
+        }
     }
 });
 function animationSlideLeft(hide, show) {

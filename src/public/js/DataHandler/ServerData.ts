@@ -78,11 +78,27 @@ class ServerData extends AjaxRequest {
 
     getIndexOfElementWithName(name: string) {
         for (let i = 0; i < this.allElements.length; i++) {
-            if(this.allElements[i].name === name) {
+            const boolDE = this.allElements[i][TitleLang.DE] === name;
+            const boolEN = this.allElements[i][TitleLang.EN] === name;
+            const boolJPN = this.allElements[i][TitleLang.JPN] === name;
+            if(boolDE || boolEN || boolJPN) {
                 return i;
             }
         }
         return -1;
+    }
+
+    getSortedListWithNames() {
+        let list = [];
+        const len = this.allElements.length;
+        for (let i = 0; i < len; i++) {
+            let data = this.allElements[i];
+            list = list.concat([data[TitleLang.DE], data[TitleLang.EN], data[TitleLang.JPN]]);
+        }
+        list.sort((a: any, b: any) => {
+            return a.toLowerCase().localeCompare(b.toLowerCase());
+        });
+        return list
     }
 
     getIndexOfELement(data: {id: string}): number
@@ -122,7 +138,9 @@ class ServerData extends AjaxRequest {
 
     private decodeElement(index: number) {
         const element = this.allElements[index];
-        element.name = decodeURIComponent(element.name);
+        element.name_de = decodeURIComponent(element.name_de);
+        element.name_en = decodeURIComponent(element.name_en);
+        element.name_jpn = decodeURIComponent(element.name_jpn);
         for (let s = 0; s < element.seasons.length; s++) {
             element.seasons[s].url = decodeURIComponent(element.seasons[s].url);
             element.seasons[s].thumbnail = decodeURIComponent(element.seasons[s].thumbnail);
@@ -140,7 +158,9 @@ class ServerData extends AjaxRequest {
     }
 
     private static encodeElement(element: DataListElement) {
-        element.name = encodeURIComponent(element.name);
+        element.name_de = encodeURIComponent(element.name_de);
+        element.name_en = encodeURIComponent(element.name_en);
+        element.name_jpn = encodeURIComponent(element.name_jpn);
         for (let s = 0; s < element.seasons.length; s++) {
             element.seasons[s].url = encodeURIComponent(element.seasons[s].url);
             element.seasons[s].thumbnail = encodeURIComponent(element.seasons[s].thumbnail);

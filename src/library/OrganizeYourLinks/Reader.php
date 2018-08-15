@@ -10,6 +10,7 @@ class Reader {
     public function __construct() {}
 
     public function readDir($dir) {
+        $this->dataArray = [];
         $fileArray = scandir($dir);
         for($i = 2; $i < count($fileArray); $i++) {
             $file = $fileArray[$i];

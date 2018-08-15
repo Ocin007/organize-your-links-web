@@ -89,19 +89,31 @@
     width: 100%;
 }
 .title-container {
-    height: 155px;
-    max-height: 155px;
+    height: 204px;
+    max-height: 204px;
     display: flex;
-    align-items: center;
-    margin-left: 50px;
+    flex-direction: column;
+    margin-top: 50px;
 }
-.title-container > h1 {
+.main-title > h1 {
     font-size: 3em;
     cursor: pointer;
+}
+.main-title > h1:hover {
+    text-decoration: underline;
+}
+.title-wrapper {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+.title-wrapper h1, .title-wrapper h5 {
     margin: 0;
 }
-.title-container > h1:hover {
-    text-decoration: underline;
+.title-wrapper img {
+    margin-right: 18px;
+    border-radius: 5px;
 }
 .episode-container {
     padding: 10px;

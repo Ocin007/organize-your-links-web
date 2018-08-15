@@ -29,13 +29,23 @@ document.addEventListener('keydown', function (ev: any) {
     if(!navMap.flag || blockKeyboardNav) {
         return;
     }
-    if(ev.keyCode === 39 && navMap.active < 4) {
-        animationSlideLeft(navMap[navMap.active], navMap[navMap.active+1]);
-        navMap.active++;
+    if(ev.keyCode === 39) {
+        if(navMap.active < 4) {
+            animationSlideLeft(navMap[navMap.active], navMap[navMap.active+1]);
+            navMap.active++;
+        } else {
+            animationSlideLeft(navMap[4], navMap[1]);
+            navMap.active = 1;
+        }
     }
-    if(ev.keyCode === 37 && navMap.active > 1) {
-        animationSlideRight(navMap[navMap.active], navMap[navMap.active-1]);
-        navMap.active--;
+    if(ev.keyCode === 37) {
+        if(navMap.active > 1) {
+            animationSlideRight(navMap[navMap.active], navMap[navMap.active-1]);
+            navMap.active--;
+        } else {
+            animationSlideRight(navMap[1], navMap[4]);
+            navMap.active = 4;
+        }
     }
 });
 

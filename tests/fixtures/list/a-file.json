@@ -1,4 +1,6 @@
 {
     "id": "id1",
-    "name": "A File"
+    "name_de": "A File",
+    "name_en": "A File",
+    "name_jpn": "A File"
 }

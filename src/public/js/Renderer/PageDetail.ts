@@ -42,6 +42,7 @@ class PageDetail implements Slideable, ForeachElement {
     }
 
     showPage() {
+        this.renderPage(this.serverData.getListElement(this.currentIndex));
         this.pageElement.style.display = 'flex';
     }
 
@@ -126,12 +127,75 @@ class PageDetail implements Slideable, ForeachElement {
             this.success
         ] = ListElement.getIndicesAndCountOfFirstNotWatched(data);
     }
-    //TODO: name_en, name_de, name_jpn
+
     private renderDetailsContainer(data: DataListElement) {
         this.detailContainer.innerHTML = '';
+        const titleContainer = this.generateTitleContainer(data);
+        this.detailContainer.appendChild(titleContainer);
+        for (let s = 0; s < data.seasons.length; s++) {
+            this.detailContainer.appendChild(this.createSegment(s, data))
+        }
+    }
+
+    private generateTitleContainer(data: DataListElement) {
         const titleContainer = PageDetail.createDiv('title-container');
+        const titleMain = this.generateMainTitle(data);
+
+        const titleDE = document.createElement('h5');
+        titleDE.innerHTML = data[TitleLang.DE];
+        const titleEN = document.createElement('h5');
+        titleEN.innerHTML = data[TitleLang.EN];
+        const titleJPN = document.createElement('h5');
+        titleJPN.innerHTML = data[TitleLang.JPN];
+
+        let wrapper1;
+        let wrapper2;
+        const wrapperMain = PageDetail.generateTitleWrapper(Settings.titleLanguage, titleMain, 'main-title');
+        switch (Settings.titleLanguage) {
+            case TitleLang.DE:
+                wrapper1 = PageDetail.generateTitleWrapper(TitleLang.EN, titleEN);
+                wrapper2 = PageDetail.generateTitleWrapper(TitleLang.JPN, titleJPN);
+                break;
+            case TitleLang.EN:
+                wrapper1 = PageDetail.generateTitleWrapper(TitleLang.DE, titleDE);
+                wrapper2 = PageDetail.generateTitleWrapper(TitleLang.JPN, titleJPN);
+                break;
+            case TitleLang.JPN:
+                wrapper1 = PageDetail.generateTitleWrapper(TitleLang.DE, titleDE);
+                wrapper2 = PageDetail.generateTitleWrapper(TitleLang.EN, titleEN);
+                break;
+        }
+        titleContainer.appendChild(wrapperMain);
+        titleContainer.appendChild(wrapper1);
+        titleContainer.appendChild(wrapper2);
+        return titleContainer;
+    }
+
+    private static generateTitleWrapper(lang: TitleLang, append: HTMLElement, token?: string) {
+        const container = PageDetail.createDiv('title-wrapper');
+        if(token !== undefined) {
+            container.classList.add(token);
+        }
+        let img;
+        switch (lang) {
+            case TitleLang.DE:
+                img = PageDetail.createImg('img/germany.png', 'germany');
+                break;
+            case TitleLang.EN:
+                img = PageDetail.createImg('img/uk.png', 'uk');
+                break;
+            case TitleLang.JPN:
+                img = PageDetail.createImg('img/japan.png', 'japan');
+                break;
+        }
+        container.appendChild(img);
+        container.appendChild(append);
+        return container;
+    }
+
+    private generateMainTitle(data: DataListElement) {
         const title = document.createElement('h1');
-        title.innerHTML = data.name;
+        title.innerHTML = data[Settings.titleLanguage];
         const instance = this;
         title.addEventListener('click', function () {
             const listElement = instance.listElementMap[data.id];
@@ -154,11 +218,7 @@ class PageDetail implements Slideable, ForeachElement {
                 });
             }, 120);
         });
-        titleContainer.appendChild(title);
-        this.detailContainer.appendChild(titleContainer);
-        for (let s = 0; s < data.seasons.length; s++) {
-            this.detailContainer.appendChild(this.createSegment(s, data))
-        }
+        return title;
     }
 
     private createSegment(sIndex: number, data: DataListElement) {
@@ -372,7 +432,7 @@ class PageDetail implements Slideable, ForeachElement {
         container.appendChild(left);
         return container;
     }
-    //TODO: alle namen (en, de, jpn) suchbar
+
     private generateInputContainer() {
         const container = PageDetail.createDiv('input-container');
         const label = document.createElement('label');
@@ -403,11 +463,10 @@ class PageDetail implements Slideable, ForeachElement {
     }
 
     private fillWithOptions(dataList: HTMLElement) {
-        const len = this.serverData.getListLen();
-        for (let i = 0; i < len; i++) {
-            let data = this.serverData.getListElement(i);
+        const list = this.serverData.getSortedListWithNames();
+        for (let i = 0; i < list.length; i++) {
             let option = document.createElement('option');
-            option.innerHTML = data.name;
+            option.innerHTML = list[i];
             dataList.appendChild(option);
         }
     }

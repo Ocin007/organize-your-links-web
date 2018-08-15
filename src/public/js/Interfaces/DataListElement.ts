@@ -1,6 +1,8 @@
 interface DataListElement {
     id: string,
-    name: string,
+    name_de: string,
+    name_en: string,
+    name_jpn: string,
     list: ListID,
     seasons: {
         thumbnail: string,

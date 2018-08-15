@@ -13,6 +13,7 @@ class SettingsValidator implements Validator {
         $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'animationSpeedMulti', 'double'));
         $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'minSizeOfPlaylist', 'integer'));
         $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'colorBrightness', 'integer'));
+        $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'titleLanguage', 'string'));
         return $errors;
     }
 

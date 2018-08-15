@@ -7,7 +7,8 @@ class PageSettings {
         animationSpeedSingle: null,
         animationSpeedMulti: null,
         minSizeOfPlaylist: null,
-        colorBrightness: null
+        colorBrightness: null,
+        titleLanguage: null
     };
     private startPage: HTMLSelectElement;
     private initialDataId: string;
@@ -15,6 +16,7 @@ class PageSettings {
     private animationSpeedMulti: string;
     private minSizeOfPlaylist: HTMLInputElement;
     private colorBrightness: HTMLInputElement;
+    private titleLanguage: string;
 
     constructor(private serverData: ServerData) {
         this.revertSettings();
@@ -24,6 +26,7 @@ class PageSettings {
 
     renderSettings() {
         this.actionContainer.innerHTML = '';
+        this.actionContainer.appendChild(this.titleLanguageAction());
         this.actionContainer.appendChild(this.startPageAction());
         this.actionContainer.appendChild(this.initialDataIdAction());
         this.actionContainer.appendChild(this.animationSpeedSingleAction());
@@ -72,7 +75,7 @@ class PageSettings {
         this.settings.animationSpeedMulti = parseFloat(this.animationSpeedMulti);
         this.settings.minSizeOfPlaylist = parseInt(this.minSizeOfPlaylist.value);
         this.settings.colorBrightness = parseInt(this.colorBrightness.value);
-
+        this.settings.titleLanguage = this.titleLanguage;
     }
 
     private revertSettings() {
@@ -82,6 +85,7 @@ class PageSettings {
         this.settings.animationSpeedMulti = Settings.animationSpeedMulti;
         this.settings.minSizeOfPlaylist = Settings.minSizeOfPlaylist;
         this.settings.colorBrightness = Settings.colorBrightness;
+        this.settings.titleLanguage = Settings.titleLanguage;
     }
 
     private static getActionDiv() {
@@ -113,10 +117,12 @@ class PageSettings {
     }
 
     private fillWithOptions(parent: HTMLElement) {
-        const len = this.serverData.getListLen();
-        for (let i = 0; i < len; i++) {
-            let data = this.serverData.getListElement(i);
-            let option = PageSettings.getOptionTag('', data.name, data.id === this.settings.initialDataId);
+        const list = this.serverData.getSortedListWithNames();
+        for (let i = 0; i < list.length; i++) {
+            let dataIndex = this.serverData.getIndexOfElementWithName(list[i]);
+            let data = this.serverData.getListElement(dataIndex);
+            let selected = (data.id === this.settings.initialDataId && data[this.settings.titleLanguage] === list[i]);
+            let option = PageSettings.getOptionTag('', list[i], selected);
             parent.appendChild(option);
         }
     }
@@ -151,6 +157,25 @@ class PageSettings {
         return input;
     }
 
+    private getRadioInput(src: string, alt: string, lang: TitleLang) {
+        const div = document.createElement('div');
+        div.classList.add('opt-single-radio');
+        const img = PageDetail.createImg(src, alt);
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'titleLanguage';
+        input.value = lang;
+        input.checked = this.settings.titleLanguage === lang;
+        div.appendChild(img);
+        div.appendChild(input);
+        const instance = this;
+        div.addEventListener('click', function () {
+            instance.titleLanguage = lang;
+            input.checked = true;
+        });
+        return div;
+    }
+
     private startPageAction() {
         this.startPage = document.createElement('select');
         this.startPage.appendChild(PageSettings.getOptionTag(
@@ -176,7 +201,7 @@ class PageSettings {
         input.setAttribute('list', 'all-names-settings');
         this.initialDataId = this.settings.initialDataId;
         const index = this.serverData.getIndexOfELement({id: this.initialDataId});
-        input.value = this.serverData.getListElement(index).name;
+        input.value = this.serverData.getListElement(index)[this.settings.titleLanguage];
         const instance = this;
         input.addEventListener('input', function (ev: any) {
             const index = instance.serverData.getIndexOfElementWithName(ev.target.value);
@@ -222,5 +247,19 @@ class PageSettings {
     private colorBrightnessAction() {
         this.colorBrightness = PageSettings.getInputNumber('0', '255', this.settings.colorBrightness.toString());
         return PageSettings.getAction('Farbhelligkeit, nur für Serienfortschritt', this.colorBrightness);
+    }
+
+    private titleLanguageAction() {
+        const radioContainer = document.createElement('div');
+        radioContainer.classList.add('opt-range-control');
+        radioContainer.classList.add('opt-radio-buttons');
+        this.titleLanguage = this.settings.titleLanguage;
+        const divDE = this.getRadioInput('img/germany.png', 'germany', TitleLang.DE);
+        const divEN = this.getRadioInput('img/uk.png', 'uk', TitleLang.EN);
+        const divJPN = this.getRadioInput('img/japan.png', 'japan', TitleLang.JPN);
+        radioContainer.appendChild(divDE);
+        radioContainer.appendChild(divEN);
+        radioContainer.appendChild(divJPN);
+        return PageSettings.getAction('Titelsprache auswählen', radioContainer);
     }
 }

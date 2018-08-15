@@ -15,10 +15,10 @@ class ReaderTest extends TestCase
         $subject->readDir($this->listDir);
         $result = $subject->getContent();
         $expected = [
-            ['id' => 'id1', 'name' => 'A File'],
-            ['id' => 'id2', 'name' => 'C File 2'],
-            ['id' => 'id3', 'name' => 'D File'],
-            ['id' => 'id4', 'name' => 'G File'],
+            ['id' => 'id1', 'name_de' => 'A File', 'name_en' => 'A File', 'name_jpn' => 'A File'],
+            ['id' => 'id2', 'name_de' => 'C File 2', 'name_en' => 'C File 2', 'name_jpn' => 'C File 2'],
+            ['id' => 'id3', 'name_de' => 'D File', 'name_en' => 'D File', 'name_jpn' => 'D File'],
+            ['id' => 'id4', 'name_de' => 'G File', 'name_en' => 'G File', 'name_jpn' => 'G File'],
         ];
         $this->assertEquals($expected, $result);
     }
@@ -37,7 +37,8 @@ class ReaderTest extends TestCase
             "animationSpeedSingle" => 0.05,
             "animationSpeedMulti" => 0.1,
             "minSizeOfPlaylist" => 10,
-            "colorBrightness" => 255
+            "colorBrightness" => 255,
+            "titleLanguage" => "name_de"
         ];
         $this->assertEquals($expected, $result);
     }

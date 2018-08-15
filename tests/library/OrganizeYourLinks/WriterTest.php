@@ -22,11 +22,15 @@ class WriterTest extends TestCase
         $data = [
             [
                 'id' => 'id1',
-                'name' => 'test'
+                'name_de' => 'test',
+                'name_en' => 'test',
+                'name_jpn' => 'test'
             ],
             [
                 'id' => 'id2',
-                'name' => 'test'
+                'name_de' => 'test',
+                'name_en' => 'test',
+                'name_jpn' => 'test'
             ]
         ];
         $expected = ['id1', 'id2'];
@@ -38,8 +42,8 @@ class WriterTest extends TestCase
         $this->assertEquals([], $errors);
         $file1 = json_decode(file_get_contents($this->listDir.'/a-file.json'), true);
         $file2 = json_decode(file_get_contents($this->listDir.'/c-file2.json'), true);
-        $this->assertEquals(['id' => 'id1', 'name' => 'test'], $file1);
-        $this->assertEquals(['id' => 'id2', 'name' => 'test'], $file2);
+        $this->assertEquals($data[0], $file1);
+        $this->assertEquals($data[1], $file2);
     }
 
     public function testUpdateFiles2()
@@ -47,11 +51,15 @@ class WriterTest extends TestCase
         $data = [
             [
                 'id' => 'id1',
-                'name' => 'A File'
+                'name_de' => 'A File',
+                'name_en' => 'A File',
+                'name_jpn' => 'A File'
             ],
             [
                 'id' => 'id2',
-                'name' => 'C File 2'
+                'name_de' => 'C File 2',
+                'name_en' => 'C File 2',
+                'name_jpn' => 'C File 2'
             ]
         ];
         $expected = ['id1', 'id2'];
@@ -66,11 +74,15 @@ class WriterTest extends TestCase
         $data = [
             [
                 'id' => 'id1',
-                'name' => 'A File'
+                'name_de' => 'A File',
+                'name_en' => 'A File',
+                'name_jpn' => 'A File'
             ],
             [
                 'id' => 'id0',
-                'name' => 'A File'
+                'name_de' => 'A File',
+                'name_en' => 'A File',
+                'name_jpn' => 'A File'
             ]
         ];
         $expectedResult = ['id1'];
@@ -91,7 +103,8 @@ class WriterTest extends TestCase
             "animationSpeedSingle" => 0.05,
             "animationSpeedMulti" => 0.1,
             "minSizeOfPlaylist" => 10,
-            "colorBrightness" => 255
+            "colorBrightness" => 255,
+            "titleLanguage" => "name_de"
         ];
         $expectedErrors = [];
         $subject = new Writer($this->settings, $this->map);

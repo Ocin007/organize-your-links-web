@@ -19,7 +19,8 @@ class SettingsValidatorTest extends TestCase
             "animationSpeedSingle" => 'missing',
             "animationSpeedMulti" => 'wrong type',
             "minSizeOfPlaylist" => 'missing',
-            "colorBrightness" => 'missing'
+            "colorBrightness" => 'missing',
+            "titleLanguage" => 'missing'
         ];
         $subject = new SettingsValidator();
         $errors = $subject->validate($data);
@@ -34,7 +35,8 @@ class SettingsValidatorTest extends TestCase
             "animationSpeedSingle" => 0.05,
             "animationSpeedMulti" => 0.1,
             "minSizeOfPlaylist" => 10,
-            "colorBrightness" => 255
+            "colorBrightness" => 255,
+            "titleLanguage" => 'name_de'
         ];
         $expectedErrors = [];
         $subject = new SettingsValidator();

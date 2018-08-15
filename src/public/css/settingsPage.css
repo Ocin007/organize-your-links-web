@@ -32,3 +32,15 @@
     align-items: center;
     justify-content: space-evenly;
 }
+.opt-radio-buttons {
+    width: 100%;
+}
+.opt-single-radio {
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.opt-single-radio img {
+    border-radius: 5px;
+}

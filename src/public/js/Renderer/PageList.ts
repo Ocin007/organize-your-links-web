@@ -76,7 +76,7 @@ class PageList implements Slideable, ForeachElement {
         const indexList = this.serverData.getIndexList(this.listID);
         for (let i = 0; i < indexList.length; i++) {
             let element = this.serverData.getListElement(indexList[i]);
-            let firstChar = element.name.charAt(0).toUpperCase();
+            let firstChar = element[Settings.titleLanguage].charAt(0).toUpperCase();
             let listElement = new ListElement(indexList[i], this.serverData, this.detailPage, this);
             if (this.dataList[firstChar] === undefined) {
                 this.dataList[firstChar] = [listElement];

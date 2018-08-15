@@ -24,7 +24,9 @@ class DataListValidator implements Validator {
     private function checkElement($data) {
         $errors = [];
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'id', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name', 'string'));
+        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_de', 'string'));
+        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_en', 'string'));
+        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_jpn', 'string'));
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'list', 'integer'));
         $seasonErrors = $this->checkForKeyAndType($data, 'seasons', 'array');
         if(count($seasonErrors) === 0) {

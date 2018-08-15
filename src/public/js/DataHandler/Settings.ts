@@ -6,7 +6,7 @@ class Settings extends AjaxRequest {
     static animationSpeedMulti: number;
     static minSizeOfPlaylist: number;
     static colorBrightness: number;
-    //TODO: titleLanguage (en, de, jpn)
+    static titleLanguage: TitleLang;
 
     static load(callback?: Function) {
         Settings.sendAjaxRequest('../api/loadSettings.php', {}, function (http) {
@@ -49,6 +49,7 @@ class Settings extends AjaxRequest {
         Settings.animationSpeedMulti = response.animationSpeedMulti;
         Settings.minSizeOfPlaylist = response.minSizeOfPlaylist;
         Settings.colorBrightness = response.colorBrightness;
+        Settings.titleLanguage = response.titleLanguage;
     }
 
     private static generateSettingsObj() {
@@ -58,7 +59,8 @@ class Settings extends AjaxRequest {
             animationSpeedSingle: Settings.animationSpeedSingle,
             animationSpeedMulti: Settings.animationSpeedMulti,
             minSizeOfPlaylist: Settings.minSizeOfPlaylist,
-            colorBrightness: Settings.colorBrightness
+            colorBrightness: Settings.colorBrightness,
+            titleLanguage: Settings.titleLanguage
         };
     }
 }
