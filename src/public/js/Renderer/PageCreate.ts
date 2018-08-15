@@ -24,7 +24,7 @@ class PageCreate implements Slideable, ForeachElement {
     }
 
     showPage() {
-        this.pageElement.style.display = 'block';
+        this.pageElement.style.display = 'flex';
     }
 
     foreachListElement(callback: Function, opt?: any) {

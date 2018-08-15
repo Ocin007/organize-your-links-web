@@ -735,7 +735,7 @@ var PageCreate = /** @class */ (function () {
         this.pageElement.style.display = 'none';
     };
     PageCreate.prototype.showPage = function () {
-        this.pageElement.style.display = 'block';
+        this.pageElement.style.display = 'flex';
     };
     PageCreate.prototype.foreachListElement = function (callback, opt) {
     };
