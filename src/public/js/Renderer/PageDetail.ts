@@ -28,7 +28,8 @@ class PageDetail implements Slideable, ForeachElement {
     constructor(
         private pageElement: HTMLElement,
         private tabElement: HTMLElement,
-        private serverData: ServerData
+        private serverData: ServerData,
+        private editPage: PageEdit
     ) {}
 
     showElement() {
@@ -407,7 +408,15 @@ class PageDetail implements Slideable, ForeachElement {
     private editButton() {
         const instance = this;
         return ListElement.generateButton('img/edit.ico', 'edit', function () {
-            //TODO: edit detail
+            const data = instance.serverData.getListElement(instance.currentIndex);
+            instance.editPage.renderPage(data);
+            slideToEdit();
+            setTimeout(function () {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }, 120);
         });
     }
 

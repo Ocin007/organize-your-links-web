@@ -13,6 +13,9 @@ var ListID;
     ListID[ListID["PLAYLIST"] = 2] = "PLAYLIST";
     ListID[ListID["NOT_WATCHED"] = 3] = "NOT_WATCHED";
     ListID[ListID["DETAILS"] = 4] = "DETAILS";
+    ListID[ListID["CREATE"] = 5] = "CREATE";
+    ListID[ListID["EDIT"] = 6] = "EDIT";
+    ListID[ListID["RANKING"] = 7] = "RANKING";
 })(ListID || (ListID = {}));
 //# sourceMappingURL=ListID.js.map
 var TitleLang;
@@ -327,11 +330,12 @@ var Settings = /** @class */ (function (_super) {
 }(AjaxRequest));
 //# sourceMappingURL=Settings.js.map
 var ListElement = /** @class */ (function () {
-    function ListElement(dataIndex, serverData, detailPage, pageList) {
+    function ListElement(dataIndex, serverData, detailPage, pageList, editPage) {
         this.dataIndex = dataIndex;
         this.serverData = serverData;
         this.detailPage = detailPage;
         this.pageList = pageList;
+        this.editPage = editPage;
         this.openTab = [];
         var element = this.serverData.getListElement(this.dataIndex);
         _a = ListElement.getIndicesAndCountOfFirstNotWatched(element), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
@@ -589,7 +593,14 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.createEditButton = function () {
         var instance = this;
         return ListElement.generateButton('img/edit.ico', 'edit', function () {
-            //TODO: edit
+            instance.editPage.renderPage(instance.data);
+            slideToEdit();
+            setTimeout(function () {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }, 120);
         });
     };
     ListElement.prototype.createDeleteButton = function () {
@@ -703,11 +714,56 @@ var ListElement = /** @class */ (function () {
     return ListElement;
 }());
 //# sourceMappingURL=ListElement.js.map
-var PageDetail = /** @class */ (function () {
-    function PageDetail(pageElement, tabElement, serverData) {
+var PageCreate = /** @class */ (function () {
+    function PageCreate(pageElement, tabElement, serverData) {
         this.pageElement = pageElement;
         this.tabElement = tabElement;
         this.serverData = serverData;
+    }
+    PageCreate.prototype.activateTab = function () {
+        if (!this.tabElement.classList.contains('tab-active')) {
+            this.tabElement.classList.add('tab-active');
+        }
+    };
+    PageCreate.prototype.deactivateTab = function () {
+        this.tabElement.classList.remove('tab-active');
+    };
+    PageCreate.prototype.getPageElement = function () {
+        return this.pageElement;
+    };
+    PageCreate.prototype.hidePage = function () {
+        this.pageElement.style.display = 'none';
+    };
+    PageCreate.prototype.showPage = function () {
+        this.pageElement.style.display = 'block';
+    };
+    PageCreate.prototype.foreachListElement = function (callback, opt) {
+    };
+    PageCreate.prototype.getDataIndexList = function () {
+    };
+    PageCreate.prototype.getElementWithDataIndex = function (dataIndex) {
+    };
+    PageCreate.prototype.getListId = function () {
+    };
+    PageCreate.prototype.hideElement = function () {
+        this.hidePage();
+        this.deactivateTab();
+    };
+    PageCreate.prototype.showElement = function () {
+        this.showPage();
+        this.activateTab();
+    };
+    PageCreate.prototype.renderPage = function () {
+    };
+    return PageCreate;
+}());
+//# sourceMappingURL=PageCreate.js.map
+var PageDetail = /** @class */ (function () {
+    function PageDetail(pageElement, tabElement, serverData, editPage) {
+        this.pageElement = pageElement;
+        this.tabElement = tabElement;
+        this.serverData = serverData;
+        this.editPage = editPage;
         this.colorBrightness = Settings.colorBrightness;
         this.currentIndex = 0;
         this.seasonUrl = '';
@@ -1053,7 +1109,15 @@ var PageDetail = /** @class */ (function () {
     PageDetail.prototype.editButton = function () {
         var instance = this;
         return ListElement.generateButton('img/edit.ico', 'edit', function () {
-            //TODO: edit detail
+            var data = instance.serverData.getListElement(instance.currentIndex);
+            instance.editPage.renderPage(data);
+            slideToEdit();
+            setTimeout(function () {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }, 120);
         });
     };
     PageDetail.prototype.deleteButton = function () {
@@ -1245,13 +1309,61 @@ var PageDetail = /** @class */ (function () {
     return PageDetail;
 }());
 //# sourceMappingURL=PageDetail.js.map
+var PageEdit = /** @class */ (function () {
+    function PageEdit(pageElement, tabElement, serverData) {
+        this.pageElement = pageElement;
+        this.tabElement = tabElement;
+        this.serverData = serverData;
+    }
+    PageEdit.prototype.activateTab = function () {
+        if (!this.tabElement.classList.contains('tab-active')) {
+            this.tabElement.classList.add('tab-active');
+        }
+    };
+    PageEdit.prototype.deactivateTab = function () {
+        this.tabElement.classList.remove('tab-active');
+    };
+    PageEdit.prototype.getPageElement = function () {
+        return this.pageElement;
+    };
+    PageEdit.prototype.hidePage = function () {
+        this.pageElement.style.display = 'none';
+    };
+    PageEdit.prototype.showPage = function () {
+        this.pageElement.style.display = 'block';
+    };
+    PageEdit.prototype.foreachListElement = function (callback, opt) {
+    };
+    PageEdit.prototype.getDataIndexList = function () {
+    };
+    PageEdit.prototype.getElementWithDataIndex = function (dataIndex) {
+    };
+    PageEdit.prototype.getListId = function () {
+    };
+    PageEdit.prototype.hideElement = function () {
+        this.hidePage();
+        this.deactivateTab();
+    };
+    PageEdit.prototype.showElement = function () {
+        this.showPage();
+        this.activateTab();
+    };
+    PageEdit.prototype.initPage = function () {
+    };
+    PageEdit.prototype.renderPage = function (data) {
+        this.pageElement.innerHTML = data.name_de;
+    };
+    return PageEdit;
+}());
+//# sourceMappingURL=PageEdit.js.map
 var PageList = /** @class */ (function () {
-    function PageList(listID, pageElement, tabElement, serverData, detailPage) {
+    function PageList(listID, pageElement, tabElement, serverData, detailPage, editPage) {
         this.listID = listID;
         this.pageElement = pageElement;
         this.tabElement = tabElement;
         this.serverData = serverData;
         this.detailPage = detailPage;
+        this.editPage = editPage;
     }
     PageList.prototype.showElement = function () {
         this.showPage();
@@ -1310,7 +1422,7 @@ var PageList = /** @class */ (function () {
         for (var i = 0; i < indexList.length; i++) {
             var element = this.serverData.getListElement(indexList[i]);
             var firstChar = element[PageDetail.calcTitleLang(element)].charAt(0).toUpperCase();
-            var listElement = new ListElement(indexList[i], this.serverData, this.detailPage, this);
+            var listElement = new ListElement(indexList[i], this.serverData, this.detailPage, this, this.editPage);
             if (this.dataList[firstChar] === undefined) {
                 this.dataList[firstChar] = [listElement];
             }
@@ -1386,7 +1498,7 @@ var PageOptions = /** @class */ (function () {
         else if (activeFlag === 3) {
             this.renderForNotWatched();
         }
-        else if (activeFlag === 4) {
+        else if (activeFlag > 3) {
             this.showSettingsFlag = true;
             this.renderSettings();
         }
@@ -1737,6 +1849,50 @@ var PageOptions = /** @class */ (function () {
     return PageOptions;
 }());
 //# sourceMappingURL=PageOptions.js.map
+var PageRanking = /** @class */ (function () {
+    function PageRanking(pageElement, tabElement, serverData) {
+        this.pageElement = pageElement;
+        this.tabElement = tabElement;
+        this.serverData = serverData;
+    }
+    PageRanking.prototype.activateTab = function () {
+        if (!this.tabElement.classList.contains('tab-active')) {
+            this.tabElement.classList.add('tab-active');
+        }
+    };
+    PageRanking.prototype.deactivateTab = function () {
+        this.tabElement.classList.remove('tab-active');
+    };
+    PageRanking.prototype.getPageElement = function () {
+        return this.pageElement;
+    };
+    PageRanking.prototype.hidePage = function () {
+        this.pageElement.style.display = 'none';
+    };
+    PageRanking.prototype.showPage = function () {
+        this.pageElement.style.display = 'block';
+    };
+    PageRanking.prototype.foreachListElement = function (callback, opt) {
+    };
+    PageRanking.prototype.getDataIndexList = function () {
+    };
+    PageRanking.prototype.getElementWithDataIndex = function (dataIndex) {
+    };
+    PageRanking.prototype.getListId = function () {
+    };
+    PageRanking.prototype.hideElement = function () {
+        this.hidePage();
+        this.deactivateTab();
+    };
+    PageRanking.prototype.showElement = function () {
+        this.showPage();
+        this.activateTab();
+    };
+    PageRanking.prototype.renderPage = function () {
+    };
+    return PageRanking;
+}());
+//# sourceMappingURL=PageRanking.js.map
 var PageSettings = /** @class */ (function () {
     function PageSettings(serverData) {
         this.serverData = serverData;
@@ -1994,12 +2150,12 @@ document.addEventListener('keydown', function (ev) {
         return;
     }
     if (ev.keyCode === 39) {
-        if (navMap.active < 4) {
+        if (navMap.active < 7) {
             animationSlideLeft(navMap[navMap.active], navMap[navMap.active + 1]);
             navMap.active++;
         }
         else {
-            animationSlideLeft(navMap[4], navMap[1]);
+            animationSlideLeft(navMap[7], navMap[1]);
             navMap.active = 1;
         }
     }
@@ -2009,8 +2165,8 @@ document.addEventListener('keydown', function (ev) {
             navMap.active--;
         }
         else {
-            animationSlideRight(navMap[1], navMap[4]);
-            navMap.active = 4;
+            animationSlideRight(navMap[1], navMap[7]);
+            navMap.active = 7;
         }
     }
 });
@@ -2113,8 +2269,53 @@ function slideToDetails() {
     if (!navMap.flag) {
         return;
     }
-    animationSlideLeft(navMap[navMap.active], details);
+    if (navMap.active > 4) {
+        animationSlideRight(navMap[navMap.active], details);
+    }
+    else {
+        animationSlideLeft(navMap[navMap.active], details);
+    }
     navMap.active = 4;
+}
+function slideToCreate() {
+    if (navMap.active === 5) {
+        return;
+    }
+    if (!navMap.flag) {
+        return;
+    }
+    if (navMap.active > 5) {
+        animationSlideRight(navMap[navMap.active], create);
+    }
+    else {
+        animationSlideLeft(navMap[navMap.active], create);
+    }
+    navMap.active = 5;
+}
+function slideToEdit() {
+    if (navMap.active === 6) {
+        return;
+    }
+    if (!navMap.flag) {
+        return;
+    }
+    if (navMap.active > 6) {
+        animationSlideRight(navMap[navMap.active], edit);
+    }
+    else {
+        animationSlideLeft(navMap[navMap.active], edit);
+    }
+    navMap.active = 6;
+}
+function slideToRanking() {
+    if (navMap.active === 7) {
+        return;
+    }
+    if (!navMap.flag) {
+        return;
+    }
+    animationSlideLeft(navMap[navMap.active], ranking);
+    navMap.active = 7;
 }
 function resizeSegment(parent, relSpeed, callback) {
     var currentHeight = parent.parentElement.getBoundingClientRect().height;
@@ -2293,6 +2494,9 @@ var playlist;
 var watched;
 var notWatched;
 var details;
+var create;
+var edit;
+var ranking;
 var optionPage;
 var navMap;
 function reloadAllData() {
@@ -2302,6 +2506,9 @@ function reloadAllData() {
             2: playlist,
             3: notWatched,
             4: details,
+            5: create,
+            6: edit,
+            7: ranking,
             active: Settings.startPage,
             flag: true
         };
@@ -2311,39 +2518,78 @@ function reloadAllData() {
                 notWatched.hideElement();
                 playlist.hideElement();
                 details.hideElement();
+                create.hideElement();
+                edit.hideElement();
+                ranking.hideElement();
                 break;
             case ListID.PLAYLIST:
                 playlist.showElement();
                 watched.hideElement();
                 notWatched.hideElement();
                 details.hideElement();
+                create.hideElement();
+                edit.hideElement();
+                ranking.hideElement();
                 break;
             case ListID.NOT_WATCHED:
                 notWatched.showElement();
                 details.hideElement();
                 playlist.hideElement();
                 watched.hideElement();
+                create.hideElement();
+                edit.hideElement();
+                ranking.hideElement();
                 break;
             case ListID.DETAILS:
                 details.showElement();
                 notWatched.hideElement();
                 playlist.hideElement();
                 watched.hideElement();
+                create.hideElement();
+                edit.hideElement();
+                ranking.hideElement();
+                break;
+            case ListID.CREATE:
+                details.hideElement();
+                notWatched.hideElement();
+                playlist.hideElement();
+                watched.hideElement();
+                create.showElement();
+                edit.hideElement();
+                ranking.hideElement();
+                break;
+            case ListID.EDIT:
+                details.hideElement();
+                notWatched.hideElement();
+                playlist.hideElement();
+                watched.hideElement();
+                create.hideElement();
+                edit.showElement();
+                ranking.hideElement();
+                break;
+            case ListID.RANKING:
+                details.hideElement();
+                notWatched.hideElement();
+                playlist.hideElement();
+                watched.hideElement();
+                create.hideElement();
+                edit.hideElement();
+                ranking.showElement();
                 break;
         }
         playlist.generateMap();
         playlist.renderList();
-        // watched.hideElement();
         watched.generateMap();
         watched.renderList();
-        // notWatched.hideElement();
         notWatched.generateMap();
         notWatched.renderList();
-        // details.hideElement();
         details.initPage();
         details.renderPage(serverData.getListElement(serverData.getIndexOfELement({
             id: Settings.initialDataId
         })));
+        create.renderPage();
+        edit.initPage();
+        ranking.renderPage();
     });
 }
 function reloadEverything() {
@@ -2353,64 +2599,68 @@ function reloadEverything() {
     var detailsElement = document.getElementById('details');
     var opacityLayer = document.getElementById('opacity-layer');
     var pageOption = document.getElementById('page-option');
+    var createElement = document.getElementById('create');
+    var editElement = document.getElementById('edit');
+    var rankingElement = document.getElementById('ranking');
     var tabWatched = document.getElementById('tab-watched');
     var tabPlaylist = document.getElementById('tab-playlist');
     var tabNotWatched = document.getElementById('tab-not-watched');
     var tabDetails = document.getElementById('tab-details');
     var tabOptions = document.getElementById('option-button');
+    var tabCreate = document.getElementById('tab-create');
+    var tabEdit = document.getElementById('tab-edit');
+    var tabRanking = document.getElementById('tab-ranking');
     Settings.load(function () {
         serverData = new ServerData();
-        details = new PageDetail(detailsElement, tabDetails, serverData);
-        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details);
-        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details);
-        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details);
+        edit = new PageEdit(editElement, tabEdit, serverData);
+        details = new PageDetail(detailsElement, tabDetails, serverData, edit);
+        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details, edit);
+        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details, edit);
+        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details, edit);
         optionPage = new PageOptions(opacityLayer, pageOption, serverData);
+        create = new PageCreate(createElement, tabCreate, serverData);
+        ranking = new PageRanking(rankingElement, tabRanking, serverData);
         reloadAllData();
         tabWatched.addEventListener('click', function () {
             if (navMap !== undefined) {
                 slideToWatched();
-                return;
             }
-            watched.showElement();
-            playlist.hideElement();
-            notWatched.hideElement();
-            details.hideElement();
         });
         tabPlaylist.addEventListener('click', function () {
             if (navMap !== undefined) {
                 slideToPlaylist();
-                return;
             }
-            watched.hideElement();
-            playlist.showElement();
-            notWatched.hideElement();
-            details.hideElement();
         });
         tabNotWatched.addEventListener('click', function () {
             if (navMap !== undefined) {
                 slideToNotWatched();
-                return;
             }
-            watched.hideElement();
-            playlist.hideElement();
-            notWatched.showElement();
-            details.hideElement();
         });
         tabDetails.addEventListener('click', function () {
             if (navMap !== undefined) {
                 slideToDetails();
-                return;
             }
-            watched.hideElement();
-            playlist.hideElement();
-            notWatched.hideElement();
-            details.showElement();
         });
         tabOptions.addEventListener('click', function () {
             optionPage.renderPage(navMap[navMap.active], navMap.active);
             optionPage.showElement();
             if (navMap !== undefined) {
                 slideOpenOptions(optionPage.getOptionContainer());
+            }
+        });
+        tabCreate.addEventListener('click', function () {
+            if (navMap !== undefined) {
+                slideToCreate();
+            }
+        });
+        tabEdit.addEventListener('click', function () {
+            if (navMap !== undefined) {
+                slideToEdit();
+            }
+        });
+        tabRanking.addEventListener('click', function () {
+            if (navMap !== undefined) {
+                slideToRanking();
             }
         });
     });

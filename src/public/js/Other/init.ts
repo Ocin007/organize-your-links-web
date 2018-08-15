@@ -4,6 +4,9 @@ let playlist: PageList;
 let watched: PageList;
 let notWatched: PageList;
 let details: PageDetail;
+let create: PageCreate;
+let edit: PageEdit;
+let ranking: PageRanking;
 let optionPage: PageOptions;
 let navMap;
 
@@ -14,6 +17,9 @@ function reloadAllData() {
             2: playlist,
             3: notWatched,
             4: details,
+            5: create,
+            6: edit,
+            7: ranking,
             active: Settings.startPage,
             flag: true
         };
@@ -23,44 +29,86 @@ function reloadAllData() {
                 notWatched.hideElement();
                 playlist.hideElement();
                 details.hideElement();
+                create.hideElement();
+                edit.hideElement();
+                ranking.hideElement();
                 break;
             case ListID.PLAYLIST:
                 playlist.showElement();
                 watched.hideElement();
                 notWatched.hideElement();
                 details.hideElement();
+                create.hideElement();
+                edit.hideElement();
+                ranking.hideElement();
                 break;
             case ListID.NOT_WATCHED:
                 notWatched.showElement();
                 details.hideElement();
                 playlist.hideElement();
                 watched.hideElement();
+                create.hideElement();
+                edit.hideElement();
+                ranking.hideElement();
                 break;
             case ListID.DETAILS:
                 details.showElement();
                 notWatched.hideElement();
                 playlist.hideElement();
                 watched.hideElement();
+                create.hideElement();
+                edit.hideElement();
+                ranking.hideElement();
+                break;
+            case ListID.CREATE:
+                details.hideElement();
+                notWatched.hideElement();
+                playlist.hideElement();
+                watched.hideElement();
+                create.showElement();
+                edit.hideElement();
+                ranking.hideElement();
+                break;
+            case ListID.EDIT:
+                details.hideElement();
+                notWatched.hideElement();
+                playlist.hideElement();
+                watched.hideElement();
+                create.hideElement();
+                edit.showElement();
+                ranking.hideElement();
+                break;
+            case ListID.RANKING:
+                details.hideElement();
+                notWatched.hideElement();
+                playlist.hideElement();
+                watched.hideElement();
+                create.hideElement();
+                edit.hideElement();
+                ranking.showElement();
                 break;
         }
         playlist.generateMap();
         playlist.renderList();
 
-        // watched.hideElement();
         watched.generateMap();
         watched.renderList();
 
-        // notWatched.hideElement();
         notWatched.generateMap();
         notWatched.renderList();
 
-        // details.hideElement();
         details.initPage();
         details.renderPage(serverData.getListElement(
             serverData.getIndexOfELement({
                 id: Settings.initialDataId
             })
         ));
+
+        create.renderPage();
+
+        edit.initPage();
+
+        ranking.renderPage();
     });
 }
 
@@ -71,66 +119,70 @@ function reloadEverything() {
     const detailsElement = document.getElementById('details');
     const opacityLayer = document.getElementById('opacity-layer');
     const pageOption = document.getElementById('page-option');
+    const createElement = document.getElementById('create');
+    const editElement = document.getElementById('edit');
+    const rankingElement = document.getElementById('ranking');
 
     const tabWatched = document.getElementById('tab-watched');
     const tabPlaylist = document.getElementById('tab-playlist');
     const tabNotWatched = document.getElementById('tab-not-watched');
     const tabDetails = document.getElementById('tab-details');
     const tabOptions = document.getElementById('option-button');
+    const tabCreate = document.getElementById('tab-create');
+    const tabEdit = document.getElementById('tab-edit');
+    const tabRanking = document.getElementById('tab-ranking');
     Settings.load(function () {
         serverData = new ServerData();
 
-        details = new PageDetail(detailsElement, tabDetails, serverData);
-        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details);
-        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details);
-        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details);
+        edit = new PageEdit(editElement, tabEdit, serverData);
+        details = new PageDetail(detailsElement, tabDetails, serverData, edit);
+        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details, edit);
+        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details, edit);
+        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details, edit);
         optionPage = new PageOptions(opacityLayer, pageOption, serverData);
+        create = new PageCreate(createElement, tabCreate, serverData);
+        ranking = new PageRanking(rankingElement, tabRanking, serverData);
         reloadAllData();
         tabWatched.addEventListener('click', function () {
             if (navMap !== undefined) {
                 slideToWatched();
-                return;
             }
-            watched.showElement();
-            playlist.hideElement();
-            notWatched.hideElement();
-            details.hideElement();
         });
         tabPlaylist.addEventListener('click', function () {
             if (navMap !== undefined) {
                 slideToPlaylist();
-                return;
             }
-            watched.hideElement();
-            playlist.showElement();
-            notWatched.hideElement();
-            details.hideElement();
         });
         tabNotWatched.addEventListener('click', function () {
             if (navMap !== undefined) {
                 slideToNotWatched();
-                return;
             }
-            watched.hideElement();
-            playlist.hideElement();
-            notWatched.showElement();
-            details.hideElement();
         });
         tabDetails.addEventListener('click', function () {
             if (navMap !== undefined) {
                 slideToDetails();
-                return;
             }
-            watched.hideElement();
-            playlist.hideElement();
-            notWatched.hideElement();
-            details.showElement();
         });
         tabOptions.addEventListener('click', function () {
             optionPage.renderPage(navMap[navMap.active], navMap.active);
             optionPage.showElement();
             if (navMap !== undefined) {
                 slideOpenOptions(optionPage.getOptionContainer());
+            }
+        });
+        tabCreate.addEventListener('click', function () {
+            if(navMap !== undefined) {
+                slideToCreate();
+            }
+        });
+        tabEdit.addEventListener('click', function () {
+            if(navMap !== undefined) {
+                slideToEdit();
+            }
+        });
+        tabRanking.addEventListener('click', function () {
+            if(navMap !== undefined) {
+                slideToRanking();
             }
         });
     });

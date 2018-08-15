@@ -17,7 +17,8 @@ class ListElement {
         private dataIndex: number,
         private serverData: ServerData,
         private detailPage: PageDetail,
-        private pageList: PageList
+        private pageList: PageList,
+        private editPage: PageEdit
     ) {
         const element = this.serverData.getListElement(this.dataIndex);
         [
@@ -307,7 +308,14 @@ class ListElement {
     private createEditButton() {
         const instance = this;
         return ListElement.generateButton('img/edit.ico', 'edit', function () {
-            //TODO: edit
+            instance.editPage.renderPage(instance.data);
+            slideToEdit();
+            setTimeout(function () {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            }, 120);
         });
     }
 

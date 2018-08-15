@@ -30,11 +30,11 @@ document.addEventListener('keydown', function (ev: any) {
         return;
     }
     if(ev.keyCode === 39) {
-        if(navMap.active < 4) {
+        if(navMap.active < 7) {
             animationSlideLeft(navMap[navMap.active], navMap[navMap.active+1]);
             navMap.active++;
         } else {
-            animationSlideLeft(navMap[4], navMap[1]);
+            animationSlideLeft(navMap[7], navMap[1]);
             navMap.active = 1;
         }
     }
@@ -43,8 +43,8 @@ document.addEventListener('keydown', function (ev: any) {
             animationSlideRight(navMap[navMap.active], navMap[navMap.active-1]);
             navMap.active--;
         } else {
-            animationSlideRight(navMap[1], navMap[4]);
-            navMap.active = 4;
+            animationSlideRight(navMap[1], navMap[7]);
+            navMap.active = 7;
         }
     }
 });
@@ -151,9 +151,55 @@ function slideToDetails() {
     if(!navMap.flag) {
         return;
     }
-    animationSlideLeft(navMap[navMap.active], details);
+    if(navMap.active > 4) {
+        animationSlideRight(navMap[navMap.active], details);
+    } else {
+        animationSlideLeft(navMap[navMap.active], details);
+    }
     navMap.active = 4;
 }
+
+function slideToCreate() {
+    if(navMap.active === 5) {
+        return;
+    }
+    if(!navMap.flag) {
+        return;
+    }
+    if(navMap.active > 5) {
+        animationSlideRight(navMap[navMap.active], create);
+    } else {
+        animationSlideLeft(navMap[navMap.active], create);
+    }
+    navMap.active = 5;
+}
+
+function slideToEdit() {
+    if(navMap.active === 6) {
+        return;
+    }
+    if(!navMap.flag) {
+        return;
+    }
+    if(navMap.active > 6) {
+        animationSlideRight(navMap[navMap.active], edit);
+    } else {
+        animationSlideLeft(navMap[navMap.active], edit);
+    }
+    navMap.active = 6;
+}
+
+function slideToRanking() {
+    if(navMap.active === 7) {
+        return;
+    }
+    if(!navMap.flag) {
+        return;
+    }
+    animationSlideLeft(navMap[navMap.active], ranking);
+    navMap.active = 7;
+}
+
 
 function resizeSegment(parent: HTMLElement, relSpeed: number, callback: Function) {
     let currentHeight = parent.parentElement.getBoundingClientRect().height;
