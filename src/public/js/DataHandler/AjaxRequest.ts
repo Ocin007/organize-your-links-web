@@ -12,7 +12,6 @@ class AjaxRequest {
                     const errWindow = window.open();
                     errWindow.document.write(http.responseText);
                     errWindow.document.write(e);
-                    return;
                 }
             } else {
                 onError(http);
@@ -29,5 +28,7 @@ class AjaxRequest {
         } catch (e) {
             console.log('cannot be parsed');
         }
+        const errWindow = window.open();
+        errWindow.document.write(http.responseText);
     }
 }

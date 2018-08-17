@@ -1,3 +1,5 @@
 .idea
 organize-your-links-web.iml
 vendor
+data/apikey.json
+data/apitoken.json
