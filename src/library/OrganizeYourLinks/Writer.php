@@ -44,6 +44,18 @@ class Writer {
         }
     }
 
+    public function createNewFiles($dataListMap, $fileListMap) {
+        foreach ($dataListMap as $file => $data) {
+            $id = uniqid('', true);
+            $data['id'] = $id;
+            $this->map[$id] = $file;
+            $dataStr = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            file_put_contents($this->directory.'/'.$file, $dataStr);
+        }
+        $mapStr = json_encode($this->map, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        file_put_contents($fileListMap, $mapStr);
+    }
+
     public function getIdListOfUpdatedFiles() {
         return $this->idList;
     }

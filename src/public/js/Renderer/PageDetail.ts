@@ -111,8 +111,10 @@ class PageDetail implements Slideable, ForeachElement {
     renderPage(data: DataListElement) {
         this.setFlags(data);
         this.episodeList = [];
-        this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
-        this.seasonUrl = data.seasons[this.sIndex].url;
+        if(data.seasons.length !== 0) {
+            this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
+            this.seasonUrl = data.seasons[this.sIndex].url;
+        }
         this.currentIndex = this.serverData.getIndexOfELement(data);
         this.pageNumberElement.innerHTML = (this.currentIndex+1).toString();
         this.setInfoValues(data);
@@ -540,7 +542,11 @@ class PageDetail implements Slideable, ForeachElement {
             this.infoSeasonContainer.appendChild(PageDetail.generateInfoWrapper(label, countPerSeason.toString())[0]);
         }
         let result = ((count/this.maxCount)*100).toFixed(1);
-        this.infoProgress.innerHTML = result+'%';
+        if(isNaN(Number(result))) {
+            this.infoProgress.innerHTML = result;
+        } else {
+            this.infoProgress.innerHTML = result+'%';
+        }
         const [r, g] = this.calculateColor(parseFloat(result));
         this.infoProgress.style.color = 'rgb('+r+', '+g+', 0)';
         this.infoNotWatched.innerHTML = (this.maxCount-count).toString();
@@ -574,6 +580,9 @@ class PageDetail implements Slideable, ForeachElement {
     }
 
     private calculateColor(result: number) {
+        if(isNaN(result)) {
+            return [this.colorBrightness, 0];
+        }
         let r, g;
         if(result <= 50) {
             r = this.colorBrightness;

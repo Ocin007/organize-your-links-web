@@ -103,9 +103,22 @@ class DataListValidator implements Validator {
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_de', 'string'));
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_en', 'string'));
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_jpn', 'string'));
-        if(count($errors) === 0 && $data['name_de'] === '' && $data['name_en'] === '' && $data['name_jpn'] === '') {
+        $boolDE = $this->stringHasOnlyWhiteSpace($data['name_de']);
+        $boolEN = $this->stringHasOnlyWhiteSpace($data['name_en']);
+        $boolJPN = $this->stringHasOnlyWhiteSpace($data['name_jpn']);
+        if(count($errors) === 0 && $boolDE && $boolEN && $boolJPN) {
             $errors = ['name' => 'no name given'];
         }
         return $errors;
+    }
+
+    private function stringHasOnlyWhiteSpace($str) {
+        $strArray = str_split($str, 1);
+        foreach($strArray as $char) {
+            if($char !== ' ' && $char !== '') {
+                return false;
+            }
+        }
+        return true;
     }
 }

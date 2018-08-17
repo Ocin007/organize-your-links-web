@@ -13,7 +13,6 @@ header('Access-Control-Allow-Origin: *');
 const LIST_DIR = __DIR__.'/../../data/list';
 const SETTINGS_FILE = __DIR__.'/../../data/settings.json';
 
-//echo uniqid('', true).PHP_EOL;
 
 try {
     $reader = new Reader();

@@ -91,9 +91,9 @@ class DataListValidatorTest extends TestCase
         $testData = [
             [
                 'id' => '',
-                'name_de' => '',
+                'name_de' => '     ',
                 'name_en' => '',
-                'name_jpn' => '',
+                'name_jpn' => '   ',
                 'list' => 1,
                 'seasons' => [[]]
             ]

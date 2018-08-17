@@ -112,4 +112,36 @@ class WriterTest extends TestCase
         $errors = $subject->getErrorList();
         $this->assertEquals($expectedErrors, $errors);
     }
+
+    public function testcreateNewFiles()
+    {
+        $dataListMap = [
+            'test1.json' => [
+                'id' => '',
+                'name_de' => 'A File',
+                'name_en' => 'A File',
+                'name_jpn' => 'A File'
+            ]
+        ];
+        $subject = new Writer($this->listDir, $this->map);
+        $subject->createNewFiles($dataListMap, $this->mapFile);
+        $expected = [
+            '.',
+            '..',
+            'a-file.json',
+            'c-file2.json',
+            'd-file.json',
+            'g-file.json',
+            'test1.json'
+        ];
+        $result = scandir($this->listDir);
+        $this->assertEquals($expected, $result);
+        unlink($this->listDir.'/test1.json');
+        file_put_contents($this->mapFile, json_encode([
+            "id1" => "a-file.json",
+            "id2" => "c-file2.json",
+            "id3" => "d-file.json",
+            "id4" => "g-file.json"
+        ], JSON_PRETTY_PRINT));
+    }
 }

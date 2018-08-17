@@ -129,7 +129,21 @@ var ServerData = /** @class */ (function (_super) {
             }
         });
     };
-    ServerData.prototype.post = function (list, callback) {
+    ServerData.prototype.post = function (list, onError, onSuccess) {
+        ServerData.encodeAllElements(list);
+        ServerData.sendAjaxRequest('../api/post.php', list, function (http) {
+            ServerData.errFunction(http, 'post');
+        }, function (http) {
+            var resObj = JSON.parse(http.responseText);
+            if (resObj.error !== undefined) {
+                onError(resObj.error);
+                return;
+            }
+            if (resObj.response !== undefined) {
+                onSuccess();
+                return;
+            }
+        });
     };
     ServerData.prototype.delete = function (idArray, callback) {
     };
@@ -477,8 +491,10 @@ var ListElement = /** @class */ (function () {
         listElement.classList.add('shadow-bottom');
         var imgLabelContainer = document.createElement('div');
         imgLabelContainer.classList.add('list-img-label');
-        this.thumbnail = this.generateThumbnail();
-        imgLabelContainer.appendChild(this.thumbnail);
+        if (this.data.seasons.length !== 0) {
+            this.thumbnail = this.generateThumbnail();
+            imgLabelContainer.appendChild(this.thumbnail);
+        }
         var buttonContainer = this.generateButtonContainer();
         var labelContainer = this.generateLabelContainer();
         imgLabelContainer.appendChild(labelContainer);
@@ -509,8 +525,10 @@ var ListElement = /** @class */ (function () {
                 container.appendChild(this.createArrowLeftButton());
                 break;
         }
-        container.appendChild(this.createPlayButton());
-        container.appendChild(this.createWatchedButton());
+        if (this.data.seasons.length !== 0) {
+            container.appendChild(this.createPlayButton());
+            container.appendChild(this.createWatchedButton());
+        }
         container.appendChild(this.createEditButton());
         container.appendChild(this.createDeleteButton());
         return container;
@@ -624,10 +642,14 @@ var ListElement = /** @class */ (function () {
         var labelContainer = document.createElement('div');
         labelContainer.classList.add('title-episode-container');
         labelContainer.appendChild(this.generateTitle());
-        this.episode = this.generateEpisodeName();
-        labelContainer.appendChild(this.episode);
+        if (this.data.seasons.length !== 0) {
+            this.episode = this.generateEpisodeName();
+            labelContainer.appendChild(this.episode);
+        }
         container.appendChild(labelContainer);
-        container.appendChild(this.generateAddSubContainer());
+        if (this.data.seasons.length !== 0) {
+            container.appendChild(this.generateAddSubContainer());
+        }
         return container;
     };
     ListElement.prototype.generateTitle = function () {
@@ -753,7 +775,124 @@ var PageCreate = /** @class */ (function () {
         this.showPage();
         this.activateTab();
     };
-    PageCreate.prototype.renderPage = function () {
+    PageCreate.prototype.initPage = function () {
+        this.pageElement.innerHTML = '';
+        this.pageElement.appendChild(PageCreate.generateTitel());
+        this.pageElement.appendChild(this.generateInputContainer('img/germany-big.png', 'germany', 'inputDE'));
+        this.pageElement.appendChild(this.generateInputContainer('img/uk-big.png', 'uk', 'inputEN'));
+        this.pageElement.appendChild(this.generateInputContainer('img/japan-big.png', 'japan', 'inputJPN'));
+        this.pageElement.appendChild(this.generateMsgContainer());
+        this.pageElement.appendChild(this.generateButtonContainer());
+    };
+    PageCreate.prototype.postNewElement = function () {
+        var data = this.createNewDataListElement();
+        var instance = this;
+        this.serverData.post([data], function (error) {
+            instance.msgContainer.classList.remove('create-msg-success');
+            instance.msgContainer.classList.remove('create-msg-error');
+            instance.msgContainer.classList.add('create-msg-error');
+            instance.inputDE.classList.remove('name-input-error');
+            instance.inputEN.classList.remove('name-input-error');
+            instance.inputJPN.classList.remove('name-input-error');
+            instance.msgContainer.innerHTML = JSON.stringify(error[0]);
+            if (error[0].name !== undefined) {
+                instance.msgContainer.innerHTML = 'Es muss mindestens 1 Name angegeben werden. ';
+                instance.inputDE.classList.remove('name-input-error');
+                instance.inputEN.classList.remove('name-input-error');
+                instance.inputJPN.classList.remove('name-input-error');
+            }
+            if (error[0]['name-dublicate'] !== undefined) {
+                instance.msgContainer.innerHTML = 'Name existiert bereits. ';
+                if (error[0]['name-dublicate']['name_de'] !== undefined) {
+                    instance.inputDE.classList.add('name-input-error');
+                }
+                if (error[0]['name-dublicate']['name_en'] !== undefined) {
+                    instance.inputEN.classList.add('name-input-error');
+                }
+                if (error[0]['name-dublicate']['name_jpn'] !== undefined) {
+                    instance.inputJPN.classList.add('name-input-error');
+                }
+            }
+            if (error[0]['name-file'] !== undefined) {
+                instance.msgContainer.innerHTML = 'Serie konnte nicht hinzugefügt werden. Bitte andere Namen wählen.';
+            }
+        }, function () {
+            instance.msgContainer.innerHTML = 'Neue Serie angelegt!';
+            instance.msgContainer.classList.remove('create-msg-success');
+            instance.msgContainer.classList.remove('create-msg-error');
+            instance.msgContainer.classList.add('create-msg-success');
+            setTimeout(reloadEverything, 1000);
+        });
+    };
+    PageCreate.prototype.resetInput = function () {
+        this.inputDE.value = '';
+        this.inputEN.value = '';
+        this.inputJPN.value = '';
+        this.inputDE.classList.remove('name-input-error');
+        this.inputEN.classList.remove('name-input-error');
+        this.inputJPN.classList.remove('name-input-error');
+        this.msgContainer.innerHTML = '';
+        this.msgContainer.classList.remove('create-msg-success');
+        this.msgContainer.classList.remove('create-msg-error');
+    };
+    PageCreate.generateTitel = function () {
+        var title = document.createElement('h1');
+        title.innerHTML = 'Neue Serie anlegen';
+        return PageCreate.createDiv(['title-container-create'], [title]);
+    };
+    PageCreate.prototype.generateInputContainer = function (src, alt, inputField) {
+        var img = PageDetail.createImg(src, alt);
+        this[inputField] = PageCreate.createTextInput(['name-input'], 'Name der Serie');
+        return PageCreate.createDiv(['name-input-container'], [img, this[inputField]]);
+    };
+    PageCreate.prototype.generateMsgContainer = function () {
+        this.msgContainer = PageCreate.createDiv(['create-msg-container']);
+        return PageCreate.createDiv(['create-msg-wrapper'], [this.msgContainer]);
+    };
+    PageCreate.prototype.generateButtonContainer = function () {
+        var buttonSave = PageCreate.createDiv(['custom-button', 'button-green']);
+        buttonSave.innerHTML = 'Erstellen';
+        var buttonRevert = PageCreate.createDiv(['custom-button', 'button-red']);
+        buttonRevert.innerHTML = 'Verwerfen';
+        var instance = this;
+        buttonSave.addEventListener('click', function () {
+            instance.postNewElement();
+        });
+        buttonRevert.addEventListener('click', function () {
+            instance.resetInput();
+        });
+        return PageCreate.createDiv(['create-button-container'], [buttonSave, buttonRevert]);
+    };
+    PageCreate.createDiv = function (classArray, appendArray) {
+        var div = document.createElement('div');
+        for (var i = 0; i < classArray.length; i++) {
+            div.classList.add(classArray[i]);
+        }
+        if (appendArray !== undefined) {
+            for (var i = 0; i < appendArray.length; i++) {
+                div.appendChild(appendArray[i]);
+            }
+        }
+        return div;
+    };
+    PageCreate.createTextInput = function (classArray, placeholder) {
+        var input = document.createElement('input');
+        input.type = 'text';
+        for (var i = 0; i < classArray.length; i++) {
+            input.classList.add(classArray[i]);
+        }
+        input.placeholder = placeholder;
+        return input;
+    };
+    PageCreate.prototype.createNewDataListElement = function () {
+        return {
+            id: '',
+            name_de: this.inputDE.value,
+            name_en: this.inputEN.value,
+            name_jpn: this.inputJPN.value,
+            list: ListID.NOT_WATCHED,
+            seasons: []
+        };
     };
     return PageCreate;
 }());
@@ -832,8 +971,10 @@ var PageDetail = /** @class */ (function () {
     PageDetail.prototype.renderPage = function (data) {
         this.setFlags(data);
         this.episodeList = [];
-        this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
-        this.seasonUrl = data.seasons[this.sIndex].url;
+        if (data.seasons.length !== 0) {
+            this.thumbnail.src = data.seasons[this.sIndex].thumbnail;
+            this.seasonUrl = data.seasons[this.sIndex].url;
+        }
         this.currentIndex = this.serverData.getIndexOfELement(data);
         this.pageNumberElement.innerHTML = (this.currentIndex + 1).toString();
         this.setInfoValues(data);
@@ -1234,7 +1375,12 @@ var PageDetail = /** @class */ (function () {
             this.infoSeasonContainer.appendChild(PageDetail.generateInfoWrapper(label, countPerSeason.toString())[0]);
         }
         var result = ((count / this.maxCount) * 100).toFixed(1);
-        this.infoProgress.innerHTML = result + '%';
+        if (isNaN(Number(result))) {
+            this.infoProgress.innerHTML = result;
+        }
+        else {
+            this.infoProgress.innerHTML = result + '%';
+        }
         var _a = this.calculateColor(parseFloat(result)), r = _a[0], g = _a[1];
         this.infoProgress.style.color = 'rgb(' + r + ', ' + g + ', 0)';
         this.infoNotWatched.innerHTML = (this.maxCount - count).toString();
@@ -1264,6 +1410,9 @@ var PageDetail = /** @class */ (function () {
         return div;
     };
     PageDetail.prototype.calculateColor = function (result) {
+        if (isNaN(result)) {
+            return [this.colorBrightness, 0];
+        }
         var r, g;
         if (result <= 50) {
             r = this.colorBrightness;
@@ -2590,7 +2739,7 @@ function reloadAllData() {
         details.renderPage(serverData.getListElement(serverData.getIndexOfELement({
             id: Settings.initialDataId
         })));
-        create.renderPage();
+        create.initPage();
         edit.initPage();
         ranking.renderPage();
     });

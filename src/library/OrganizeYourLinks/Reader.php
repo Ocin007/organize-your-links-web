@@ -12,10 +12,12 @@ class Reader {
     public function readDir($dir) {
         $this->dataArray = [];
         $fileArray = scandir($dir);
-        for($i = 2; $i < count($fileArray); $i++) {
+        for($i = 0; $i < count($fileArray); $i++) {
             $file = $fileArray[$i];
-            $data = file_get_contents($dir.'/'.$file);
-            $this->dataArray[] = json_decode($data, true);
+            if($file !== '.' && $file !== '..') {
+                $data = file_get_contents($dir.'/'.$file);
+                $this->dataArray[] = json_decode($data, true);
+            }
         }
     }
 

@@ -182,8 +182,10 @@ class ListElement {
         listElement.classList.add('shadow-bottom');
         const imgLabelContainer = document.createElement('div');
         imgLabelContainer.classList.add('list-img-label');
-        this.thumbnail = this.generateThumbnail();
-        imgLabelContainer.appendChild(this.thumbnail);
+        if(this.data.seasons.length !== 0) {
+            this.thumbnail = this.generateThumbnail();
+            imgLabelContainer.appendChild(this.thumbnail);
+        }
         const buttonContainer = this.generateButtonContainer();
         const labelContainer = this.generateLabelContainer();
         imgLabelContainer.appendChild(labelContainer);
@@ -217,8 +219,10 @@ class ListElement {
                 container.appendChild(this.createArrowLeftButton());
                 break;
         }
-        container.appendChild(this.createPlayButton());
-        container.appendChild(this.createWatchedButton());
+        if(this.data.seasons.length !== 0) {
+            container.appendChild(this.createPlayButton());
+            container.appendChild(this.createWatchedButton());
+        }
         container.appendChild(this.createEditButton());
         container.appendChild(this.createDeleteButton());
         return container;
@@ -342,10 +346,14 @@ class ListElement {
         const labelContainer = document.createElement('div');
         labelContainer.classList.add('title-episode-container');
         labelContainer.appendChild(this.generateTitle());
-        this.episode = this.generateEpisodeName();
-        labelContainer.appendChild(this.episode);
+        if(this.data.seasons.length !== 0) {
+            this.episode = this.generateEpisodeName();
+            labelContainer.appendChild(this.episode);
+        }
         container.appendChild(labelContainer);
-        container.appendChild(this.generateAddSubContainer());
+        if(this.data.seasons.length !== 0) {
+            container.appendChild(this.generateAddSubContainer());
+        }
         return container;
     }
 

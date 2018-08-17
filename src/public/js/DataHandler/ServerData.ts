@@ -49,8 +49,21 @@ class ServerData extends AjaxRequest {
         });
     }
 
-    post(list: DataListElement[], callback?: Function) {
-
+    post(list: DataListElement[], onError?: Function, onSuccess?: Function) {
+        ServerData.encodeAllElements(list);
+        ServerData.sendAjaxRequest('../api/post.php', list, function (http) {
+            ServerData.errFunction(http, 'post');
+        }, function (http) {
+            const resObj = JSON.parse(http.responseText);
+            if(resObj.error !== undefined) {
+                onError(resObj.error);
+                return;
+            }
+            if(resObj.response !== undefined) {
+                onSuccess();
+                return;
+            }
+        });
     }
 
     delete(idArray: string[], callback?: Function) {

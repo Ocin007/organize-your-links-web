@@ -104,7 +104,7 @@ function reloadAllData() {
             })
         ));
 
-        create.renderPage();
+        create.initPage();
 
         edit.initPage();
 
