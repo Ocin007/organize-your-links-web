@@ -934,6 +934,7 @@ var PageCreate = /** @class */ (function () {
     PageCreate.prototype.createNewDataListElement = function () {
         return {
             id: '',
+            tvdbId: this.tvdbID,
             name_de: this.inputDE.value,
             name_en: this.inputEN.value,
             name_jpn: this.inputJPN.value,

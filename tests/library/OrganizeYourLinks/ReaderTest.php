@@ -15,10 +15,10 @@ class ReaderTest extends TestCase
         $subject->readDir($this->listDir);
         $result = $subject->getContent();
         $expected = [
-            ['id' => 'id1', 'name_de' => 'A File', 'name_en' => 'A File', 'name_jpn' => 'A File'],
-            ['id' => 'id2', 'name_de' => 'C File 2', 'name_en' => 'C File 2', 'name_jpn' => 'C File 2'],
-            ['id' => 'id3', 'name_de' => 'D File', 'name_en' => 'D File', 'name_jpn' => 'D File'],
-            ['id' => 'id4', 'name_de' => 'G File', 'name_en' => 'G File', 'name_jpn' => 'G File'],
+            ['id' => 'id1', 'tvdbId' => -1, 'name_de' => 'A File', 'name_en' => 'A File', 'name_jpn' => 'A File'],
+            ['id' => 'id2', 'tvdbId' => -1, 'name_de' => 'C File 2', 'name_en' => 'C File 2', 'name_jpn' => 'C File 2'],
+            ['id' => 'id3', 'tvdbId' => -1, 'name_de' => 'D File', 'name_en' => 'D File', 'name_jpn' => 'D File'],
+            ['id' => 'id4', 'tvdbId' => -1, 'name_de' => 'G File', 'name_en' => 'G File', 'name_jpn' => 'G File'],
         ];
         $this->assertEquals($expected, $result);
     }

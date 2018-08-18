@@ -21,6 +21,7 @@ class DataListValidatorTest extends TestCase
         $expectedErrors = [
             0 => [
                 'id' => 'missing',
+                'tvdbId' => 'missing',
                 'name_de' => 'missing',
                 'name_en' => 'missing',
                 'name_jpn' => 'missing',
@@ -29,6 +30,7 @@ class DataListValidatorTest extends TestCase
             ],
             1 => [
                 'id' => 'missing',
+                'tvdbId' => 'missing',
                 'name_de' => 'missing',
                 'name_en' => 'missing',
                 'name_jpn' => 'missing',
@@ -46,6 +48,7 @@ class DataListValidatorTest extends TestCase
         $testData = [
             [
                 'id' => false,
+                'tvdbId' => false,
                 'name_de' => false,
                 'name_en' => false,
                 'name_jpn' => false,
@@ -56,6 +59,7 @@ class DataListValidatorTest extends TestCase
         $expectedErrors = [
             0 => [
                 'id' => 'wrong type',
+                'tvdbId' => 'wrong type',
                 'name_de' => 'wrong type',
                 'name_en' => 'wrong type',
                 'name_jpn' => 'wrong type',
@@ -73,6 +77,7 @@ class DataListValidatorTest extends TestCase
         $testData = [
             [
                 'id' => '',
+                'tvdbId' => -1,
                 'name_de' => '',
                 'name_en' => '',
                 'name_jpn' => 'japan',
@@ -91,6 +96,7 @@ class DataListValidatorTest extends TestCase
         $testData = [
             [
                 'id' => '',
+                'tvdbId' => -1,
                 'name_de' => '     ',
                 'name_en' => '',
                 'name_jpn' => '   ',
@@ -120,6 +126,7 @@ class DataListValidatorTest extends TestCase
         $testData = [
             [
                 'id' => '',
+                'tvdbId' => -1,
                 'name_de' => 'germany',
                 'name_en' => 'uk',
                 'name_jpn' => '',
@@ -158,6 +165,7 @@ class DataListValidatorTest extends TestCase
         $testData = [
             [
                 'id' => '',
+                'tvdbId' => -1,
                 'name_de' => '',
                 'name_en' => 'uk',
                 'name_jpn' => '',
@@ -178,6 +186,7 @@ class DataListValidatorTest extends TestCase
             ],
             [
                 'id' => false,
+                'tvdbId' => false,
                 'list' => false,
                 'seasons' => [
                     [
@@ -210,6 +219,7 @@ class DataListValidatorTest extends TestCase
         $expectedErrors = [
             1 => [
                 'id' => 'wrong type',
+                'tvdbId' => 'wrong type',
                 'name_de' => 'missing',
                 'name_en' => 'missing',
                 'name_jpn' => 'missing',
@@ -239,6 +249,7 @@ class DataListValidatorTest extends TestCase
         $testData = [
             [
                 'id' => '',
+                'tvdbId' => -1,
                 'name_de' => '',
                 'name_en' => 'uk',
                 'name_jpn' => '',
@@ -280,6 +291,7 @@ class DataListValidatorTest extends TestCase
             ],
             [
                 'id' => '',
+                'tvdbId' => -1,
                 'name_de' => 'de',
                 'name_en' => '',
                 'name_jpn' => 'japan',

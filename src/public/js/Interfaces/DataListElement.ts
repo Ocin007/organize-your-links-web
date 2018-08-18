@@ -1,5 +1,6 @@
 interface DataListElement {
     id: string,
+    tvdbId: number,
     name_de: string,
     name_en: string,
     name_jpn: string,

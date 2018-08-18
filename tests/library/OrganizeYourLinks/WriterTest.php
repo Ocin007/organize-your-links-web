@@ -22,12 +22,14 @@ class WriterTest extends TestCase
         $data = [
             [
                 'id' => 'id1',
+                'tvdbId' => -1,
                 'name_de' => 'test',
                 'name_en' => 'test',
                 'name_jpn' => 'test'
             ],
             [
                 'id' => 'id2',
+                'tvdbId' => -1,
                 'name_de' => 'test',
                 'name_en' => 'test',
                 'name_jpn' => 'test'
@@ -51,12 +53,14 @@ class WriterTest extends TestCase
         $data = [
             [
                 'id' => 'id1',
+                'tvdbId' => -1,
                 'name_de' => 'A File',
                 'name_en' => 'A File',
                 'name_jpn' => 'A File'
             ],
             [
                 'id' => 'id2',
+                'tvdbId' => -1,
                 'name_de' => 'C File 2',
                 'name_en' => 'C File 2',
                 'name_jpn' => 'C File 2'
@@ -74,12 +78,14 @@ class WriterTest extends TestCase
         $data = [
             [
                 'id' => 'id1',
+                'tvdbId' => -1,
                 'name_de' => 'A File',
                 'name_en' => 'A File',
                 'name_jpn' => 'A File'
             ],
             [
                 'id' => 'id0',
+                'tvdbId' => -1,
                 'name_de' => 'A File',
                 'name_en' => 'A File',
                 'name_jpn' => 'A File'
@@ -118,6 +124,7 @@ class WriterTest extends TestCase
         $dataListMap = [
             'test1.json' => [
                 'id' => '',
+                'tvdbId' => -1,
                 'name_de' => 'A File',
                 'name_en' => 'A File',
                 'name_jpn' => 'A File'
