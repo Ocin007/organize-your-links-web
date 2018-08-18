@@ -3,7 +3,10 @@ class PageCreate implements Slideable, ForeachElement {
     private inputDE: HTMLInputElement;
     private inputEN: HTMLInputElement;
     private inputJPN: HTMLInputElement;
+    private tvdbID: number;
+
     private msgContainer: HTMLElement;
+    private tvdbSearch: TvdbSearchResults;
 
     constructor(
         private pageElement: HTMLElement,
@@ -58,14 +61,39 @@ class PageCreate implements Slideable, ForeachElement {
         this.activateTab();
     }
 
+    setResults(tvdbID: number, nameDE: string, nameEN: string, nameJPN: string) {
+        this.inputDE.value = nameDE;
+        this.inputEN.value = nameEN;
+        this.inputJPN.value = nameJPN;
+        this.tvdbID = tvdbID;
+        this.msgContainer.innerHTML = 'TVDB ID: #'+tvdbID;
+        this.msgContainer.classList.remove('create-msg-success');
+        this.msgContainer.classList.remove('create-msg-error');
+    }
+
     initPage() {
         this.pageElement.innerHTML = '';
         this.pageElement.appendChild(PageCreate.generateTitel());
+        this.appendTvdbSearch();
         this.pageElement.appendChild(this.generateInputContainer('img/germany-big.png', 'germany', 'inputDE'));
         this.pageElement.appendChild(this.generateInputContainer('img/uk-big.png', 'uk', 'inputEN'));
         this.pageElement.appendChild(this.generateInputContainer('img/japan-big.png', 'japan', 'inputJPN'));
         this.pageElement.appendChild(this.generateMsgContainer());
         this.pageElement.appendChild(this.generateButtonContainer());
+    }
+
+    private appendTvdbSearch() {
+        const searchButton = PageCreate.createDiv(['custom-button'],
+            [PageDetail.createImg('img/search-icon.ico', 'search')]
+        );
+        const input = PageCreate.createTextInput(['name-input'], 'TVDB durchsuchen...');
+        this.pageElement.appendChild(PageCreate.createDiv(['name-input-container'],
+            [searchButton, input])
+        );
+        const container = PageCreate.createDiv(['search-result-container']);
+        this.pageElement.appendChild(PageCreate.createDiv(['create-msg-wrapper'], [container]));
+        this.tvdbSearch = new TvdbSearchResults(searchButton, input, container, this);
+        this.tvdbSearch.init();
     }
 
     private postNewElement() {
@@ -110,6 +138,7 @@ class PageCreate implements Slideable, ForeachElement {
     }
 
     private resetInput() {
+        this.tvdbSearch.reset();
         this.inputDE.value = '';
         this.inputEN.value = '';
         this.inputJPN.value = '';
@@ -153,7 +182,7 @@ class PageCreate implements Slideable, ForeachElement {
         return PageCreate.createDiv(['create-button-container'], [buttonSave, buttonRevert]);
     }
 
-    private static createDiv(classArray: string[], appendArray?: HTMLElement[]) {
+    static createDiv(classArray: string[], appendArray?: HTMLElement[]) {
         const div = document.createElement('div');
         for (let i = 0; i < classArray.length; i++) {
             div.classList.add(classArray[i]);

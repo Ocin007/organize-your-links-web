@@ -3,6 +3,7 @@
 - index.html in src/public  
 - Benötigt composer
 - data/apikey.json.example in data/apikey.json umbenennen und TVDB API Key eintragen
+- data/cacert.pem, download: https://curl.haxx.se/docs/caextract.html
 
 Geplante Funktionen:
 - neue einträge erstellen

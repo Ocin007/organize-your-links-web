@@ -44,7 +44,6 @@ var AjaxRequest = /** @class */ (function () {
                     var errWindow = window.open();
                     errWindow.document.write(http.responseText);
                     errWindow.document.write(e);
-                    return;
                 }
             }
             else {
@@ -62,6 +61,8 @@ var AjaxRequest = /** @class */ (function () {
         catch (e) {
             console.log('cannot be parsed');
         }
+        var errWindow = window.open();
+        errWindow.document.write(http.responseText);
     };
     return AjaxRequest;
 }());
@@ -343,6 +344,32 @@ var Settings = /** @class */ (function (_super) {
     return Settings;
 }(AjaxRequest));
 //# sourceMappingURL=Settings.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var TVDB = /** @class */ (function (_super) {
+    __extends(TVDB, _super);
+    function TVDB() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    TVDB.search = function (token, callback) {
+        TVDB.sendAjaxRequest('../api/tvdb/search.php', token, function (http) {
+            TVDB.errFunction(http, 'search');
+        }, function (http) {
+            var resObj = JSON.parse(http.responseText);
+            callback(resObj);
+        });
+    };
+    return TVDB;
+}(AjaxRequest));
+//# sourceMappingURL=TVDB.js.map
 var ListElement = /** @class */ (function () {
     function ListElement(dataIndex, serverData, detailPage, pageList, editPage) {
         this.dataIndex = dataIndex;
@@ -775,14 +802,33 @@ var PageCreate = /** @class */ (function () {
         this.showPage();
         this.activateTab();
     };
+    PageCreate.prototype.setResults = function (tvdbID, nameDE, nameEN, nameJPN) {
+        this.inputDE.value = nameDE;
+        this.inputEN.value = nameEN;
+        this.inputJPN.value = nameJPN;
+        this.tvdbID = tvdbID;
+        this.msgContainer.innerHTML = 'TVDB ID: #' + tvdbID;
+        this.msgContainer.classList.remove('create-msg-success');
+        this.msgContainer.classList.remove('create-msg-error');
+    };
     PageCreate.prototype.initPage = function () {
         this.pageElement.innerHTML = '';
         this.pageElement.appendChild(PageCreate.generateTitel());
+        this.appendTvdbSearch();
         this.pageElement.appendChild(this.generateInputContainer('img/germany-big.png', 'germany', 'inputDE'));
         this.pageElement.appendChild(this.generateInputContainer('img/uk-big.png', 'uk', 'inputEN'));
         this.pageElement.appendChild(this.generateInputContainer('img/japan-big.png', 'japan', 'inputJPN'));
         this.pageElement.appendChild(this.generateMsgContainer());
         this.pageElement.appendChild(this.generateButtonContainer());
+    };
+    PageCreate.prototype.appendTvdbSearch = function () {
+        var searchButton = PageCreate.createDiv(['custom-button'], [PageDetail.createImg('img/search-icon.ico', 'search')]);
+        var input = PageCreate.createTextInput(['name-input'], 'TVDB durchsuchen...');
+        this.pageElement.appendChild(PageCreate.createDiv(['name-input-container'], [searchButton, input]));
+        var container = PageCreate.createDiv(['search-result-container']);
+        this.pageElement.appendChild(PageCreate.createDiv(['create-msg-wrapper'], [container]));
+        this.tvdbSearch = new TvdbSearchResults(searchButton, input, container, this);
+        this.tvdbSearch.init();
     };
     PageCreate.prototype.postNewElement = function () {
         var data = this.createNewDataListElement();
@@ -825,6 +871,7 @@ var PageCreate = /** @class */ (function () {
         });
     };
     PageCreate.prototype.resetInput = function () {
+        this.tvdbSearch.reset();
         this.inputDE.value = '';
         this.inputEN.value = '';
         this.inputJPN.value = '';
@@ -2273,6 +2320,117 @@ var PageSettings = /** @class */ (function () {
     return PageSettings;
 }());
 //# sourceMappingURL=PageSettings.js.map
+var TvdbSearchResults = /** @class */ (function () {
+    function TvdbSearchResults(searchButton, searchInput, searchContainer, pageCreate) {
+        this.searchButton = searchButton;
+        this.searchInput = searchInput;
+        this.searchContainer = searchContainer;
+        this.pageCreate = pageCreate;
+    }
+    TvdbSearchResults.prototype.init = function () {
+        var instance = this;
+        this.loadindSpinner = PageCreate.createDiv(['loader']);
+        this.searchButton.addEventListener('click', function () {
+            instance.search();
+        });
+        this.searchInput.addEventListener('keypress', function (ev) {
+            if (ev.key !== 'Enter') {
+                return;
+            }
+            instance.search();
+        });
+    };
+    TvdbSearchResults.prototype.reset = function () {
+        this.searchContainer.innerHTML = '';
+        this.searchInput.value = '';
+    };
+    TvdbSearchResults.prototype.search = function () {
+        this.searchContainer.innerHTML = '';
+        this.searchContainer.appendChild(this.loadindSpinner);
+        var instance = this;
+        TVDB.search(this.searchInput.value, function (result) {
+            instance.searchContainer.innerHTML = '';
+            if (result.error !== undefined) {
+                var errMsg = TvdbSearchResults.createErrMsg(result.error);
+                instance.searchContainer.appendChild(errMsg);
+                return;
+            }
+            if (result.response !== undefined) {
+                instance.filterResponse(result.response);
+                instance.displayResults();
+            }
+        });
+    };
+    TvdbSearchResults.prototype.displayResults = function () {
+        for (var id in this.resultMap) {
+            var lang = '';
+            if (this.resultMap[id].de !== undefined) {
+                lang = 'de';
+            }
+            else if (this.resultMap[id].en !== undefined) {
+                lang = 'en';
+            }
+            else if (this.resultMap[id].ja !== undefined) {
+                lang = 'ja';
+            }
+            if (lang !== '') {
+                this.searchContainer.appendChild(this.createSearchResult(this.resultMap[id][lang].name, parseInt(id), this.resultMap[id][lang].overview));
+            }
+        }
+    };
+    TvdbSearchResults.prototype.filterResponse = function (res) {
+        this.resultMap = {};
+        for (var lang in res) {
+            if (res[lang].data !== undefined) {
+                this.appendDataArrayToMap(res[lang].data, lang);
+            }
+        }
+    };
+    TvdbSearchResults.prototype.appendDataArrayToMap = function (data, lang) {
+        for (var i = 0; i < data.length; i++) {
+            if (this.resultMap[data[i].id] === undefined) {
+                this.resultMap[data[i].id] = {};
+            }
+            this.resultMap[data[i].id][lang] = {
+                name: data[i].seriesName,
+                overview: data[i].overview
+            };
+        }
+    };
+    TvdbSearchResults.createErrMsg = function (msg) {
+        var p = document.createElement('p');
+        p.innerHTML = msg;
+        return PageCreate.createDiv(['errMsg-container'], [p]);
+    };
+    TvdbSearchResults.prototype.createSearchResult = function (title, id, description) {
+        var span = document.createElement('span');
+        span.innerHTML = '#' + id;
+        var h3 = document.createElement('h3');
+        h3.innerHTML = title + ' ';
+        var instance = this;
+        h3.addEventListener('click', function () {
+            var nameDE = '';
+            var nameEN = '';
+            var nameJPN = '';
+            if (instance.resultMap[id].de !== undefined) {
+                nameDE = instance.resultMap[id].de.name;
+            }
+            if (instance.resultMap[id].en !== undefined) {
+                nameEN = instance.resultMap[id].en.name;
+            }
+            if (instance.resultMap[id].ja !== undefined) {
+                nameJPN = instance.resultMap[id].ja.name;
+            }
+            instance.pageCreate.setResults(id, nameDE, nameEN, nameJPN);
+        });
+        h3.appendChild(span);
+        var p = document.createElement('p');
+        p.innerHTML = description;
+        return PageCreate.createDiv(['search-result'], [h3, p]);
+    };
+    return TvdbSearchResults;
+}());
+//# sourceMappingURL=TvdbSearchResults.js.map
 document.addEventListener('DOMContentLoaded', function () {
     window.onscroll = function () {
         myFunction();

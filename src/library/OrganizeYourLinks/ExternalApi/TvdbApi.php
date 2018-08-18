@@ -14,11 +14,13 @@ class TvdbApi {
     private $key;
     private $token;
     private $tokenFile;
+    private $certFile;
     private $content = [];
 
-    public function __construct($keyFile, $tokenFile) {
+    public function __construct($keyFile, $tokenFile, $certFile) {
         $this->key = file_get_contents($keyFile);
         $this->tokenFile = $tokenFile;
+        $this->certFile = $certFile;
     }
 
     public function getContent() {
@@ -62,7 +64,12 @@ class TvdbApi {
                 'header'  => "Content-type: application/json",
                 'method'  => 'POST',
                 'content' => $this->key,
-            ]
+            ],
+            "ssl"=> [
+                "cafile" => $this->certFile,
+                "verify_peer" => true,
+                "verify_peer_name" => true,
+            ],
         ]);
         $result = file_get_contents(TvdbApi::$apiUrl.TvdbApi::$rootLogin, false, $context);
         if(!$this->checkResponse($result)) {
@@ -86,7 +93,12 @@ class TvdbApi {
                     "Authorization: Bearer ".$this->token
                 ],
                 'method' => 'GET'
-            ]
+            ],
+            "ssl"=> [
+                "cafile" => $this->certFile,
+                "verify_peer"=> true,
+                "verify_peer_name"=> true,
+            ],
         ]);
     }
 
