@@ -37,7 +37,6 @@
     border: 2px solid #adadad;
     box-shadow: inset #171717 0 0 5px 0;
     height: 250px;
-    transition: min-height 0.2s, max-height 0.2s, height 0.2s;
     width: 89%;
     margin-bottom: 50px;
     margin-left: 60px;

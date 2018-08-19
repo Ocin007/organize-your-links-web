@@ -1,0 +1,90 @@
+.page-edit {
+    background-color: #dedede;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 440px;
+}
+.edit-no-data {
+    width: 100%;
+    height: 440px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.edit-tools {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    /*justify-content: stretch;*/
+    background-color: lightgray;
+    box-shadow: 0 0 5px 0;
+    width: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.edit-tools label {
+    margin-left: 5px;
+}
+.title-container-edit {
+    height: 214px;
+    max-height: 214px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 40px;
+}
+.button-wrapper-edit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.button-wrapper-edit div {
+    margin-right: 20px;
+    margin-left: 20px;
+}
+.generic-url-container {
+    display: flex;
+    flex-direction: column;
+    margin-right: 20px;
+}
+.edit-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 20px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+.edit-wrapper p {
+    width: 48px;
+    font-weight: bold;
+}
+.edit-input {
+    border: 2px solid #adadad;
+    border-radius: 10px;
+    font-size: 1.5em;
+    height: 38px;
+}
+.edit-number {
+    width: 50px;
+    text-align: center;
+}
+.edit-text {
+    width: 100%;
+}
+.edit-grow {
+    flex-grow: 1;
+    height: 94px;
+    justify-content: space-between;
+}
+.edit-season {
+
+}
+.edit-season h2 {
+    border-bottom: 1px solid #adadad;
+    text-indent: 50px;
+}

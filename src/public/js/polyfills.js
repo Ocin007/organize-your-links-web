@@ -1511,6 +1511,7 @@ var PageEdit = /** @class */ (function () {
         this.pageElement = pageElement;
         this.tabElement = tabElement;
         this.serverData = serverData;
+        this.inputElementList = [];
     }
     PageEdit.prototype.activateTab = function () {
         if (!this.tabElement.classList.contains('tab-active')) {
@@ -1546,9 +1547,162 @@ var PageEdit = /** @class */ (function () {
         this.activateTab();
     };
     PageEdit.prototype.initPage = function () {
+        if (this.oldData !== undefined) {
+            return;
+        }
+        this.pageElement.appendChild(PageCreate.createDiv(['edit-no-data'], [
+            PageEdit.generateText('h1', 'Keine Serie zum Bearbeiten ausgewählt')
+        ]));
     };
     PageEdit.prototype.renderPage = function (data) {
-        this.pageElement.innerHTML = data.name_de;
+        this.oldData = data;
+        this.newData = data;
+        this.pageElement.innerHTML = '';
+        this.pageElement.appendChild(this.generateTitleContainer());
+        this.pageElement.appendChild(this.generateGeneralEditTools());
+    };
+    PageEdit.prototype.generateTitleContainer = function () {
+        var nameDE = (this.oldData.name_de === '') ? '-' : this.oldData.name_de;
+        var nameEN = (this.oldData.name_en === '') ? '-' : this.oldData.name_en;
+        var nameJPN = (this.oldData.name_jpn === '') ? '-' : this.oldData.name_jpn;
+        return PageCreate.createDiv(['title-container-edit'], [
+            PageCreate.createDiv(['title-wrapper'], [
+                PageDetail.createImg('img/germany.png', 'germany'),
+                PageEdit.generateText('h1', nameDE)
+            ]),
+            PageCreate.createDiv(['title-wrapper'], [
+                PageDetail.createImg('img/uk.png', 'uk'),
+                PageEdit.generateText('h1', nameEN)
+            ]),
+            PageCreate.createDiv(['title-wrapper'], [
+                PageDetail.createImg('img/japan.png', 'japan'),
+                PageEdit.generateText('h1', nameJPN)
+            ]),
+            this.createButtonContainer()
+        ]);
+    };
+    PageEdit.generateText = function (tag, text) {
+        var element = document.createElement(tag);
+        element.innerHTML = text;
+        return element;
+    };
+    PageEdit.prototype.createButtonContainer = function () {
+        var instance = this;
+        var save = PageCreate.createDiv(['custom-button', 'button-green']);
+        save.innerHTML = 'Speichern';
+        save.addEventListener('click', function () {
+            instance.serverData.put([instance.newData], reloadAllData);
+        });
+        var revert = PageCreate.createDiv(['custom-button', 'button-red']);
+        revert.innerHTML = 'Verwerfen';
+        revert.addEventListener('click', function () {
+            instance.renderPage(instance.oldData);
+        });
+        return PageCreate.createDiv(['button-wrapper-edit'], [save, revert]);
+    };
+    PageEdit.prototype.generateGeneralEditTools = function () {
+        this.zerosS = PageEdit.createInputNum('0', 'generic-fill-zero-s');
+        this.zerosEp = PageEdit.createInputNum('0', 'generic-fill-zero-ep');
+        var radioEp = this.createInputRadio('generic-mode-ep', '1', true);
+        radioEp.checked = true;
+        var radioSEp = this.createInputRadio('generic-mode-s-ep', '2', false);
+        this.genUrl = PageEdit.createInputText('Generische Url mit {{s}}, {{ep}}');
+        return PageCreate.createDiv(['edit-tools'], [
+            PageCreate.createDiv(['edit-wrapper'], [
+                this.createButton('button-green', 'TVDB Daten einfügen', this.buttonFillWithTvdbData)
+            ]),
+            this.createAddSeasonAction(),
+            PageCreate.createDiv(['generic-url-container', 'edit-grow'], [
+                PageCreate.createDiv(['edit-wrapper'], [
+                    this.createButton('button-silver', 'Los', this.buttonFillWithGenericUrls),
+                    this.genUrl
+                ]),
+                PageCreate.createDiv(['edit-wrapper'], [
+                    radioEp,
+                    PageEdit.createLabel('generic-mode-ep', '{{ep}}'),
+                    radioSEp,
+                    PageEdit.createLabel('generic-mode-s-ep', '{{s}} & {{ep}}')
+                ])
+            ]),
+            PageCreate.createDiv(['generic-url-container'], [
+                PageCreate.createDiv(['edit-wrapper'], [
+                    this.zerosS,
+                    PageEdit.createLabel('generic-fill-zero-s', 'Stellen Season')
+                ]),
+                PageCreate.createDiv(['edit-wrapper'], [
+                    this.zerosEp,
+                    PageEdit.createLabel('generic-fill-zero-ep', 'Stellen Episode')
+                ])
+            ]),
+        ]);
+    };
+    PageEdit.prototype.createButton = function (token, label, callback) {
+        var button = PageCreate.createDiv(['custom-button', token]);
+        button.innerHTML = label;
+        button.addEventListener('click', function () {
+            callback();
+        });
+        return button;
+    };
+    PageEdit.prototype.buttonFillWithTvdbData = function () {
+    };
+    PageEdit.prototype.buttonAppendSeason = function (numEpisodes) {
+    };
+    PageEdit.prototype.buttonFillWithGenericUrls = function () {
+    };
+    PageEdit.prototype.createAddSeasonAction = function () {
+        var instance = this;
+        var inputS = PageEdit.createInputNum('1');
+        var inputEp = PageEdit.createInputNum('1', 'episodes-per-seasons');
+        var button = this.createButton('button-silver', 'Seasons hinzufügen', function () {
+            for (var i = 0; i < parseInt(inputS.value); i++) {
+                instance.buttonAppendSeason(parseInt(inputEp.value));
+            }
+        });
+        var label = PageEdit.createLabel('episodes-per-seasons', 'Episoden pro Season');
+        return PageCreate.createDiv(['generic-url-container'], [
+            PageCreate.createDiv(['edit-wrapper'], [inputS, button]),
+            PageCreate.createDiv(['edit-wrapper'], [inputEp, label])
+        ]);
+    };
+    PageEdit.createInputNum = function (min, id) {
+        var input = document.createElement('input');
+        input.classList.add('edit-input');
+        input.classList.add('edit-number');
+        input.type = 'number';
+        input.min = min;
+        input.value = min;
+        if (id !== undefined) {
+            input.id = id;
+        }
+        return input;
+    };
+    PageEdit.createLabel = function (htmlFor, text) {
+        var label = PageEdit.generateText('label', text);
+        label.setAttribute('for', htmlFor);
+        return label;
+    };
+    PageEdit.prototype.createInputRadio = function (id, value, checked) {
+        var input = document.createElement('input');
+        input.type = 'radio';
+        input.name = 'generate-mode';
+        input.id = id;
+        input.value = value;
+        input.checked = checked;
+        var instance = this;
+        input.addEventListener('click', function () {
+            input.checked = true;
+            instance.genericMode = input.value;
+        });
+        return input;
+    };
+    PageEdit.createInputText = function (placeholder) {
+        var input = document.createElement('input');
+        input.type = 'text';
+        input.classList.add('edit-input');
+        input.classList.add('edit-text');
+        input.placeholder = placeholder;
+        return input;
     };
     return PageEdit;
 }());
