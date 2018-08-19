@@ -1643,6 +1643,7 @@ var PageEdit = /** @class */ (function () {
         }
     };
     PageEdit.prototype.generateGeneralEditTools = function () {
+        var instance = this;
         this.zerosS = PageEdit.createInputNum('0', 'generic-fill-zero-s');
         this.zerosEp = PageEdit.createInputNum('0', 'generic-fill-zero-ep');
         var radioEp = this.createInputRadio('generic-mode-ep', '1', true);
@@ -1651,19 +1652,23 @@ var PageEdit = /** @class */ (function () {
         this.genUrl = PageEdit.createInputText('Generische Url mit {{s}}, {{ep}}');
         return PageCreate.createDiv(['edit-tools'], [
             PageCreate.createDiv(['edit-wrapper'], [
-                this.createButton('button-green', 'TVDB Daten einfügen', this.buttonFillWithTvdbData)
+                this.createButton('button-green', 'TVDB Daten einfügen', function () {
+                    instance.buttonFillWithTvdbData();
+                })
             ]),
             this.createAddSeasonAction(),
             PageCreate.createDiv(['generic-url-container', 'edit-grow'], [
                 PageCreate.createDiv(['edit-wrapper'], [
-                    this.createButton('button-silver', 'Los', this.buttonFillWithGenericUrls),
+                    this.createButton('button-silver', 'Los', function () {
+                        instance.buttonFillWithGenericUrls();
+                    }),
                     this.genUrl
                 ]),
                 PageCreate.createDiv(['edit-wrapper'], [
                     radioEp,
-                    PageEdit.createLabel('generic-mode-ep', '{{ep}}'),
+                    PageEdit.createLabel('generic-mode-ep', '{{ep}} nicht neu zählen'),
                     radioSEp,
-                    PageEdit.createLabel('generic-mode-s-ep', '{{s}} & {{ep}}')
+                    PageEdit.createLabel('generic-mode-s-ep', '{{ep}} in jeder Season neu zählen')
                 ])
             ]),
             PageCreate.createDiv(['generic-url-container'], [
@@ -1687,6 +1692,7 @@ var PageEdit = /** @class */ (function () {
         return button;
     };
     PageEdit.prototype.buttonFillWithTvdbData = function () {
+        //TODO
     };
     PageEdit.prototype.buttonAppendSeason = function (numEpisodes) {
         var container = this.appendSeason('', '');
@@ -1770,6 +1776,31 @@ var PageEdit = /** @class */ (function () {
         sObj.episodes.push(epObj);
     };
     PageEdit.prototype.buttonFillWithGenericUrls = function () {
+        var count = 0;
+        for (var s = 0; s < this.inputElementList.length; s++) {
+            for (var ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
+                count++;
+                var realEp = void 0;
+                if (this.genericMode === '1') {
+                    realEp = PageEdit.appendZeros(count.toString(), parseInt(this.zerosEp.value));
+                }
+                else {
+                    realEp = PageEdit.appendZeros((ep + 1).toString(), parseInt(this.zerosEp.value));
+                }
+                var url = this.genUrl.value.replace(/{{s}}/g, PageEdit.appendZeros((s + 1).toString(), parseInt(this.zerosS.value)));
+                url = url.replace(/{{ep}}/g, realEp);
+                if (this.inputElementList[s].episodes[ep].url.value === '') {
+                    this.inputElementList[s].episodes[ep].url.value = url;
+                }
+            }
+        }
+    };
+    PageEdit.appendZeros = function (str, numZeros) {
+        var zeros = '';
+        for (var i = 0; i < numZeros - str.length; i++) {
+            zeros += '0';
+        }
+        return zeros + str;
     };
     PageEdit.prototype.createAddSeasonAction = function () {
         var instance = this;
@@ -1810,6 +1841,9 @@ var PageEdit = /** @class */ (function () {
         input.id = id;
         input.value = value;
         input.checked = checked;
+        if (checked) {
+            this.genericMode = value;
+        }
         var instance = this;
         input.addEventListener('click', function () {
             input.checked = true;

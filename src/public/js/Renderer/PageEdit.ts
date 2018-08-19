@@ -178,6 +178,7 @@ class PageEdit implements Slideable, ForeachElement {
     }
 
     private generateGeneralEditTools() {
+        const instance = this;
         this.zerosS = PageEdit.createInputNum('0', 'generic-fill-zero-s');
         this.zerosEp = PageEdit.createInputNum('0', 'generic-fill-zero-ep');
         const radioEp = this.createInputRadio('generic-mode-ep', '1', true);
@@ -186,19 +187,23 @@ class PageEdit implements Slideable, ForeachElement {
         this.genUrl = PageEdit.createInputText('Generische Url mit {{s}}, {{ep}}');
         return PageCreate.createDiv(['edit-tools'], [
             PageCreate.createDiv(['edit-wrapper'], [
-                this.createButton('button-green', 'TVDB Daten einfügen', this.buttonFillWithTvdbData)
+                this.createButton('button-green', 'TVDB Daten einfügen', function () {
+                    instance.buttonFillWithTvdbData();
+                })
             ]),
             this.createAddSeasonAction(),
             PageCreate.createDiv(['generic-url-container', 'edit-grow'], [
                 PageCreate.createDiv(['edit-wrapper'], [
-                    this.createButton('button-silver', 'Los', this.buttonFillWithGenericUrls),
+                    this.createButton('button-silver', 'Los', function () {
+                        instance.buttonFillWithGenericUrls();
+                    }),
                     this.genUrl
                 ]),
                 PageCreate.createDiv(['edit-wrapper'], [
                     radioEp,
-                    PageEdit.createLabel('generic-mode-ep', '{{ep}}'),
+                    PageEdit.createLabel('generic-mode-ep', '{{ep}} nicht neu zählen'),
                     radioSEp,
-                    PageEdit.createLabel('generic-mode-s-ep', '{{s}} & {{ep}}')
+                    PageEdit.createLabel('generic-mode-s-ep', '{{ep}} in jeder Season neu zählen')
                 ])
             ]),
             PageCreate.createDiv(['generic-url-container'], [
@@ -224,7 +229,7 @@ class PageEdit implements Slideable, ForeachElement {
     }
 
     private buttonFillWithTvdbData() {
-
+        //TODO
     }
 
     private buttonAppendSeason(numEpisodes: number) {
@@ -312,7 +317,31 @@ class PageEdit implements Slideable, ForeachElement {
     }
 
     private buttonFillWithGenericUrls() {
+        let count = 0;
+        for (let s = 0; s < this.inputElementList.length; s++) {
+            for (let ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
+                count++;
+                let realEp;
+                if(this.genericMode === '1') {
+                    realEp = PageEdit.appendZeros(count.toString(), parseInt(this.zerosEp.value));
+                } else {
+                    realEp = PageEdit.appendZeros((ep+1).toString(), parseInt(this.zerosEp.value));
+                }
+                let url = this.genUrl.value.replace(/{{s}}/g, PageEdit.appendZeros((s+1).toString(), parseInt(this.zerosS.value)));
+                url = url.replace(/{{ep}}/g, realEp);
+                if(this.inputElementList[s].episodes[ep].url.value === '') {
+                    this.inputElementList[s].episodes[ep].url.value = url;
+                }
+            }
+        }
+    }
 
+    private static appendZeros(str: string, numZeros: number) {
+        let zeros = '';
+        for (let i = 0; i < numZeros - str.length; i++) {
+            zeros += '0';
+        }
+        return zeros + str;
     }
 
     private createAddSeasonAction() {
@@ -357,6 +386,9 @@ class PageEdit implements Slideable, ForeachElement {
         input.id = id;
         input.value = value;
         input.checked = checked;
+        if(checked) {
+            this.genericMode = value;
+        }
         const instance = this;
         input.addEventListener('click', function () {
             input.checked = true;
