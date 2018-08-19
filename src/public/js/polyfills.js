@@ -1550,16 +1550,40 @@ var PageEdit = /** @class */ (function () {
         if (this.oldData !== undefined) {
             return;
         }
+        this.pageElement.innerHTML = '';
         this.pageElement.appendChild(PageCreate.createDiv(['edit-no-data'], [
             PageEdit.generateText('h1', 'Keine Serie zum Bearbeiten ausgewählt')
         ]));
     };
     PageEdit.prototype.renderPage = function (data) {
         this.oldData = data;
-        this.newData = data;
+        this.newData = {
+            id: this.oldData.id,
+            tvdbId: this.oldData.tvdbId,
+            name_de: this.oldData.name_de,
+            name_en: this.oldData.name_en,
+            name_jpn: this.oldData.name_jpn,
+            list: this.oldData.list,
+            seasons: []
+        };
+        this.inputElementList = [];
         this.pageElement.innerHTML = '';
         this.pageElement.appendChild(this.generateTitleContainer());
         this.pageElement.appendChild(this.generateGeneralEditTools());
+        this.pageElement.appendChild(this.generateSeasonsContainer());
+    };
+    PageEdit.prototype.generateSeasonsContainer = function () {
+        this.seasonContainer = PageCreate.createDiv(['edit-season-container']);
+        for (var s = 0; s < this.oldData.seasons.length; s++) {
+            var epContainer = this.appendSeason(this.oldData.seasons[s].url, this.oldData.seasons[s].thumbnail);
+            for (var ep = 0; ep < this.oldData.seasons[s].episodes.length; ep++) {
+                var name_1 = this.oldData.seasons[s].episodes[ep].name;
+                var url = this.oldData.seasons[s].episodes[ep].url;
+                var watched_1 = this.oldData.seasons[s].episodes[ep].watched;
+                this.appendEpisode(epContainer, name_1, url, s, watched_1);
+            }
+        }
+        return this.seasonContainer;
     };
     PageEdit.prototype.generateTitleContainer = function () {
         var nameDE = (this.oldData.name_de === '') ? '-' : this.oldData.name_de;
@@ -1591,6 +1615,7 @@ var PageEdit = /** @class */ (function () {
         var save = PageCreate.createDiv(['custom-button', 'button-green']);
         save.innerHTML = 'Speichern';
         save.addEventListener('click', function () {
+            instance.createNewData();
             instance.serverData.put([instance.newData], reloadAllData);
         });
         var revert = PageCreate.createDiv(['custom-button', 'button-red']);
@@ -1599,6 +1624,23 @@ var PageEdit = /** @class */ (function () {
             instance.renderPage(instance.oldData);
         });
         return PageCreate.createDiv(['button-wrapper-edit'], [save, revert]);
+    };
+    PageEdit.prototype.createNewData = function () {
+        this.newData.seasons = [];
+        for (var s = 0; s < this.inputElementList.length; s++) {
+            this.newData.seasons.push({
+                url: this.inputElementList[s].url.value,
+                thumbnail: this.inputElementList[s].thumbnail.value,
+                episodes: []
+            });
+            for (var ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
+                this.newData.seasons[s].episodes.push({
+                    name: this.inputElementList[s].episodes[ep].name.value,
+                    url: this.inputElementList[s].episodes[ep].url.value,
+                    watched: this.inputElementList[s].episodes[ep].watched
+                });
+            }
+        }
     };
     PageEdit.prototype.generateGeneralEditTools = function () {
         this.zerosS = PageEdit.createInputNum('0', 'generic-fill-zero-s');
@@ -1647,6 +1689,85 @@ var PageEdit = /** @class */ (function () {
     PageEdit.prototype.buttonFillWithTvdbData = function () {
     };
     PageEdit.prototype.buttonAppendSeason = function (numEpisodes) {
+        var container = this.appendSeason('', '');
+        for (var i = 0; i < numEpisodes; i++) {
+            this.appendEpisode(container, '', '', this.inputElementList.length - 1, false);
+        }
+    };
+    PageEdit.prototype.appendSeason = function (url, thumbnail) {
+        var instance = this;
+        var episodesContainer = PageCreate.createDiv(['edit-episodes-container', 'background-gray']);
+        var urlInput = PageEdit.createInputText('Url Weiterleitung', url);
+        var thumbnailInput = PageEdit.createInputText('Thumbnail', thumbnail);
+        var label = PageEdit.generateText('h2', 'Season ' + (this.inputElementList.length + 1));
+        var seasonObj = {
+            label: label,
+            url: urlInput,
+            thumbnail: thumbnailInput,
+            episodes: []
+        };
+        this.inputElementList.push(seasonObj);
+        var close = PageDetail.createImg('img/close.ico', 'delete');
+        close.addEventListener('click', function () {
+            instance.seasonContainer.removeChild(season);
+            instance.inputElementList.splice(instance.inputElementList.indexOf(seasonObj), 1);
+            for (var s = 0; s < instance.inputElementList.length; s++) {
+                instance.inputElementList[s].label.innerHTML = 'Season ' + (s + 1);
+            }
+        });
+        var numEpisode = PageEdit.createInputNum('1');
+        var addEpisode = this.createButton('button-silver', 'Episoden hinzufügen', function () {
+            var num = parseInt(numEpisode.value);
+            for (var i = 0; i < num; i++) {
+                instance.appendEpisode(episodesContainer, '', '', instance.inputElementList.indexOf(seasonObj), false);
+            }
+        });
+        var season = PageCreate.createDiv(['edit-season'], [
+            PageCreate.createDiv(['season-header-wrapper'], [
+                PageCreate.createDiv(['add-episodes-wrapper', 'edit-img-button'], [
+                    close,
+                    label
+                ]),
+                PageCreate.createDiv(['add-episodes-wrapper'], [
+                    numEpisode,
+                    addEpisode
+                ])
+            ]),
+            PageCreate.createDiv(['input-wrapper'], [
+                urlInput,
+                thumbnailInput
+            ]),
+            episodesContainer
+        ]);
+        this.seasonContainer.appendChild(season);
+        return episodesContainer;
+    };
+    PageEdit.prototype.appendEpisode = function (container, name, url, index, watched) {
+        var instance = this;
+        var sObj = this.inputElementList[index];
+        var close = PageDetail.createImg('img/close.ico', 'delete');
+        close.addEventListener('click', function () {
+            console.log(instance.inputElementList[index]);
+            container.removeChild(episode);
+            sObj.episodes.splice(sObj.episodes.indexOf(epObj), 1);
+            for (var ep = 0; ep < sObj.episodes.length; ep++) {
+                sObj.episodes[ep].label.innerHTML = 'Folge ' + (ep + 1);
+            }
+        });
+        var label = PageEdit.generateText('p', 'Folge ' + (this.inputElementList[index].episodes.length + 1));
+        var nameInput = PageEdit.createInputText('Name', name);
+        var urlInput = PageEdit.createInputText('Url', url);
+        var episode = PageCreate.createDiv(['edit-episode', 'font-green'], [
+            close, label, nameInput, urlInput
+        ]);
+        container.appendChild(episode);
+        var epObj = {
+            label: label,
+            url: urlInput,
+            name: nameInput,
+            watched: watched
+        };
+        sObj.episodes.push(epObj);
     };
     PageEdit.prototype.buttonFillWithGenericUrls = function () {
     };
@@ -1696,12 +1817,15 @@ var PageEdit = /** @class */ (function () {
         });
         return input;
     };
-    PageEdit.createInputText = function (placeholder) {
+    PageEdit.createInputText = function (placeholder, value) {
         var input = document.createElement('input');
         input.type = 'text';
         input.classList.add('edit-input');
         input.classList.add('edit-text');
         input.placeholder = placeholder;
+        if (value !== undefined) {
+            input.value = value;
+        }
         return input;
     };
     return PageEdit;

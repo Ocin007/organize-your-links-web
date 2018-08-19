@@ -81,10 +81,67 @@
     height: 94px;
     justify-content: space-between;
 }
-.edit-season {
-
+.edit-season-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: stretch;
+    margin-top: 20px;
 }
-.edit-season h2 {
-    border-bottom: 1px solid #adadad;
-    text-indent: 50px;
+.edit-season {
+    border-top: 1px solid #adadad;
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.season-header-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 80%;
+}
+.input-wrapper {
+    width: 80%;
+}
+.input-wrapper input {
+    margin-bottom: 10px;
+}
+.add-episodes-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.edit-img-button img, .edit-episode img {
+    cursor: pointer;
+    padding-bottom: 16px;
+    padding-top: 16px;
+}
+.edit-img-button img:hover {
+    background-color: #5d6062;
+}
+.edit-episodes-container {
+    margin-bottom: 50px;
+    width: 90%;
+    box-shadow: inset 0 0 20px 0;
+    border-radius: 10px;
+}
+.edit-episode {
+    font-size: 1.5em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 10px;
+}
+.edit-episode .edit-text {
+    width: 41%;
+    margin-right: 10px;
+    font-size: unset;
+}
+.edit-episode p {
+    width: 150px;
+    margin: 0;
 }
