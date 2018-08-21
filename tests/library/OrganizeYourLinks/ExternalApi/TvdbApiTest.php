@@ -24,4 +24,12 @@ class TvdbApiTest extends TestCase
         $result = $subject->search('one piece');
         $this->assertEquals(true, $result);
     }
+
+    public function testGetEpisodes()
+    {
+        $subject = new TvdbApi($this->keyFile, $this->tokenFile, $this->certFile);
+        $subject->prepare();
+        $subject->getEpisodes(74796);
+        $this->assertEquals(true, isset($subject->getContent()['1']));
+    }
 }

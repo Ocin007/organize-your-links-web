@@ -202,6 +202,14 @@ class PageCreate implements Slideable, ForeachElement {
             input.classList.add(classArray[i]);
         }
         input.placeholder = placeholder;
+        input.addEventListener('focus', function () {
+            blockKeyboardOnInputFocus = true;
+            input.placeholder = '';
+        });
+        input.addEventListener('blur', function () {
+            blockKeyboardOnInputFocus = false;
+            input.placeholder = placeholder;
+        });
         return input;
     }
 

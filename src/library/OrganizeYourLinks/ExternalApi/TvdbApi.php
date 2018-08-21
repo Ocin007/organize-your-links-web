@@ -7,9 +7,12 @@ class TvdbApi {
 
     private static $timeDiff = 82800;
     private static $languages = ['de', 'en', 'ja'];
+    private static $languagesEp = ['en', 'de'];
     private static $apiUrl = 'https://api.thetvdb.com';
     private static $rootLogin = '/login';
     private static $rootSearch = '/search/series';
+    private static $rootEp1 = '/series/';
+    private static $rootEp2 = '/episodes';
 
     private $key;
     private $token;
@@ -43,10 +46,10 @@ class TvdbApi {
 
     public function search($string) {
         $foundSomething = false;
+        $urlAndQuerry = TvdbApi::$apiUrl . TvdbApi::$rootSearch . '?' . http_build_query([
+                'name' => $string
+            ]);
         foreach (TvdbApi::$languages as $lang) {
-            $urlAndQuerry = TvdbApi::$apiUrl . TvdbApi::$rootSearch . '?' . http_build_query([
-                    'name' => $string
-                ]);
             $result = file_get_contents($urlAndQuerry, false, $this->createStandardStreamContext($lang));
             if ($this->checkResponse($result)) {
                 $this->content[$lang] = json_decode($result, true);
@@ -56,6 +59,28 @@ class TvdbApi {
             }
         }
         return $foundSomething;
+    }
+
+    public function getEpisodes($id) {
+        foreach (TvdbApi::$languagesEp as $lang) {
+            $next = 1;
+            while($next !== null) {
+                $next = $this->getPage($next, $id, $lang);
+            }
+        }
+    }
+
+    private function getPage($page, $id, $lang) {
+        $urlAndQuerry = TvdbApi::$apiUrl . TvdbApi::$rootEp1 . $id . TvdbApi::$rootEp2 . '?' . http_build_query([
+                'page' => $page
+            ]);
+        $result = file_get_contents($urlAndQuerry, false, $this->createStandardStreamContext($lang));
+        if ($this->checkResponse($result)) {
+            $parsed = json_decode($result, true);
+            $this->appendPageToContent($parsed['data']);
+            return $parsed['links']['next'];
+        }
+        return null;
     }
 
     private function getNewToken() {
@@ -111,5 +136,19 @@ class TvdbApi {
             return false;
         }
         return true;
+    }
+
+    private function appendPageToContent($dataArray) {
+        foreach ($dataArray as $data) {
+            if($data['episodeName'] !== null) {
+                $s = $data['airedSeason'];
+                $ep = $data['airedEpisodeNumber'];
+                $name = $data['episodeName'];
+                if(!isset($this->content[$s])) {
+                    $this->content[$s] = [];
+                }
+                $this->content[$s][$ep] = $name;
+            }
+        }
     }
 }

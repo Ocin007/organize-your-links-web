@@ -23,10 +23,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
-
 let blockKeyboardNav = false;
+let blockKeyboardOnInputFocus = false;
 document.addEventListener('keydown', function (ev: any) {
-    if(!navMap.flag || blockKeyboardNav) {
+    if(!navMap.flag || blockKeyboardNav || blockKeyboardOnInputFocus) {
         return;
     }
     if(ev.keyCode === 39) {

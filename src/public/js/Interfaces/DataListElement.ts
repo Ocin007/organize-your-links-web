@@ -1,3 +1,4 @@
+//TODO: attribut rank: number hinzufügen
 interface DataListElement {
     id: string,
     tvdbId: number,

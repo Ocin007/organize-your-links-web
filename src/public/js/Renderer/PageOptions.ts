@@ -311,6 +311,12 @@ class PageOptions {
             }
             instance.inputFieldValue = parseInt(instance.inputField.value);
         });
+        this.inputField.addEventListener('focus', function () {
+            blockKeyboardOnInputFocus = true;
+        });
+        this.inputField.addEventListener('blur', function () {
+            blockKeyboardOnInputFocus = false;
+        });
         labelContainer.appendChild(this.inputField);
         const label2 = document.createElement('label');
         label2.htmlFor = 'input-random-number';

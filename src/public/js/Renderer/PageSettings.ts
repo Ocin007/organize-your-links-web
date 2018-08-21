@@ -29,6 +29,7 @@ class PageSettings {
         this.actionContainer.appendChild(this.titleLanguageAction());
         this.actionContainer.appendChild(this.startPageAction());
         this.actionContainer.appendChild(this.initialDataIdAction());
+        //TODO: settings folgenzählung durchgängig / bei jeder season neu
         this.actionContainer.appendChild(this.animationSpeedSingleAction());
         this.actionContainer.appendChild(this.animationSpeedMultiAction());
         this.actionContainer.appendChild(this.minSizeOfPlaylistAction());
@@ -142,6 +143,12 @@ class PageSettings {
             display.innerHTML = range.value;
             callback(range.value);
         });
+        range.addEventListener('focus', function () {
+            blockKeyboardOnInputFocus = true;
+        });
+        range.addEventListener('blur', function () {
+            blockKeyboardOnInputFocus = false;
+        });
         container.appendChild(range);
         container.appendChild(display);
         return container;
@@ -154,6 +161,12 @@ class PageSettings {
         input.min = min;
         input.max = max;
         input.value = value;
+        input.addEventListener('focus', function () {
+            blockKeyboardOnInputFocus = true;
+        });
+        input.addEventListener('blur', function () {
+            blockKeyboardOnInputFocus = false;
+        });
         return input;
     }
 
@@ -166,6 +179,12 @@ class PageSettings {
         input.name = 'titleLanguage';
         input.value = lang;
         input.checked = this.settings.titleLanguage === lang;
+        input.addEventListener('focus', function () {
+            blockKeyboardOnInputFocus = true;
+        });
+        input.addEventListener('blur', function () {
+            blockKeyboardOnInputFocus = false;
+        });
         div.appendChild(img);
         div.appendChild(input);
         const instance = this;
@@ -221,6 +240,10 @@ class PageSettings {
         });
         input.addEventListener('focus', function () {
             input.value = '';
+            blockKeyboardOnInputFocus = true;
+        });
+        input.addEventListener('blur', function () {
+            blockKeyboardOnInputFocus = false;
         });
         const dataList = document.createElement('dataList');
         dataList.id = 'all-names-settings';

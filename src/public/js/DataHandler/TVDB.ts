@@ -8,4 +8,13 @@ class TVDB extends AjaxRequest {
             callback(resObj);
         });
     }
+
+    static getEpisodes(id: number, callback: Function) {
+        TVDB.sendAjaxRequest('../api/tvdb/getEpisodes.php', id, function (http) {
+            TVDB.errFunction(http, 'getEpisodes');
+        }, function (http) {
+            const resObj = JSON.parse(http.responseText);
+            callback(resObj);
+        });
+    }
 }

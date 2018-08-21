@@ -468,6 +468,12 @@ class PageDetail implements Slideable, ForeachElement {
             }
             instance.renderPage(instance.serverData.getListElement(index));
         });
+        input.addEventListener('focus', function () {
+            blockKeyboardOnInputFocus = true;
+        });
+        input.addEventListener('blur', function () {
+            blockKeyboardOnInputFocus = false;
+        });
         container.appendChild(input);
         const dataList = document.createElement('dataList');
         dataList.id = 'all-names';

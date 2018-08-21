@@ -20,6 +20,12 @@ class PageEdit implements Slideable, ForeachElement {
     private genericMode: string;
     private genUrl: HTMLInputElement;
     private seasonContainer: HTMLElement;
+    private loadingSpinner: HTMLElement;
+    private errMsg: HTMLElement;
+    private startS: HTMLInputElement;
+    private startEp: HTMLInputElement;
+    private stopS: HTMLInputElement;
+    private stopEp: HTMLInputElement;
 
     constructor(
         private pageElement: HTMLElement,
@@ -99,7 +105,13 @@ class PageEdit implements Slideable, ForeachElement {
         this.pageElement.innerHTML = '';
         this.pageElement.appendChild(this.generateTitleContainer());
         this.pageElement.appendChild(this.generateGeneralEditTools());
+        this.pageElement.appendChild(this.generateErrMsgContainer());
         this.pageElement.appendChild(this.generateSeasonsContainer());
+    }
+
+    private generateErrMsgContainer() {
+        this.errMsg = PageCreate.createDiv(['create-msg-container', 'edit-msg-container']);
+        return PageCreate.createDiv(['edit-msg-wrapper'], [this.errMsg]);
     }
 
     private generateSeasonsContainer() {
@@ -148,12 +160,22 @@ class PageEdit implements Slideable, ForeachElement {
         const save = PageCreate.createDiv(['custom-button', 'button-green']);
         save.innerHTML = 'Speichern';
         save.addEventListener('click', function () {
+            instance.resetErrMsg();
             instance.createNewData();
-            instance.serverData.put([instance.newData], reloadAllData);
+            instance.serverData.put([instance.newData], function () {
+                reloadAllData();
+                instance.errMsg.innerHTML = 'Gespeichert!';
+                instance.errMsg.classList.add('create-msg-success');
+            });
         });
         const revert = PageCreate.createDiv(['custom-button', 'button-red']);
         revert.innerHTML = 'Verwerfen';
         revert.addEventListener('click', function () {
+            instance.resetErrMsg();
+            setTimeout(function () {
+                instance.errMsg.innerHTML = 'Änderungen zurückgesetzt!';
+                instance.errMsg.classList.add('create-msg-success');
+            }, 100);
             instance.renderPage(instance.oldData);
         });
         return PageCreate.createDiv(['button-wrapper-edit'], [save, revert]);
@@ -168,8 +190,9 @@ class PageEdit implements Slideable, ForeachElement {
                 episodes: []
             });
             for (let ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
+                let name = this.inputElementList[s].episodes[ep].name.value.replace(/"/g, '\'');
                 this.newData.seasons[s].episodes.push({
-                    name: this.inputElementList[s].episodes[ep].name.value,
+                    name: name,
                     url: this.inputElementList[s].episodes[ep].url.value,
                     watched: this.inputElementList[s].episodes[ep].watched
                 });
@@ -179,17 +202,31 @@ class PageEdit implements Slideable, ForeachElement {
 
     private generateGeneralEditTools() {
         const instance = this;
+        this.loadingSpinner = PageCreate.createDiv(['spinner'], [
+            PageCreate.createDiv(['bounce1']),
+            PageCreate.createDiv(['bounce2']),
+            PageCreate.createDiv(['bounce3'])
+        ]);
         this.zerosS = PageEdit.createInputNum('0', 'generic-fill-zero-s');
         this.zerosEp = PageEdit.createInputNum('0', 'generic-fill-zero-ep');
+        this.startS = PageEdit.createInputNum('1', 'generic-startS');
+        this.startEp = PageEdit.createInputNum('1', 'generic-startEp');
+        this.stopS = PageEdit.createInputNum('1', 'generic-stopS');
+        this.stopEp = PageEdit.createInputNum('1', 'generic-stopEp');
         const radioEp = this.createInputRadio('generic-mode-ep', '1', true);
         radioEp.checked = true;
         const radioSEp = this.createInputRadio('generic-mode-s-ep', '2', false);
         this.genUrl = PageEdit.createInputText('Generische Url mit {{s}}, {{ep}}');
         return PageCreate.createDiv(['edit-tools'], [
-            PageCreate.createDiv(['edit-wrapper'], [
-                this.createButton('button-green', 'TVDB Daten einfügen', function () {
-                    instance.buttonFillWithTvdbData();
-                })
+            PageCreate.createDiv(['generic-url-container'], [
+                PageCreate.createDiv(['edit-wrapper'], [
+                    this.createButton('button-green', 'TVDB Daten laden', function () {
+                        instance.buttonFillWithTvdbData();
+                    })
+                ]),
+                PageCreate.createDiv(['edit-wrapper', 'loading-container'], [
+                    this.loadingSpinner
+                ])
             ]),
             this.createAddSeasonAction(),
             PageCreate.createDiv(['generic-url-container', 'edit-grow'], [
@@ -200,20 +237,38 @@ class PageEdit implements Slideable, ForeachElement {
                     this.genUrl
                 ]),
                 PageCreate.createDiv(['edit-wrapper'], [
-                    radioEp,
-                    PageEdit.createLabel('generic-mode-ep', '{{ep}} nicht neu zählen'),
-                    radioSEp,
-                    PageEdit.createLabel('generic-mode-s-ep', '{{ep}} in jeder Season neu zählen')
+                    PageCreate.createDiv(['generic-url-container'], [
+                        PageCreate.createDiv([], [
+                            radioEp,
+                            PageEdit.createLabel('generic-mode-ep', 'Nicht neu zählen')
+                        ]),
+                        PageCreate.createDiv([], [
+                            radioSEp,
+                            PageEdit.createLabel('generic-mode-s-ep', 'In jeder Season neu zählen')
+                        ]),
+                    ]),
+                    PageCreate.createDiv(['edit-wrapper'], [
+                        this.zerosS,
+                        PageEdit.createLabel('generic-fill-zero-s', 'Stellen Season')
+                    ]),
+                    PageCreate.createDiv(['edit-wrapper'], [
+                        this.zerosEp,
+                        PageEdit.createLabel('generic-fill-zero-ep', 'Stellen Episode')
+                    ])
                 ])
             ]),
             PageCreate.createDiv(['generic-url-container'], [
-                PageCreate.createDiv(['edit-wrapper'], [
-                    this.zerosS,
-                    PageEdit.createLabel('generic-fill-zero-s', 'Stellen Season')
+                PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
+                    PageEdit.createLabel('generic-startS', '{{s}} von'),
+                    this.startS,
+                    PageEdit.createLabel('generic-stopS', 'bis'),
+                    this.stopS
                 ]),
                 PageCreate.createDiv(['edit-wrapper'], [
-                    this.zerosEp,
-                    PageEdit.createLabel('generic-fill-zero-ep', 'Stellen Episode')
+                    PageEdit.createLabel('generic-startEp', '{{ep}} von'),
+                    this.startEp,
+                    PageEdit.createLabel('generic-stopEp', 'bis'),
+                    this.stopEp
                 ])
             ]),
         ]);
@@ -228,8 +283,64 @@ class PageEdit implements Slideable, ForeachElement {
         return button;
     }
 
+    private resetErrMsg() {
+        this.errMsg.innerHTML = '';
+        this.errMsg.classList.remove('create-msg-success');
+        this.errMsg.classList.remove('create-msg-error');
+    }
+
     private buttonFillWithTvdbData() {
-        //TODO
+        //TODO: abfrage thumbnails anschauen
+        this.resetErrMsg();
+        if(this.oldData.tvdbId === -1) {
+            this.errMsg.innerHTML = 'Keine TVDB ID für diese Serie vergeben!';
+            this.errMsg.classList.add('create-msg-error');
+            return;
+        }
+        this.loadingSpinner.style.visibility = 'visible';
+        const instance = this;
+        TVDB.getEpisodes(this.oldData.tvdbId, function (resObj: any) {
+            if(resObj.error !== undefined) {
+                instance.errMsg.innerHTML = 'Error: '+resObj.error;
+                instance.errMsg.classList.add('create-msg-error');
+                return;
+            }
+            if(resObj.response === undefined) {
+                return;
+            }
+            instance.fillNameInputsWithData(resObj.response);
+            instance.loadingSpinner.style.visibility = 'hidden';
+            instance.errMsg.innerHTML = 'TVDB Daten ergänzt!';
+            instance.errMsg.classList.add('create-msg-success');
+        });
+    }
+
+    private fillNameInputsWithData(data: any) {
+        for (let s = 1; s < Object.keys(data).length+1; s++) {
+            if(data[s] !== undefined) {
+                let epContainer;
+                if(this.inputElementList.length < s) {
+                    epContainer = this.appendSeason('', '');
+                } else {
+                    epContainer = this.seasonContainer.children[s-1].lastChild;
+                }
+                for (let ep = 1; ep < Object.keys(data[s]).length+1; ep++) {
+                    if(this.inputElementList[s-1].episodes.length < ep) {
+                        this.appendEpisode(epContainer, data[s][ep], '', s-1, false);
+                    } else {
+                        if(this.inputElementList[s-1].episodes[ep-1].name.value === '') {
+                            this.inputElementList[s-1].episodes[ep-1].name.value = data[s][ep];
+                        }
+                    }
+                }
+            }
+        }
+        // if(data[0] !== undefined) {
+        //     let epContainer = this.appendSeason('', '');
+        //     for (let ep = 1; ep < Object.keys(data[0]).length+1; ep++) {
+        //         this.appendEpisode(epContainer, data[0][ep], '', Object.keys(data).length-1, false);
+        //     }
+        // }
     }
 
     private buttonAppendSeason(numEpisodes: number) {
@@ -259,6 +370,7 @@ class PageEdit implements Slideable, ForeachElement {
             for (let s = 0; s < instance.inputElementList.length; s++) {
                 instance.inputElementList[s].label.innerHTML = 'Season '+(s+1);
             }
+            instance.updateStopSEp();
         });
         const numEpisode = PageEdit.createInputNum('1');
         const addEpisode = this.createButton('button-silver', 'Episoden hinzufügen', function () {
@@ -293,12 +405,12 @@ class PageEdit implements Slideable, ForeachElement {
         const sObj = this.inputElementList[index];
         const close = PageDetail.createImg('img/close.ico', 'delete');
         close.addEventListener('click', function () {
-            console.log(instance.inputElementList[index]);
             container.removeChild(episode);
             sObj.episodes.splice(sObj.episodes.indexOf(epObj), 1);
             for (let ep = 0; ep < sObj.episodes.length; ep++) {
                 sObj.episodes[ep].label.innerHTML = 'Folge '+(ep+1);
             }
+            instance.updateStopSEp();
         });
         const label = PageEdit.generateText('p', 'Folge '+(this.inputElementList[index].episodes.length+1));
         const nameInput = PageEdit.createInputText('Name', name);
@@ -314,26 +426,55 @@ class PageEdit implements Slideable, ForeachElement {
             watched: watched
         };
         sObj.episodes.push(epObj);
+        this.updateStopSEp();
+    }
+
+    private updateStopSEp() {
+        let sMax = 1;
+        for (let s = this.inputElementList.length-1; s > -1; s--) {
+            if(this.inputElementList[s].episodes.length > 0) {
+                sMax = s+1;
+                break;
+            }
+        }
+        this.stopS.value = sMax.toString();
+        if(this.inputElementList[sMax-1] !== undefined) {
+            this.stopEp.value = this.inputElementList[sMax-1].episodes.length.toString();
+        } else {
+            this.stopEp.value = '1';
+        }
     }
 
     private buttonFillWithGenericUrls() {
+        this.resetErrMsg();
         let count = 0;
+        let flag = false;
         for (let s = 0; s < this.inputElementList.length; s++) {
             for (let ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
                 count++;
-                let realEp;
-                if(this.genericMode === '1') {
-                    realEp = PageEdit.appendZeros(count.toString(), parseInt(this.zerosEp.value));
-                } else {
-                    realEp = PageEdit.appendZeros((ep+1).toString(), parseInt(this.zerosEp.value));
+                if(s === parseInt(this.startS.value)-1 && ep === parseInt(this.startEp.value)-1) {
+                    flag = true;
                 }
-                let url = this.genUrl.value.replace(/{{s}}/g, PageEdit.appendZeros((s+1).toString(), parseInt(this.zerosS.value)));
-                url = url.replace(/{{ep}}/g, realEp);
-                if(this.inputElementList[s].episodes[ep].url.value === '') {
-                    this.inputElementList[s].episodes[ep].url.value = url;
+                if(flag) {
+                    let realEp;
+                    if(this.genericMode === '1') {
+                        realEp = PageEdit.appendZeros(count.toString(), parseInt(this.zerosEp.value));
+                    } else {
+                        realEp = PageEdit.appendZeros((ep+1).toString(), parseInt(this.zerosEp.value));
+                    }
+                    let url = this.genUrl.value.replace(/{{s}}/g, PageEdit.appendZeros((s+1).toString(), parseInt(this.zerosS.value)));
+                    url = url.replace(/{{ep}}/g, realEp);
+                    if(this.inputElementList[s].episodes[ep].url.value === '') {
+                        this.inputElementList[s].episodes[ep].url.value = url;
+                    }
+                }
+                if(s === parseInt(this.stopS.value)-1 && ep === parseInt(this.stopEp.value)-1) {
+                    flag = false;
                 }
             }
         }
+        this.errMsg.innerHTML = 'Urls generiert!';
+        this.errMsg.classList.add('create-msg-success');
     }
 
     private static appendZeros(str: string, numZeros: number) {
@@ -370,6 +511,12 @@ class PageEdit implements Slideable, ForeachElement {
         if(id !== undefined) {
             input.id = id;
         }
+        input.addEventListener('focus', function () {
+            blockKeyboardOnInputFocus = true;
+        });
+        input.addEventListener('blur', function () {
+            blockKeyboardOnInputFocus = false;
+        });
         return input;
     }
 
@@ -394,6 +541,12 @@ class PageEdit implements Slideable, ForeachElement {
             input.checked = true;
             instance.genericMode = input.value;
         });
+        input.addEventListener('focus', function () {
+            blockKeyboardOnInputFocus = true;
+        });
+        input.addEventListener('blur', function () {
+            blockKeyboardOnInputFocus = false;
+        });
         return input;
     }
 
@@ -406,6 +559,14 @@ class PageEdit implements Slideable, ForeachElement {
         if(value !== undefined) {
             input.value = value;
         }
+        input.addEventListener('focus', function () {
+            blockKeyboardOnInputFocus = true;
+            input.placeholder = '';
+        });
+        input.addEventListener('blur', function () {
+            blockKeyboardOnInputFocus = false;
+            input.placeholder = placeholder;
+        });
         return input;
     }
 }
