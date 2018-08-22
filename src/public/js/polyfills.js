@@ -1750,20 +1750,37 @@ var PageEdit = /** @class */ (function () {
                 ])
             ]),
             PageCreate.createDiv(['generic-url-container'], [
-                //TODO: von - bis umsortieren in: von s, ep - bis s, ep
-                PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
-                    PageEdit.createLabel('generic-startS', '{{s}} von'),
-                    this.startS,
-                    PageEdit.createLabel('generic-stopS', 'bis'),
-                    this.stopS
-                ]),
-                PageCreate.createDiv(['edit-wrapper'], [
-                    PageEdit.createLabel('generic-startEp', '{{ep}} von'),
-                    this.startEp,
-                    PageEdit.createLabel('generic-stopEp', 'bis'),
-                    this.stopEp
-                ])
+                this.createStartInput(),
+                this.createStopInput()
             ]),
+        ]);
+    };
+    PageEdit.prototype.createStartInput = function () {
+        if (this.episodeCount) {
+            return PageCreate.createDiv(['edit-wrapper'], [
+                PageEdit.createLabel('generic-startEp', 'Von {{ep}}'),
+                this.startEp
+            ]);
+        }
+        return PageCreate.createDiv(['edit-wrapper'], [
+            PageEdit.createLabel('generic-startS', 'Von {{s}}'),
+            this.startS,
+            PageEdit.createLabel('generic-startEp', '{{ep}}'),
+            this.startEp
+        ]);
+    };
+    PageEdit.prototype.createStopInput = function () {
+        if (this.episodeCount) {
+            return PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
+                PageEdit.createLabel('generic-stopEp', 'Bis {{ep}}'),
+                this.stopEp
+            ]);
+        }
+        return PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
+            PageEdit.createLabel('generic-stopS', 'Bis {{s}}'),
+            this.stopS,
+            PageEdit.createLabel('generic-stopEp', '{{ep}}'),
+            this.stopEp
         ]);
     };
     PageEdit.prototype.createButton = function (token, label, callback) {
@@ -1860,7 +1877,12 @@ var PageEdit = /** @class */ (function () {
             for (var s = 0; s < instance.inputElementList.length; s++) {
                 instance.inputElementList[s].label.innerHTML = 'Season ' + (s + 1);
             }
-            instance.updateStopSStopEp();
+            if (instance.episodeCount) {
+                instance.updateStopValuesOnlyEp();
+            }
+            else {
+                instance.updateStopValues();
+            }
             instance.updateEpLabels(sIndex);
         });
         var numEpisode = PageEdit.createInputNum('1');
@@ -1900,7 +1922,12 @@ var PageEdit = /** @class */ (function () {
             for (var ep = 0; ep < sObj.episodes.length; ep++) {
                 sObj.episodes[ep].label.innerHTML = 'Folge ' + (ep + 1);
             }
-            instance.updateStopSStopEp();
+            if (instance.episodeCount) {
+                instance.updateStopValuesOnlyEp();
+            }
+            else {
+                instance.updateStopValues();
+            }
             instance.updateEpLabels(sIndex);
         });
         var label = PageEdit.generateText('p', 'Folge ' + (this.inputElementList[sIndex].episodes.length + 1));
@@ -1917,10 +1944,24 @@ var PageEdit = /** @class */ (function () {
             watched: watched
         };
         sObj.episodes.push(epObj);
-        this.updateStopSStopEp();
+        if (this.episodeCount) {
+            this.updateStopValuesOnlyEp();
+        }
+        else {
+            this.updateStopValues();
+        }
         this.updateEpLabels(sIndex);
     };
-    PageEdit.prototype.updateStopSStopEp = function () {
+    PageEdit.prototype.updateStopValuesOnlyEp = function () {
+        var count = 0;
+        for (var s = 0; s < this.inputElementList.length; s++) {
+            for (var ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
+                count++;
+            }
+        }
+        this.stopEp.value = count.toString();
+    };
+    PageEdit.prototype.updateStopValues = function () {
         var sMax = 1;
         for (var s = this.inputElementList.length - 1; s > -1; s--) {
             if (this.inputElementList[s].episodes.length > 0) {
@@ -1940,7 +1981,6 @@ var PageEdit = /** @class */ (function () {
         if (!this.episodeCount) {
             return;
         }
-        //TODO
         var epCount = 0;
         for (var s = 0; s < sIndex; s++) {
             epCount += this.inputElementList[s].episodes.length;
@@ -1952,14 +1992,25 @@ var PageEdit = /** @class */ (function () {
             }
         }
     };
+    //TODO: anpassen für episodeCount == true
     PageEdit.prototype.buttonFillWithGenericUrls = function () {
         this.resetErrMsg();
+        var startS, stopS, startEp, stopEp;
+        if (this.episodeCount) {
+            _a = this.calcStartStopValues(), startS = _a[0], stopS = _a[1], startEp = _a[2], stopEp = _a[3];
+        }
+        else {
+            startS = parseInt(this.startS.value) - 1;
+            stopS = parseInt(this.stopS.value) - 1;
+            startEp = parseInt(this.startEp.value) - 1;
+            stopEp = parseInt(this.stopEp.value) - 1;
+        }
         var count = 0;
         var flag = false;
         for (var s = 0; s < this.inputElementList.length; s++) {
             for (var ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
                 count++;
-                if (s === parseInt(this.startS.value) - 1 && ep === parseInt(this.startEp.value) - 1) {
+                if (s === startS && ep === startEp) {
                     flag = true;
                 }
                 if (flag) {
@@ -1976,13 +2027,31 @@ var PageEdit = /** @class */ (function () {
                         this.inputElementList[s].episodes[ep].url.value = url;
                     }
                 }
-                if (s === parseInt(this.stopS.value) - 1 && ep === parseInt(this.stopEp.value) - 1) {
+                if (s === stopS && ep === stopEp) {
                     flag = false;
                 }
             }
         }
         this.errMsg.innerHTML = 'Urls generiert!';
         this.errMsg.classList.add('create-msg-success');
+        var _a;
+    };
+    PageEdit.prototype.calcStartStopValues = function () {
+        var startS = 0, stopS = 0, startEp = 0, stopEp = 0, count = 0;
+        for (var s = 0; s < this.inputElementList.length; s++) {
+            for (var ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
+                count++;
+                if (count === parseInt(this.startEp.value)) {
+                    startS = s;
+                    startEp = ep;
+                }
+                if (count === parseInt(this.stopEp.value)) {
+                    stopS = s;
+                    stopEp = ep;
+                }
+            }
+        }
+        return [startS, stopS, startEp, stopEp];
     };
     PageEdit.appendZeros = function (str, numZeros) {
         var zeros = '';
@@ -2639,7 +2708,6 @@ var PageSettings = /** @class */ (function () {
         this.actionContainer.appendChild(this.titleLanguageAction());
         this.actionContainer.appendChild(this.startPageAction());
         this.actionContainer.appendChild(this.initialDataIdAction());
-        //TODO: settings folgenzählung durchgängig / bei jeder season neu
         this.actionContainer.appendChild(this.episodeCountAction());
         this.actionContainer.appendChild(this.animationSpeedSingleAction());
         this.actionContainer.appendChild(this.animationSpeedMultiAction());

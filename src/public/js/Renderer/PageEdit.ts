@@ -259,20 +259,39 @@ class PageEdit implements Slideable, ForeachElement {
                 ])
             ]),
             PageCreate.createDiv(['generic-url-container'], [
-                //TODO: von - bis umsortieren in: von s, ep - bis s, ep
-                PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
-                    PageEdit.createLabel('generic-startS', '{{s}} von'),
-                    this.startS,
-                    PageEdit.createLabel('generic-stopS', 'bis'),
-                    this.stopS
-                ]),
-                PageCreate.createDiv(['edit-wrapper'], [
-                    PageEdit.createLabel('generic-startEp', '{{ep}} von'),
-                    this.startEp,
-                    PageEdit.createLabel('generic-stopEp', 'bis'),
-                    this.stopEp
-                ])
+                this.createStartInput(),
+                this.createStopInput()
             ]),
+        ]);
+    }
+
+    private createStartInput() {
+        if(this.episodeCount) {
+            return PageCreate.createDiv(['edit-wrapper'], [
+                PageEdit.createLabel('generic-startEp', 'Von {{ep}}'),
+                this.startEp
+            ]);
+        }
+        return PageCreate.createDiv(['edit-wrapper'], [
+            PageEdit.createLabel('generic-startS', 'Von {{s}}'),
+            this.startS,
+            PageEdit.createLabel('generic-startEp', '{{ep}}'),
+            this.startEp
+        ]);
+    }
+
+    private createStopInput() {
+        if(this.episodeCount) {
+            return PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
+                PageEdit.createLabel('generic-stopEp', 'Bis {{ep}}'),
+                this.stopEp
+            ]);
+        }
+        return PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
+            PageEdit.createLabel('generic-stopS', 'Bis {{s}}'),
+            this.stopS,
+            PageEdit.createLabel('generic-stopEp', '{{ep}}'),
+            this.stopEp
         ]);
     }
 
@@ -373,7 +392,11 @@ class PageEdit implements Slideable, ForeachElement {
             for (let s = 0; s < instance.inputElementList.length; s++) {
                 instance.inputElementList[s].label.innerHTML = 'Season '+(s+1);
             }
-            instance.updateStopSStopEp();
+            if(instance.episodeCount) {
+                instance.updateStopValuesOnlyEp();
+            } else {
+                instance.updateStopValues();
+            }
             instance.updateEpLabels(sIndex);
         });
         const numEpisode = PageEdit.createInputNum('1');
@@ -414,7 +437,11 @@ class PageEdit implements Slideable, ForeachElement {
             for (let ep = 0; ep < sObj.episodes.length; ep++) {
                 sObj.episodes[ep].label.innerHTML = 'Folge '+(ep+1);
             }
-            instance.updateStopSStopEp();
+            if(instance.episodeCount) {
+                instance.updateStopValuesOnlyEp();
+            } else {
+                instance.updateStopValues();
+            }
             instance.updateEpLabels(sIndex);
         });
         const label = PageEdit.generateText('p', 'Folge '+(this.inputElementList[sIndex].episodes.length+1));
@@ -431,11 +458,25 @@ class PageEdit implements Slideable, ForeachElement {
             watched: watched
         };
         sObj.episodes.push(epObj);
-        this.updateStopSStopEp();
+        if(this.episodeCount) {
+            this.updateStopValuesOnlyEp();
+        } else {
+            this.updateStopValues();
+        }
         this.updateEpLabels(sIndex);
     }
 
-    private updateStopSStopEp() {
+    private updateStopValuesOnlyEp() {
+        let count = 0;
+        for (let s = 0; s < this.inputElementList.length; s++) {
+            for (let ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
+                count++;
+            }
+        }
+        this.stopEp.value = count.toString();
+    }
+
+    private updateStopValues() {
         let sMax = 1;
         for (let s = this.inputElementList.length-1; s > -1; s--) {
             if(this.inputElementList[s].episodes.length > 0) {
@@ -466,15 +507,24 @@ class PageEdit implements Slideable, ForeachElement {
             }
         }
     }
-
+    
     private buttonFillWithGenericUrls() {
         this.resetErrMsg();
+        let startS, stopS, startEp, stopEp;
+        if(this.episodeCount) {
+            [startS, stopS, startEp, stopEp] = this.calcStartStopValues();
+        } else {
+            startS = parseInt(this.startS.value)-1;
+            stopS = parseInt(this.stopS.value)-1;
+            startEp = parseInt(this.startEp.value)-1;
+            stopEp = parseInt(this.stopEp.value)-1;
+        }
         let count = 0;
         let flag = false;
         for (let s = 0; s < this.inputElementList.length; s++) {
             for (let ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
                 count++;
-                if(s === parseInt(this.startS.value)-1 && ep === parseInt(this.startEp.value)-1) {
+                if(s === startS && ep === startEp) {
                     flag = true;
                 }
                 if(flag) {
@@ -490,13 +540,31 @@ class PageEdit implements Slideable, ForeachElement {
                         this.inputElementList[s].episodes[ep].url.value = url;
                     }
                 }
-                if(s === parseInt(this.stopS.value)-1 && ep === parseInt(this.stopEp.value)-1) {
+                if(s === stopS && ep === stopEp) {
                     flag = false;
                 }
             }
         }
         this.errMsg.innerHTML = 'Urls generiert!';
         this.errMsg.classList.add('create-msg-success');
+    }
+
+    private calcStartStopValues() {
+        let startS = 0, stopS = 0, startEp = 0, stopEp = 0, count = 0;
+        for (let s = 0; s < this.inputElementList.length; s++) {
+            for (let ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
+                count++;
+                if(count === parseInt(this.startEp.value)) {
+                    startS = s;
+                    startEp = ep;
+                }
+                if(count === parseInt(this.stopEp.value)) {
+                    stopS = s;
+                    stopEp = ep;
+                }
+            }
+        }
+        return [startS, stopS, startEp, stopEp];
     }
 
     private static appendZeros(str: string, numZeros: number) {
