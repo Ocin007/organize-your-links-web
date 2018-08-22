@@ -957,6 +957,7 @@ var PageCreate = /** @class */ (function () {
             name_en: this.inputEN.value,
             name_jpn: this.inputJPN.value,
             list: ListID.NOT_WATCHED,
+            rank: 0,
             seasons: []
         };
     };
@@ -1598,6 +1599,7 @@ var PageEdit = /** @class */ (function () {
             name_en: this.oldData.name_en,
             name_jpn: this.oldData.name_jpn,
             list: this.oldData.list,
+            rank: this.oldData.rank,
             seasons: []
         };
         this.inputElementList = [];
@@ -1657,7 +1659,7 @@ var PageEdit = /** @class */ (function () {
             instance.resetErrMsg();
             instance.createNewData();
             instance.serverData.put([instance.newData], function () {
-                reloadAllData();
+                setTimeout(reloadAllData, 400);
                 instance.errMsg.innerHTML = 'Gespeichert!';
                 instance.errMsg.classList.add('create-msg-success');
             });
@@ -1992,7 +1994,6 @@ var PageEdit = /** @class */ (function () {
             }
         }
     };
-    //TODO: anpassen für episodeCount == true
     PageEdit.prototype.buttonFillWithGenericUrls = function () {
         this.resetErrMsg();
         var startS, stopS, startEp, stopEp;

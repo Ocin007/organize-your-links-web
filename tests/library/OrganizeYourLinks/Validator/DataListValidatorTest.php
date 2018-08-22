@@ -26,6 +26,7 @@ class DataListValidatorTest extends TestCase
                 'name_en' => 'missing',
                 'name_jpn' => 'missing',
                 'list' => 'missing',
+                'rank' => 'missing',
                 'seasons' => 'missing'
             ],
             1 => [
@@ -35,6 +36,7 @@ class DataListValidatorTest extends TestCase
                 'name_en' => 'missing',
                 'name_jpn' => 'missing',
                 'list' => 'missing',
+                'rank' => 'missing',
                 'seasons' => 'missing'
             ]
         ];
@@ -53,6 +55,7 @@ class DataListValidatorTest extends TestCase
                 'name_en' => false,
                 'name_jpn' => false,
                 'list' => false,
+                'rank' => false,
                 'seasons' => false
             ]
         ];
@@ -64,6 +67,7 @@ class DataListValidatorTest extends TestCase
                 'name_en' => 'wrong type',
                 'name_jpn' => 'wrong type',
                 'list' => 'wrong type',
+                'rank' => 'wrong type',
                 'seasons' => 'wrong type'
             ]
         ];
@@ -82,6 +86,7 @@ class DataListValidatorTest extends TestCase
                 'name_en' => '',
                 'name_jpn' => 'japan',
                 'list' => 1,
+                'rank' => 0,
                 'seasons' => []
             ]
         ];
@@ -101,6 +106,7 @@ class DataListValidatorTest extends TestCase
                 'name_en' => '',
                 'name_jpn' => '   ',
                 'list' => 1,
+                'rank' => 0,
                 'seasons' => [[]]
             ]
         ];
@@ -131,6 +137,7 @@ class DataListValidatorTest extends TestCase
                 'name_en' => 'uk',
                 'name_jpn' => '',
                 'list' => 1,
+                'rank' => 0,
                 'seasons' => [
                     [
                         'thumbnail' => '',
@@ -170,6 +177,7 @@ class DataListValidatorTest extends TestCase
                 'name_en' => 'uk',
                 'name_jpn' => '',
                 'list' => 1,
+                'rank' => 0,
                 'seasons' => [
                     [
                         'thumbnail' => '',
@@ -224,6 +232,7 @@ class DataListValidatorTest extends TestCase
                 'name_en' => 'missing',
                 'name_jpn' => 'missing',
                 'list' => 'wrong type',
+                'rank' => 'missing',
                 'seasons' => [
                     1 => [
                         'thumbnail' => 'wrong type',
@@ -254,6 +263,7 @@ class DataListValidatorTest extends TestCase
                 'name_en' => 'uk',
                 'name_jpn' => '',
                 'list' => 1,
+                'rank' => 0,
                 'seasons' => [
                     [
                         'thumbnail' => '',
@@ -296,6 +306,7 @@ class DataListValidatorTest extends TestCase
                 'name_en' => '',
                 'name_jpn' => 'japan',
                 'list' => 1,
+                'rank' => 0,
                 'seasons' => [
                     [
                         'thumbnail' => '',

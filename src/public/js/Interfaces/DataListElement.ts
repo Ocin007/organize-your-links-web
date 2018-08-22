@@ -1,4 +1,3 @@
-//TODO: attribut rank: number hinzufügen
 interface DataListElement {
     id: string,
     tvdbId: number,
@@ -6,6 +5,7 @@ interface DataListElement {
     name_en: string,
     name_jpn: string,
     list: ListID,
+    rank: number,
     seasons: {
         thumbnail: string,
         url: string,

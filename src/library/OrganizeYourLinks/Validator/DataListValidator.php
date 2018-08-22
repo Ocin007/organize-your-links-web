@@ -27,6 +27,7 @@ class DataListValidator implements Validator {
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'tvdbId', 'integer'));
         $errors = array_merge($errors, $this->checkTitle($data));
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'list', 'integer'));
+        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'rank', 'integer'));
         $seasonErrors = $this->checkForKeyAndType($data, 'seasons', 'array');
         if(count($seasonErrors) === 0) {
             $seasonErrors = $this->validateSeasons($data['seasons']);

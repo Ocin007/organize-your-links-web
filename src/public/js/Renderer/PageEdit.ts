@@ -100,6 +100,7 @@ class PageEdit implements Slideable, ForeachElement {
             name_en: this.oldData.name_en,
             name_jpn: this.oldData.name_jpn,
             list: this.oldData.list,
+            rank: this.oldData.rank,
             seasons: []
         };
         this.inputElementList = [];
@@ -164,7 +165,7 @@ class PageEdit implements Slideable, ForeachElement {
             instance.resetErrMsg();
             instance.createNewData();
             instance.serverData.put([instance.newData], function () {
-                reloadAllData();
+                setTimeout(reloadAllData, 400);
                 instance.errMsg.innerHTML = 'Gespeichert!';
                 instance.errMsg.classList.add('create-msg-success');
             });
@@ -507,7 +508,7 @@ class PageEdit implements Slideable, ForeachElement {
             }
         }
     }
-    
+
     private buttonFillWithGenericUrls() {
         this.resetErrMsg();
         let startS, stopS, startEp, stopEp;

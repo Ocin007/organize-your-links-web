@@ -221,6 +221,7 @@ class PageCreate implements Slideable, ForeachElement {
             name_en: this.inputEN.value,
             name_jpn: this.inputJPN.value,
             list: ListID.NOT_WATCHED,
+            rank: 0,
             seasons: []
         };
     }
