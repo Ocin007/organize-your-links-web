@@ -2,6 +2,7 @@ class PageEdit implements Slideable, ForeachElement {
 
     private oldData: DataListElement;
     private newData: DataListElement;
+    private readonly episodeCount = Settings.episodeCount;
 
     private inputElementList: {
         label: HTMLElement,
@@ -258,6 +259,7 @@ class PageEdit implements Slideable, ForeachElement {
                 ])
             ]),
             PageCreate.createDiv(['generic-url-container'], [
+                //TODO: von - bis umsortieren in: von s, ep - bis s, ep
                 PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
                     PageEdit.createLabel('generic-startS', '{{s}} von'),
                     this.startS,
@@ -366,11 +368,13 @@ class PageEdit implements Slideable, ForeachElement {
         const close = PageDetail.createImg('img/close.ico', 'delete');
         close.addEventListener('click', function () {
             instance.seasonContainer.removeChild(season);
-            instance.inputElementList.splice(instance.inputElementList.indexOf(seasonObj), 1);
+            const sIndex = instance.inputElementList.indexOf(seasonObj);
+            instance.inputElementList.splice(sIndex, 1);
             for (let s = 0; s < instance.inputElementList.length; s++) {
                 instance.inputElementList[s].label.innerHTML = 'Season '+(s+1);
             }
-            instance.updateStopSEp();
+            instance.updateStopSStopEp();
+            instance.updateEpLabels(sIndex);
         });
         const numEpisode = PageEdit.createInputNum('1');
         const addEpisode = this.createButton('button-silver', 'Episoden hinzufügen', function () {
@@ -400,9 +404,9 @@ class PageEdit implements Slideable, ForeachElement {
         return episodesContainer;
     }
 
-    private appendEpisode(container: HTMLElement, name: string, url: string, index: number, watched: boolean) {
+    private appendEpisode(container: HTMLElement, name: string, url: string, sIndex: number, watched: boolean) {
         const instance = this;
-        const sObj = this.inputElementList[index];
+        const sObj = this.inputElementList[sIndex];
         const close = PageDetail.createImg('img/close.ico', 'delete');
         close.addEventListener('click', function () {
             container.removeChild(episode);
@@ -410,9 +414,10 @@ class PageEdit implements Slideable, ForeachElement {
             for (let ep = 0; ep < sObj.episodes.length; ep++) {
                 sObj.episodes[ep].label.innerHTML = 'Folge '+(ep+1);
             }
-            instance.updateStopSEp();
+            instance.updateStopSStopEp();
+            instance.updateEpLabels(sIndex);
         });
-        const label = PageEdit.generateText('p', 'Folge '+(this.inputElementList[index].episodes.length+1));
+        const label = PageEdit.generateText('p', 'Folge '+(this.inputElementList[sIndex].episodes.length+1));
         const nameInput = PageEdit.createInputText('Name', name);
         const urlInput = PageEdit.createInputText('Url', url);
         const episode = PageCreate.createDiv(['edit-episode', 'font-green'], [
@@ -426,10 +431,11 @@ class PageEdit implements Slideable, ForeachElement {
             watched: watched
         };
         sObj.episodes.push(epObj);
-        this.updateStopSEp();
+        this.updateStopSStopEp();
+        this.updateEpLabels(sIndex);
     }
 
-    private updateStopSEp() {
+    private updateStopSStopEp() {
         let sMax = 1;
         for (let s = this.inputElementList.length-1; s > -1; s--) {
             if(this.inputElementList[s].episodes.length > 0) {
@@ -442,6 +448,22 @@ class PageEdit implements Slideable, ForeachElement {
             this.stopEp.value = this.inputElementList[sMax-1].episodes.length.toString();
         } else {
             this.stopEp.value = '1';
+        }
+    }
+
+    private updateEpLabels(sIndex: number) {
+        if(!this.episodeCount) {
+            return;
+        }
+        let epCount = 0;
+        for (let s = 0; s < sIndex; s++) {
+            epCount += this.inputElementList[s].episodes.length;
+        }
+        for (let s = sIndex; s < this.inputElementList.length; s++) {
+            for (let ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
+                epCount++;
+                this.inputElementList[s].episodes[ep].label.innerHTML = 'Folge '+epCount;
+            }
         }
     }
 

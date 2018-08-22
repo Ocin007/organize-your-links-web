@@ -329,6 +329,7 @@ var Settings = /** @class */ (function (_super) {
         Settings.minSizeOfPlaylist = response.minSizeOfPlaylist;
         Settings.colorBrightness = response.colorBrightness;
         Settings.titleLanguage = response.titleLanguage;
+        Settings.episodeCount = response.episodeCount;
     };
     Settings.generateSettingsObj = function () {
         return {
@@ -338,7 +339,8 @@ var Settings = /** @class */ (function (_super) {
             animationSpeedMulti: Settings.animationSpeedMulti,
             minSizeOfPlaylist: Settings.minSizeOfPlaylist,
             colorBrightness: Settings.colorBrightness,
-            titleLanguage: Settings.titleLanguage
+            titleLanguage: Settings.titleLanguage,
+            episodeCount: Settings.episodeCount
         };
     };
     return Settings;
@@ -968,6 +970,7 @@ var PageDetail = /** @class */ (function () {
         this.serverData = serverData;
         this.editPage = editPage;
         this.colorBrightness = Settings.colorBrightness;
+        this.episodeCount = Settings.episodeCount;
         this.currentIndex = 0;
         this.seasonUrl = '';
         this.listElementMap = {};
@@ -1052,8 +1055,10 @@ var PageDetail = /** @class */ (function () {
         this.detailContainer.innerHTML = '';
         var titleContainer = this.generateTitleContainer(data);
         this.detailContainer.appendChild(titleContainer);
+        var epCount = 0;
         for (var s = 0; s < data.seasons.length; s++) {
-            this.detailContainer.appendChild(this.createSegment(s, data));
+            this.detailContainer.appendChild(this.createSegment(s, epCount, data));
+            epCount += data.seasons[s].episodes.length;
         }
     };
     PageDetail.prototype.generateTitleContainer = function (data) {
@@ -1138,7 +1143,7 @@ var PageDetail = /** @class */ (function () {
         });
         return title;
     };
-    PageDetail.prototype.createSegment = function (sIndex, data) {
+    PageDetail.prototype.createSegment = function (sIndex, epCount, data) {
         var segment = PageDetail.createDiv('list-segment');
         var label = document.createElement('h2');
         label.innerHTML = 'Season ' + (sIndex + 1);
@@ -1155,7 +1160,7 @@ var PageDetail = /** @class */ (function () {
         epContainer.classList.add('background-gray');
         var seasonElements = [];
         for (var ep = 0; ep < data.seasons[sIndex].episodes.length; ep++) {
-            var _a = this.createEpisode(sIndex, ep, data, watchedSeason), episode = _a[0], watchedButton = _a[1];
+            var _a = this.createEpisode(sIndex, ep, epCount + ep, data, watchedSeason), episode = _a[0], watchedButton = _a[1];
             epContainer.appendChild(episode);
             seasonElements.push([episode, watchedButton]);
         }
@@ -1191,11 +1196,17 @@ var PageDetail = /** @class */ (function () {
         }
         return true;
     };
-    PageDetail.prototype.createEpisode = function (sIndex, epIndex, data, watchedSeason) {
+    PageDetail.prototype.createEpisode = function (sIndex, epIndex, epCount, data, watchedSeason) {
         var episode = PageDetail.createDiv('episode-detail');
         var _a = this.generateEpisodeButtons(sIndex, epIndex, data, episode, watchedSeason), buttonContainer = _a[0], watchedButton = _a[1];
         episode.appendChild(buttonContainer);
-        var epLabel = PageDetail.generateEpisodeLabel(epIndex, data.seasons[sIndex].episodes[epIndex].name);
+        var epLabel;
+        if (this.episodeCount) {
+            epLabel = PageDetail.generateEpisodeLabel(epCount, data.seasons[sIndex].episodes[epIndex].name);
+        }
+        else {
+            epLabel = PageDetail.generateEpisodeLabel(epIndex, data.seasons[sIndex].episodes[epIndex].name);
+        }
         episode.appendChild(epLabel);
         if (this.episodeList[sIndex] === undefined) {
             this.episodeList[sIndex] = [episode];
@@ -1533,6 +1544,7 @@ var PageEdit = /** @class */ (function () {
         this.pageElement = pageElement;
         this.tabElement = tabElement;
         this.serverData = serverData;
+        this.episodeCount = Settings.episodeCount;
         this.inputElementList = [];
     }
     PageEdit.prototype.activateTab = function () {
@@ -1738,6 +1750,7 @@ var PageEdit = /** @class */ (function () {
                 ])
             ]),
             PageCreate.createDiv(['generic-url-container'], [
+                //TODO: von - bis umsortieren in: von s, ep - bis s, ep
                 PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
                     PageEdit.createLabel('generic-startS', '{{s}} von'),
                     this.startS,
@@ -1842,11 +1855,13 @@ var PageEdit = /** @class */ (function () {
         var close = PageDetail.createImg('img/close.ico', 'delete');
         close.addEventListener('click', function () {
             instance.seasonContainer.removeChild(season);
-            instance.inputElementList.splice(instance.inputElementList.indexOf(seasonObj), 1);
+            var sIndex = instance.inputElementList.indexOf(seasonObj);
+            instance.inputElementList.splice(sIndex, 1);
             for (var s = 0; s < instance.inputElementList.length; s++) {
                 instance.inputElementList[s].label.innerHTML = 'Season ' + (s + 1);
             }
-            instance.updateStopSEp();
+            instance.updateStopSStopEp();
+            instance.updateEpLabels(sIndex);
         });
         var numEpisode = PageEdit.createInputNum('1');
         var addEpisode = this.createButton('button-silver', 'Episoden hinzufügen', function () {
@@ -1875,9 +1890,9 @@ var PageEdit = /** @class */ (function () {
         this.seasonContainer.appendChild(season);
         return episodesContainer;
     };
-    PageEdit.prototype.appendEpisode = function (container, name, url, index, watched) {
+    PageEdit.prototype.appendEpisode = function (container, name, url, sIndex, watched) {
         var instance = this;
-        var sObj = this.inputElementList[index];
+        var sObj = this.inputElementList[sIndex];
         var close = PageDetail.createImg('img/close.ico', 'delete');
         close.addEventListener('click', function () {
             container.removeChild(episode);
@@ -1885,9 +1900,10 @@ var PageEdit = /** @class */ (function () {
             for (var ep = 0; ep < sObj.episodes.length; ep++) {
                 sObj.episodes[ep].label.innerHTML = 'Folge ' + (ep + 1);
             }
-            instance.updateStopSEp();
+            instance.updateStopSStopEp();
+            instance.updateEpLabels(sIndex);
         });
-        var label = PageEdit.generateText('p', 'Folge ' + (this.inputElementList[index].episodes.length + 1));
+        var label = PageEdit.generateText('p', 'Folge ' + (this.inputElementList[sIndex].episodes.length + 1));
         var nameInput = PageEdit.createInputText('Name', name);
         var urlInput = PageEdit.createInputText('Url', url);
         var episode = PageCreate.createDiv(['edit-episode', 'font-green'], [
@@ -1901,9 +1917,10 @@ var PageEdit = /** @class */ (function () {
             watched: watched
         };
         sObj.episodes.push(epObj);
-        this.updateStopSEp();
+        this.updateStopSStopEp();
+        this.updateEpLabels(sIndex);
     };
-    PageEdit.prototype.updateStopSEp = function () {
+    PageEdit.prototype.updateStopSStopEp = function () {
         var sMax = 1;
         for (var s = this.inputElementList.length - 1; s > -1; s--) {
             if (this.inputElementList[s].episodes.length > 0) {
@@ -1917,6 +1934,22 @@ var PageEdit = /** @class */ (function () {
         }
         else {
             this.stopEp.value = '1';
+        }
+    };
+    PageEdit.prototype.updateEpLabels = function (sIndex) {
+        if (!this.episodeCount) {
+            return;
+        }
+        //TODO
+        var epCount = 0;
+        for (var s = 0; s < sIndex; s++) {
+            epCount += this.inputElementList[s].episodes.length;
+        }
+        for (var s = sIndex; s < this.inputElementList.length; s++) {
+            for (var ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
+                epCount++;
+                this.inputElementList[s].episodes[ep].label.innerHTML = 'Folge ' + epCount;
+            }
         }
     };
     PageEdit.prototype.buttonFillWithGenericUrls = function () {
@@ -2594,7 +2627,8 @@ var PageSettings = /** @class */ (function () {
             animationSpeedMulti: null,
             minSizeOfPlaylist: null,
             colorBrightness: null,
-            titleLanguage: null
+            titleLanguage: null,
+            episodeCount: null
         };
         this.revertSettings();
         this.actionContainer = document.createElement('div');
@@ -2606,6 +2640,7 @@ var PageSettings = /** @class */ (function () {
         this.actionContainer.appendChild(this.startPageAction());
         this.actionContainer.appendChild(this.initialDataIdAction());
         //TODO: settings folgenzählung durchgängig / bei jeder season neu
+        this.actionContainer.appendChild(this.episodeCountAction());
         this.actionContainer.appendChild(this.animationSpeedSingleAction());
         this.actionContainer.appendChild(this.animationSpeedMultiAction());
         this.actionContainer.appendChild(this.minSizeOfPlaylistAction());
@@ -2648,6 +2683,7 @@ var PageSettings = /** @class */ (function () {
         this.settings.minSizeOfPlaylist = parseInt(this.minSizeOfPlaylist.value);
         this.settings.colorBrightness = parseInt(this.colorBrightness.value);
         this.settings.titleLanguage = this.titleLanguage;
+        this.settings.episodeCount = this.episodeCount;
     };
     PageSettings.prototype.revertSettings = function () {
         this.settings.startPage = Settings.startPage;
@@ -2657,6 +2693,7 @@ var PageSettings = /** @class */ (function () {
         this.settings.minSizeOfPlaylist = Settings.minSizeOfPlaylist;
         this.settings.colorBrightness = Settings.colorBrightness;
         this.settings.titleLanguage = Settings.titleLanguage;
+        this.settings.episodeCount = Settings.episodeCount;
     };
     PageSettings.getActionDiv = function () {
         var container = document.createElement('div');
@@ -2732,26 +2769,47 @@ var PageSettings = /** @class */ (function () {
         });
         return input;
     };
-    PageSettings.prototype.getRadioInput = function (src, alt, lang) {
-        var div = document.createElement('div');
-        div.classList.add('opt-single-radio');
-        var img = PageDetail.createImg(src, alt);
+    PageSettings.prototype.getRadioInput = function (name, value, checked) {
         var input = document.createElement('input');
         input.type = 'radio';
-        input.name = 'titleLanguage';
-        input.value = lang;
-        input.checked = this.settings.titleLanguage === lang;
+        input.name = name;
+        input.value = value;
+        input.checked = checked;
         input.addEventListener('focus', function () {
             blockKeyboardOnInputFocus = true;
         });
         input.addEventListener('blur', function () {
             blockKeyboardOnInputFocus = false;
         });
-        div.appendChild(img);
+        return input;
+    };
+    PageSettings.prototype.getRadioInputLang = function (src, alt, lang) {
+        var div = document.createElement('div');
+        div.classList.add('opt-single-radio');
+        var img = PageDetail.createImg(src, alt);
+        var input = this.getRadioInput('titleLanguage', lang, this.settings.titleLanguage === lang);
         div.appendChild(input);
+        div.appendChild(img);
         var instance = this;
         div.addEventListener('click', function () {
             instance.titleLanguage = lang;
+            input.checked = true;
+        });
+        return div;
+    };
+    PageSettings.prototype.getRadioInputEpCount = function (htmlFor, title, value) {
+        var div = document.createElement('div');
+        div.classList.add('opt-single-radio');
+        var input = this.getRadioInput('episodeCount', value, this.settings.episodeCount === (value === 'true'));
+        input.id = htmlFor;
+        var label = document.createElement('label');
+        label.htmlFor = htmlFor;
+        label.innerHTML = title;
+        div.appendChild(input);
+        div.appendChild(label);
+        var instance = this;
+        div.addEventListener('click', function () {
+            instance.episodeCount = input.value === 'true';
             input.checked = true;
         });
         return div;
@@ -2827,13 +2885,22 @@ var PageSettings = /** @class */ (function () {
         radioContainer.classList.add('opt-range-control');
         radioContainer.classList.add('opt-radio-buttons');
         this.titleLanguage = this.settings.titleLanguage;
-        var divDE = this.getRadioInput('img/germany.png', 'germany', TitleLang.DE);
-        var divEN = this.getRadioInput('img/uk.png', 'uk', TitleLang.EN);
-        var divJPN = this.getRadioInput('img/japan.png', 'japan', TitleLang.JPN);
+        var divDE = this.getRadioInputLang('img/germany.png', 'germany', TitleLang.DE);
+        var divEN = this.getRadioInputLang('img/uk.png', 'uk', TitleLang.EN);
+        var divJPN = this.getRadioInputLang('img/japan.png', 'japan', TitleLang.JPN);
         radioContainer.appendChild(divDE);
         radioContainer.appendChild(divEN);
         radioContainer.appendChild(divJPN);
         return PageSettings.getAction('Titelsprache auswählen', radioContainer);
+    };
+    PageSettings.prototype.episodeCountAction = function () {
+        var radioContainer = document.createElement('div');
+        radioContainer.classList.add('opt-range-control');
+        radioContainer.classList.add('opt-radio-buttons');
+        this.episodeCount = this.settings.episodeCount;
+        radioContainer.appendChild(this.getRadioInputEpCount('epCountTrue', 'durchgehend', 'true'));
+        radioContainer.appendChild(this.getRadioInputEpCount('epCountFalse', 'in jeder Season neu', 'false'));
+        return PageSettings.getAction('Folgennummerierung', radioContainer);
     };
     return PageSettings;
 }());

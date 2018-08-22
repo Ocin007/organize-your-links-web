@@ -110,7 +110,8 @@ class WriterTest extends TestCase
             "animationSpeedMulti" => 0.1,
             "minSizeOfPlaylist" => 10,
             "colorBrightness" => 255,
-            "titleLanguage" => "name_de"
+            "titleLanguage" => "name_de",
+            "episodeCount" => true
         ];
         $expectedErrors = [];
         $subject = new Writer($this->settings, $this->map);

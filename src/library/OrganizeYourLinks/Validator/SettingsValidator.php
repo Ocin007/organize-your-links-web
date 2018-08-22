@@ -14,6 +14,7 @@ class SettingsValidator implements Validator {
         $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'minSizeOfPlaylist', 'integer'));
         $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'colorBrightness', 'integer'));
         $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'titleLanguage', 'string'));
+        $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'episodeCount', 'boolean'));
         return $errors;
     }
 

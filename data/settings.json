@@ -1,9 +1,10 @@
 {
-    "startPage": 6,
+    "startPage": 3,
     "initialDataId": "5b64b9edb26839.86457126",
     "animationSpeedSingle": 0.05,
     "animationSpeedMulti": 0.1,
     "minSizeOfPlaylist": 10,
     "colorBrightness": 255,
-    "titleLanguage": "name_de"
+    "titleLanguage": "name_de",
+    "episodeCount": true
 }

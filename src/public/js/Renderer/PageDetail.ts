@@ -1,6 +1,7 @@
 class PageDetail implements Slideable, ForeachElement {
 
     private readonly colorBrightness = Settings.colorBrightness;
+    private readonly episodeCount = Settings.episodeCount;
 
     private thumbnail: HTMLImageElement;
     private detailContainer: HTMLElement;
@@ -135,8 +136,10 @@ class PageDetail implements Slideable, ForeachElement {
         this.detailContainer.innerHTML = '';
         const titleContainer = this.generateTitleContainer(data);
         this.detailContainer.appendChild(titleContainer);
+        let epCount = 0;
         for (let s = 0; s < data.seasons.length; s++) {
-            this.detailContainer.appendChild(this.createSegment(s, data))
+            this.detailContainer.appendChild(this.createSegment(s, epCount, data));
+            epCount += data.seasons[s].episodes.length;
         }
     }
 
@@ -227,7 +230,7 @@ class PageDetail implements Slideable, ForeachElement {
         return title;
     }
 
-    private createSegment(sIndex: number, data: DataListElement) {
+    private createSegment(sIndex: number, epCount: number, data: DataListElement) {
         const segment = PageDetail.createDiv('list-segment');
         const label = document.createElement('h2');
         label.innerHTML = 'Season '+(sIndex+1);
@@ -243,7 +246,7 @@ class PageDetail implements Slideable, ForeachElement {
         epContainer.classList.add('background-gray');
         const seasonElements = [];
         for (let ep = 0; ep < data.seasons[sIndex].episodes.length; ep++) {
-            let [episode, watchedButton] = this.createEpisode(sIndex, ep, data, watchedSeason);
+            let [episode, watchedButton] = this.createEpisode(sIndex, ep, epCount + ep, data, watchedSeason);
             epContainer.appendChild(episode);
             seasonElements.push([episode, watchedButton]);
         }
@@ -280,11 +283,16 @@ class PageDetail implements Slideable, ForeachElement {
         return true;
     }
 
-    private createEpisode(sIndex: number, epIndex: number, data: DataListElement, watchedSeason: HTMLImageElement) {
+    private createEpisode(sIndex: number, epIndex: number, epCount: number, data: DataListElement, watchedSeason: HTMLImageElement) {
         const episode = PageDetail.createDiv('episode-detail');
         const [buttonContainer, watchedButton] = this.generateEpisodeButtons(sIndex, epIndex, data, episode, watchedSeason);
         episode.appendChild(buttonContainer);
-        const epLabel = PageDetail.generateEpisodeLabel(epIndex, data.seasons[sIndex].episodes[epIndex].name);
+        let epLabel;
+        if(this.episodeCount) {
+            epLabel = PageDetail.generateEpisodeLabel(epCount, data.seasons[sIndex].episodes[epIndex].name);
+        } else {
+            epLabel = PageDetail.generateEpisodeLabel(epIndex, data.seasons[sIndex].episodes[epIndex].name);
+        }
         episode.appendChild(epLabel);
         if(this.episodeList[sIndex] === undefined) {
             this.episodeList[sIndex] = [episode];

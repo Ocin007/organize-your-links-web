@@ -7,6 +7,7 @@ class Settings extends AjaxRequest {
     static minSizeOfPlaylist: number;
     static colorBrightness: number;
     static titleLanguage: TitleLang;
+    static episodeCount: boolean;
 
     static load(callback?: Function) {
         Settings.sendAjaxRequest('../api/loadSettings.php', {}, function (http) {
@@ -50,6 +51,7 @@ class Settings extends AjaxRequest {
         Settings.minSizeOfPlaylist = response.minSizeOfPlaylist;
         Settings.colorBrightness = response.colorBrightness;
         Settings.titleLanguage = response.titleLanguage;
+        Settings.episodeCount = response.episodeCount;
     }
 
     private static generateSettingsObj() {
@@ -60,7 +62,8 @@ class Settings extends AjaxRequest {
             animationSpeedMulti: Settings.animationSpeedMulti,
             minSizeOfPlaylist: Settings.minSizeOfPlaylist,
             colorBrightness: Settings.colorBrightness,
-            titleLanguage: Settings.titleLanguage
+            titleLanguage: Settings.titleLanguage,
+            episodeCount: Settings.episodeCount
         };
     }
 }

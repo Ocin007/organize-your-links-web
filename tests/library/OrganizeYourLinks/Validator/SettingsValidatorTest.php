@@ -20,7 +20,8 @@ class SettingsValidatorTest extends TestCase
             "animationSpeedMulti" => 'wrong type',
             "minSizeOfPlaylist" => 'missing',
             "colorBrightness" => 'missing',
-            "titleLanguage" => 'missing'
+            "titleLanguage" => 'missing',
+            "episodeCount" => 'missing'
         ];
         $subject = new SettingsValidator();
         $errors = $subject->validate($data);
@@ -36,7 +37,8 @@ class SettingsValidatorTest extends TestCase
             "animationSpeedMulti" => 0.1,
             "minSizeOfPlaylist" => 10,
             "colorBrightness" => 255,
-            "titleLanguage" => 'name_de'
+            "titleLanguage" => 'name_de',
+            "episodeCount" => true
         ];
         $expectedErrors = [];
         $subject = new SettingsValidator();
