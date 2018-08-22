@@ -17,4 +17,13 @@ class TVDB extends AjaxRequest {
             callback(resObj);
         });
     }
+
+    static getImages(id: number, callback: Function) {
+        TVDB.sendAjaxRequest('../api/tvdb/getImages.php', id, function (http) {
+            TVDB.errFunction(http, 'getImages');
+        }, function (http) {
+            const resObj = JSON.parse(http.responseText);
+            callback(resObj);
+        });
+    }
 }

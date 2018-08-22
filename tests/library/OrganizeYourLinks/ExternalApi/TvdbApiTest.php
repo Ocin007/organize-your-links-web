@@ -32,4 +32,11 @@ class TvdbApiTest extends TestCase
         $subject->getEpisodes(74796);
         $this->assertEquals(true, isset($subject->getContent()['1']));
     }
+
+    public function testGetImages()
+    {
+        $subject = new TvdbApi($this->keyFile, $this->tokenFile, $this->certFile);
+        $subject->prepare();
+        $this->assertEquals(true, $subject->getImages(74796));
+    }
 }

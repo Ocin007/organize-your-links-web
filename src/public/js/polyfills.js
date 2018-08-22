@@ -377,6 +377,14 @@ var TVDB = /** @class */ (function (_super) {
             callback(resObj);
         });
     };
+    TVDB.getImages = function (id, callback) {
+        TVDB.sendAjaxRequest('../api/tvdb/getImages.php', id, function (http) {
+            TVDB.errFunction(http, 'getImages');
+        }, function (http) {
+            var resObj = JSON.parse(http.responseText);
+            callback(resObj);
+        });
+    };
     return TVDB;
 }(AjaxRequest));
 //# sourceMappingURL=TVDB.js.map
@@ -1270,12 +1278,12 @@ var PageDetail = /** @class */ (function () {
             watchedStatus.src = 'img/watched.ico';
             watchedStatus.alt = 'watched';
             episode.classList.remove('font-green');
-            episode.classList.add('font-light-green');
+            episode.classList.add('font-lighter-green');
         }
         else {
             watchedStatus.src = 'img/not-watched.ico';
             watchedStatus.alt = 'not-watched';
-            episode.classList.remove('font-light-green');
+            episode.classList.remove('font-lighter-green');
             episode.classList.add('font-green');
         }
     };
@@ -1760,28 +1768,28 @@ var PageEdit = /** @class */ (function () {
     PageEdit.prototype.createStartInput = function () {
         if (this.episodeCount) {
             return PageCreate.createDiv(['edit-wrapper'], [
-                PageEdit.createLabel('generic-startEp', 'Von {{ep}}'),
+                PageEdit.createLabel('generic-startEp', 'Von ep'),
                 this.startEp
             ]);
         }
         return PageCreate.createDiv(['edit-wrapper'], [
-            PageEdit.createLabel('generic-startS', 'Von {{s}}'),
+            PageEdit.createLabel('generic-startS', 'Von s'),
             this.startS,
-            PageEdit.createLabel('generic-startEp', '{{ep}}'),
+            PageEdit.createLabel('generic-startEp', 'ep'),
             this.startEp
         ]);
     };
     PageEdit.prototype.createStopInput = function () {
         if (this.episodeCount) {
             return PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
-                PageEdit.createLabel('generic-stopEp', 'Bis {{ep}}'),
+                PageEdit.createLabel('generic-stopEp', 'Bis ep'),
                 this.stopEp
             ]);
         }
         return PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
-            PageEdit.createLabel('generic-stopS', 'Bis {{s}}'),
+            PageEdit.createLabel('generic-stopS', 'Bis s'),
             this.stopS,
-            PageEdit.createLabel('generic-stopEp', '{{ep}}'),
+            PageEdit.createLabel('generic-stopEp', 'ep'),
             this.stopEp
         ]);
     };
@@ -1799,7 +1807,6 @@ var PageEdit = /** @class */ (function () {
         this.errMsg.classList.remove('create-msg-error');
     };
     PageEdit.prototype.buttonFillWithTvdbData = function () {
-        //TODO: abfrage thumbnails anschauen
         this.resetErrMsg();
         if (this.oldData.tvdbId === -1) {
             this.errMsg.innerHTML = 'Keine TVDB ID für diese Serie vergeben!';
@@ -1818,10 +1825,29 @@ var PageEdit = /** @class */ (function () {
                 return;
             }
             instance.fillNameInputsWithData(resObj.response);
-            instance.loadingSpinner.style.visibility = 'hidden';
-            instance.errMsg.innerHTML = 'TVDB Daten ergänzt!';
-            instance.errMsg.classList.add('create-msg-success');
+            instance.errMsg.innerHTML = '(1/2) Episoden ergänzt...';
+            TVDB.getImages(instance.oldData.tvdbId, function (resObj) {
+                if (resObj.error !== undefined) {
+                    instance.errMsg.innerHTML = 'Error: ' + resObj.error;
+                    instance.errMsg.classList.add('create-msg-error');
+                    return;
+                }
+                if (resObj.response === undefined) {
+                    return;
+                }
+                instance.fillThumbnailsWithData(resObj.response);
+                instance.loadingSpinner.style.visibility = 'hidden';
+                instance.errMsg.innerHTML = '(2/2) Thumbnails ergänzt!';
+                instance.errMsg.classList.add('create-msg-success');
+            });
         });
+    };
+    PageEdit.prototype.fillThumbnailsWithData = function (data) {
+        for (var s = 1; s < this.inputElementList.length + 1; s++) {
+            if (data[s] !== undefined && this.inputElementList[s - 1] !== undefined) {
+                this.inputElementList[s - 1].thumbnail.value = data[s];
+            }
+        }
     };
     PageEdit.prototype.fillNameInputsWithData = function (data) {
         for (var s = 1; s < Object.keys(data).length + 1; s++) {

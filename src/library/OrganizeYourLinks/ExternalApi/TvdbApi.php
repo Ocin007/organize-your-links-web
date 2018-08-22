@@ -9,10 +9,12 @@ class TvdbApi {
     private static $languages = ['de', 'en', 'ja'];
     private static $languagesEp = ['en', 'de'];
     private static $apiUrl = 'https://api.thetvdb.com';
+    private static $tvdbImgagesUrl = 'https://www.thetvdb.com/banners/';
     private static $rootLogin = '/login';
     private static $rootSearch = '/search/series';
-    private static $rootEp1 = '/series/';
+    private static $rootEpImg1 = '/series/';
     private static $rootEp2 = '/episodes';
+    private static $rootImg2 = '/images/query';
 
     private $key;
     private $token;
@@ -71,7 +73,7 @@ class TvdbApi {
     }
 
     private function getPage($page, $id, $lang) {
-        $urlAndQuerry = TvdbApi::$apiUrl . TvdbApi::$rootEp1 . $id . TvdbApi::$rootEp2 . '?' . http_build_query([
+        $urlAndQuerry = TvdbApi::$apiUrl . TvdbApi::$rootEpImg1 . $id . TvdbApi::$rootEp2 . '?' . http_build_query([
                 'page' => $page
             ]);
         $result = file_get_contents($urlAndQuerry, false, $this->createStandardStreamContext($lang));
@@ -150,5 +152,22 @@ class TvdbApi {
                 $this->content[$s][$ep] = $name;
             }
         }
+    }
+
+    public function getImages($id) {
+        $urlAndQuerry = TvdbApi::$apiUrl . TvdbApi::$rootEpImg1 . $id . TvdbApi::$rootImg2 . '?' . http_build_query([
+                'keyType' => 'season'
+            ]);
+        $result = file_get_contents($urlAndQuerry, false, $this->createStandardStreamContext('en'));
+        if ($this->checkResponse($result)) {
+            $parsed = json_decode($result, true);
+            foreach($parsed['data'] as $data) {
+                if(!isset($this->content[$data['subKey']])) {
+                    $this->content[$data['subKey']] = TvdbApi::$tvdbImgagesUrl.$data['fileName'];
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

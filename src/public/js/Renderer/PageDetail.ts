@@ -360,11 +360,11 @@ class PageDetail implements Slideable, ForeachElement {
             watchedStatus.src = 'img/watched.ico';
             watchedStatus.alt = 'watched';
             episode.classList.remove('font-green');
-            episode.classList.add('font-light-green');
+            episode.classList.add('font-lighter-green');
         } else {
             watchedStatus.src = 'img/not-watched.ico';
             watchedStatus.alt = 'not-watched';
-            episode.classList.remove('font-light-green');
+            episode.classList.remove('font-lighter-green');
             episode.classList.add('font-green');
         }
     }

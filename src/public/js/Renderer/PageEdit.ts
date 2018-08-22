@@ -269,14 +269,14 @@ class PageEdit implements Slideable, ForeachElement {
     private createStartInput() {
         if(this.episodeCount) {
             return PageCreate.createDiv(['edit-wrapper'], [
-                PageEdit.createLabel('generic-startEp', 'Von {{ep}}'),
+                PageEdit.createLabel('generic-startEp', 'Von ep'),
                 this.startEp
             ]);
         }
         return PageCreate.createDiv(['edit-wrapper'], [
-            PageEdit.createLabel('generic-startS', 'Von {{s}}'),
+            PageEdit.createLabel('generic-startS', 'Von s'),
             this.startS,
-            PageEdit.createLabel('generic-startEp', '{{ep}}'),
+            PageEdit.createLabel('generic-startEp', 'ep'),
             this.startEp
         ]);
     }
@@ -284,14 +284,14 @@ class PageEdit implements Slideable, ForeachElement {
     private createStopInput() {
         if(this.episodeCount) {
             return PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
-                PageEdit.createLabel('generic-stopEp', 'Bis {{ep}}'),
+                PageEdit.createLabel('generic-stopEp', 'Bis ep'),
                 this.stopEp
             ]);
         }
         return PageCreate.createDiv(['edit-wrapper', 'edit-wrapper-end'], [
-            PageEdit.createLabel('generic-stopS', 'Bis {{s}}'),
+            PageEdit.createLabel('generic-stopS', 'Bis s'),
             this.stopS,
-            PageEdit.createLabel('generic-stopEp', '{{ep}}'),
+            PageEdit.createLabel('generic-stopEp', 'ep'),
             this.stopEp
         ]);
     }
@@ -312,7 +312,6 @@ class PageEdit implements Slideable, ForeachElement {
     }
 
     private buttonFillWithTvdbData() {
-        //TODO: abfrage thumbnails anschauen
         this.resetErrMsg();
         if(this.oldData.tvdbId === -1) {
             this.errMsg.innerHTML = 'Keine TVDB ID für diese Serie vergeben!';
@@ -331,10 +330,30 @@ class PageEdit implements Slideable, ForeachElement {
                 return;
             }
             instance.fillNameInputsWithData(resObj.response);
-            instance.loadingSpinner.style.visibility = 'hidden';
-            instance.errMsg.innerHTML = 'TVDB Daten ergänzt!';
-            instance.errMsg.classList.add('create-msg-success');
+            instance.errMsg.innerHTML = '(1/2) Episoden ergänzt...';
+            TVDB.getImages(instance.oldData.tvdbId, function (resObj: any) {
+                if(resObj.error !== undefined) {
+                    instance.errMsg.innerHTML = 'Error: '+resObj.error;
+                    instance.errMsg.classList.add('create-msg-error');
+                    return;
+                }
+                if(resObj.response === undefined) {
+                    return;
+                }
+                instance.fillThumbnailsWithData(resObj.response);
+                instance.loadingSpinner.style.visibility = 'hidden';
+                instance.errMsg.innerHTML = '(2/2) Thumbnails ergänzt!';
+                instance.errMsg.classList.add('create-msg-success');
+            });
         });
+    }
+
+    private fillThumbnailsWithData(data: any) {
+        for (let s = 1; s < this.inputElementList.length+1; s++) {
+            if(data[s] !== undefined && this.inputElementList[s-1] !== undefined) {
+                this.inputElementList[s-1].thumbnail.value = data[s];
+            }
+        }
     }
 
     private fillNameInputsWithData(data: any) {
