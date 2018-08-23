@@ -14,12 +14,14 @@ class PageDelete {
     showElement() {
         this.opacityLayer.style.visibility = 'visible';
         this.deleteContainer.style.display = 'flex';
+        blockKeyboardNav = true;
     }
 
     hideElement() {
         this.opacityLayer.style.visibility = 'hidden';
         this.deleteContainer.style.display = 'none';
         this.deleteContainer.innerHTML = '';
+        blockKeyboardNav = false;
     }
 
     renderPage(data: DataListElement) {

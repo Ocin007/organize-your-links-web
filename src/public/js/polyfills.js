@@ -1001,11 +1001,13 @@ var PageDelete = /** @class */ (function () {
     PageDelete.prototype.showElement = function () {
         this.opacityLayer.style.visibility = 'visible';
         this.deleteContainer.style.display = 'flex';
+        blockKeyboardNav = true;
     };
     PageDelete.prototype.hideElement = function () {
         this.opacityLayer.style.visibility = 'hidden';
         this.deleteContainer.style.display = 'none';
         this.deleteContainer.innerHTML = '';
+        blockKeyboardNav = false;
     };
     PageDelete.prototype.renderPage = function (data) {
         this.deleteContainer.innerHTML = '';
