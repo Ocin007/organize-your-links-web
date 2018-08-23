@@ -142,11 +142,23 @@ var ServerData = /** @class */ (function (_super) {
             }
             if (resObj.response !== undefined) {
                 onSuccess();
-                return;
             }
         });
     };
     ServerData.prototype.delete = function (idArray, callback) {
+        ServerData.sendAjaxRequest('../api/delete.php', idArray, function (http) {
+            ServerData.errFunction(http, 'post');
+        }, function (http) {
+            var resObj = JSON.parse(http.responseText);
+            if (resObj.error !== undefined) {
+                console.warn('Error "delete"');
+                console.warn(resObj.error);
+                return;
+            }
+            if (resObj.response !== undefined) {
+                callback();
+            }
+        });
     };
     ServerData.prototype.getIndexList = function (id) {
         switch (id) {
@@ -389,12 +401,13 @@ var TVDB = /** @class */ (function (_super) {
 }(AjaxRequest));
 //# sourceMappingURL=TVDB.js.map
 var ListElement = /** @class */ (function () {
-    function ListElement(dataIndex, serverData, detailPage, pageList, editPage) {
+    function ListElement(dataIndex, serverData, detailPage, pageList, editPage, deletePage) {
         this.dataIndex = dataIndex;
         this.serverData = serverData;
         this.detailPage = detailPage;
         this.pageList = pageList;
         this.editPage = editPage;
+        this.deletePage = deletePage;
         this.openTab = [];
         var element = this.serverData.getListElement(this.dataIndex);
         _a = ListElement.getIndicesAndCountOfFirstNotWatched(element), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
@@ -669,7 +682,8 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.createDeleteButton = function () {
         var instance = this;
         return ListElement.generateButton('img/delete.ico', 'delete', function () {
-            //TODO: delete
+            instance.deletePage.showElement();
+            instance.deletePage.renderPage(instance.data);
         });
     };
     ListElement.generateButton = function (src, alt, onClick) {
@@ -786,6 +800,7 @@ var PageCreate = /** @class */ (function () {
         this.pageElement = pageElement;
         this.tabElement = tabElement;
         this.serverData = serverData;
+        this.tvdbID = -1;
     }
     PageCreate.prototype.activateTab = function () {
         if (!this.tabElement.classList.contains('tab-active')) {
@@ -893,6 +908,7 @@ var PageCreate = /** @class */ (function () {
         this.inputDE.value = '';
         this.inputEN.value = '';
         this.inputJPN.value = '';
+        this.tvdbID = -1;
         this.inputDE.classList.remove('name-input-error');
         this.inputEN.classList.remove('name-input-error');
         this.inputJPN.classList.remove('name-input-error');
@@ -972,12 +988,67 @@ var PageCreate = /** @class */ (function () {
     return PageCreate;
 }());
 //# sourceMappingURL=PageCreate.js.map
+var PageDelete = /** @class */ (function () {
+    function PageDelete(opacityLayer, deleteContainer, serverData) {
+        this.opacityLayer = opacityLayer;
+        this.deleteContainer = deleteContainer;
+        this.serverData = serverData;
+        var instance = this;
+        this.opacityLayer.addEventListener('click', function () {
+            instance.hideElement();
+        });
+    }
+    PageDelete.prototype.showElement = function () {
+        this.opacityLayer.style.visibility = 'visible';
+        this.deleteContainer.style.display = 'flex';
+    };
+    PageDelete.prototype.hideElement = function () {
+        this.opacityLayer.style.visibility = 'hidden';
+        this.deleteContainer.style.display = 'none';
+        this.deleteContainer.innerHTML = '';
+    };
+    PageDelete.prototype.renderPage = function (data) {
+        this.deleteContainer.innerHTML = '';
+        var instance = this;
+        var idLabel = '';
+        if (data.tvdbId !== -1) {
+            idLabel = '#' + data.tvdbId;
+        }
+        var deleteQuestion = PageEdit.generateText('h3', 'Serie wirklich löschen?');
+        deleteQuestion.classList.add('font-green');
+        this.deleteContainer.appendChild(PageCreate.createDiv(['delete-title-container'], [
+            PageEdit.generateText('h1', data[PageDetail.calcTitleLang(data)]),
+            PageEdit.generateText('p', idLabel)
+        ]));
+        this.deleteContainer.appendChild(PageCreate.createDiv(['delete-buttons-question'], [
+            deleteQuestion,
+            PageCreate.createDiv(['delete-button-container'], [
+                PageEdit.createButton('button-green', 'Löschen', function () {
+                    instance.delete(data);
+                }),
+                PageEdit.createButton('button-red', 'Abbrechen', function () {
+                    instance.hideElement();
+                })
+            ])
+        ]));
+    };
+    PageDelete.prototype.delete = function (data) {
+        var instance = this;
+        this.serverData.delete([data.id], function () {
+            instance.hideElement();
+            reloadAllData();
+        });
+    };
+    return PageDelete;
+}());
+//# sourceMappingURL=PageDelete.js.map
 var PageDetail = /** @class */ (function () {
-    function PageDetail(pageElement, tabElement, serverData, editPage) {
+    function PageDetail(pageElement, tabElement, serverData, editPage, deletePage) {
         this.pageElement = pageElement;
         this.tabElement = tabElement;
         this.serverData = serverData;
         this.editPage = editPage;
+        this.deletePage = deletePage;
         this.colorBrightness = Settings.colorBrightness;
         this.episodeCount = Settings.episodeCount;
         this.currentIndex = 0;
@@ -1045,6 +1116,9 @@ var PageDetail = /** @class */ (function () {
         this.pageElement.appendChild(this.detailContainer);
     };
     PageDetail.prototype.renderPage = function (data) {
+        if (data === undefined) {
+            return;
+        }
         this.setFlags(data);
         this.episodeList = [];
         if (data.seasons.length !== 0) {
@@ -1335,6 +1409,9 @@ var PageDetail = /** @class */ (function () {
         var instance = this;
         return ListElement.generateButton('img/edit.ico', 'edit', function () {
             var data = instance.serverData.getListElement(instance.currentIndex);
+            if (data === undefined) {
+                return;
+            }
             instance.editPage.renderPage(data);
             slideToEdit();
             setTimeout(function () {
@@ -1348,7 +1425,12 @@ var PageDetail = /** @class */ (function () {
     PageDetail.prototype.deleteButton = function () {
         var instance = this;
         return ListElement.generateButton('img/delete.ico', 'delete', function () {
-            //TODO: delete detail
+            var data = instance.serverData.getListElement(instance.currentIndex);
+            if (data === undefined) {
+                return;
+            }
+            instance.deletePage.showElement();
+            instance.deletePage.renderPage(data);
         });
     };
     PageDetail.prototype.generateCountCounainer = function () {
@@ -1521,6 +1603,9 @@ var PageDetail = /** @class */ (function () {
         button.innerHTML = 'Zur aktuellen Folge';
         var instance = this;
         button.addEventListener('click', function () {
+            if (instance.sIndex === undefined || instance.epIndex === undefined) {
+                return;
+            }
             var firstNotWatched = instance.episodeList[instance.sIndex][instance.epIndex];
             var height = firstNotWatched.offsetTop - 30;
             window.scrollTo({
@@ -1722,7 +1807,7 @@ var PageEdit = /** @class */ (function () {
         return PageCreate.createDiv(['edit-tools'], [
             PageCreate.createDiv(['generic-url-container'], [
                 PageCreate.createDiv(['edit-wrapper'], [
-                    this.createButton('button-green', 'TVDB Daten laden', function () {
+                    PageEdit.createButton('button-green', 'TVDB Daten laden', function () {
                         instance.buttonFillWithTvdbData();
                     })
                 ]),
@@ -1733,7 +1818,7 @@ var PageEdit = /** @class */ (function () {
             this.createAddSeasonAction(),
             PageCreate.createDiv(['generic-url-container', 'edit-grow'], [
                 PageCreate.createDiv(['edit-wrapper'], [
-                    this.createButton('button-silver', 'Los', function () {
+                    PageEdit.createButton('button-silver', 'Los', function () {
                         instance.buttonFillWithGenericUrls();
                     }),
                     this.genUrl
@@ -1793,7 +1878,7 @@ var PageEdit = /** @class */ (function () {
             this.stopEp
         ]);
     };
-    PageEdit.prototype.createButton = function (token, label, callback) {
+    PageEdit.createButton = function (token, label, callback) {
         var button = PageCreate.createDiv(['custom-button', token]);
         button.innerHTML = label;
         button.addEventListener('click', function () {
@@ -1845,7 +1930,9 @@ var PageEdit = /** @class */ (function () {
     PageEdit.prototype.fillThumbnailsWithData = function (data) {
         for (var s = 1; s < this.inputElementList.length + 1; s++) {
             if (data[s] !== undefined && this.inputElementList[s - 1] !== undefined) {
-                this.inputElementList[s - 1].thumbnail.value = data[s];
+                if (this.inputElementList[s - 1].thumbnail.value === '') {
+                    this.inputElementList[s - 1].thumbnail.value = data[s];
+                }
             }
         }
     };
@@ -1914,7 +2001,7 @@ var PageEdit = /** @class */ (function () {
             instance.updateEpLabels(sIndex);
         });
         var numEpisode = PageEdit.createInputNum('1');
-        var addEpisode = this.createButton('button-silver', 'Episoden hinzufügen', function () {
+        var addEpisode = PageEdit.createButton('button-silver', 'Episoden hinzufügen', function () {
             var num = parseInt(numEpisode.value);
             for (var i = 0; i < num; i++) {
                 instance.appendEpisode(episodesContainer, '', '', instance.inputElementList.indexOf(seasonObj), false);
@@ -2091,7 +2178,7 @@ var PageEdit = /** @class */ (function () {
         var instance = this;
         var inputS = PageEdit.createInputNum('1');
         var inputEp = PageEdit.createInputNum('1', 'episodes-per-seasons');
-        var button = this.createButton('button-silver', 'Seasons hinzufügen', function () {
+        var button = PageEdit.createButton('button-silver', 'Seasons hinzufügen', function () {
             for (var i = 0; i < parseInt(inputS.value); i++) {
                 instance.buttonAppendSeason(parseInt(inputEp.value));
             }
@@ -2171,13 +2258,14 @@ var PageEdit = /** @class */ (function () {
 }());
 //# sourceMappingURL=PageEdit.js.map
 var PageList = /** @class */ (function () {
-    function PageList(listID, pageElement, tabElement, serverData, detailPage, editPage) {
+    function PageList(listID, pageElement, tabElement, serverData, detailPage, editPage, deletePage) {
         this.listID = listID;
         this.pageElement = pageElement;
         this.tabElement = tabElement;
         this.serverData = serverData;
         this.detailPage = detailPage;
         this.editPage = editPage;
+        this.deletePage = deletePage;
     }
     PageList.prototype.showElement = function () {
         this.showPage();
@@ -2236,7 +2324,7 @@ var PageList = /** @class */ (function () {
         for (var i = 0; i < indexList.length; i++) {
             var element = this.serverData.getListElement(indexList[i]);
             var firstChar = element[PageDetail.calcTitleLang(element)].charAt(0).toUpperCase();
-            var listElement = new ListElement(indexList[i], this.serverData, this.detailPage, this, this.editPage);
+            var listElement = new ListElement(indexList[i], this.serverData, this.detailPage, this, this.editPage, this.deletePage);
             if (this.dataList[firstChar] === undefined) {
                 this.dataList[firstChar] = [listElement];
             }
@@ -2928,7 +3016,9 @@ var PageSettings = /** @class */ (function () {
         input.setAttribute('list', 'all-names-settings');
         this.initialDataId = this.settings.initialDataId;
         var index = this.serverData.getIndexOfELement({ id: this.initialDataId });
-        input.value = this.serverData.getListElement(index)[this.settings.titleLanguage];
+        if (index !== -1) {
+            input.value = this.serverData.getListElement(index)[this.settings.titleLanguage];
+        }
         var instance = this;
         input.addEventListener('input', function (ev) {
             var index = instance.serverData.getIndexOfElementWithName(ev.target.value);
@@ -3489,6 +3579,7 @@ var create;
 var edit;
 var ranking;
 var optionPage;
+var revert;
 var navMap;
 function reloadAllData() {
     serverData.get(function () {
@@ -3593,6 +3684,7 @@ function reloadEverything() {
     var createElement = document.getElementById('create');
     var editElement = document.getElementById('edit');
     var rankingElement = document.getElementById('ranking');
+    var deleteElement = document.getElementById('page-delete');
     var tabWatched = document.getElementById('tab-watched');
     var tabPlaylist = document.getElementById('tab-playlist');
     var tabNotWatched = document.getElementById('tab-not-watched');
@@ -3603,11 +3695,12 @@ function reloadEverything() {
     var tabRanking = document.getElementById('tab-ranking');
     Settings.load(function () {
         serverData = new ServerData();
+        revert = new PageDelete(opacityLayer, deleteElement, serverData);
         edit = new PageEdit(editElement, tabEdit, serverData);
-        details = new PageDetail(detailsElement, tabDetails, serverData, edit);
-        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details, edit);
-        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details, edit);
-        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details, edit);
+        details = new PageDetail(detailsElement, tabDetails, serverData, edit, revert);
+        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details, edit, revert);
+        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details, edit, revert);
+        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details, edit, revert);
         optionPage = new PageOptions(opacityLayer, pageOption, serverData);
         create = new PageCreate(createElement, tabCreate, serverData);
         ranking = new PageRanking(rankingElement, tabRanking, serverData);

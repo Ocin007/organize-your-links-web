@@ -8,6 +8,7 @@ let create: PageCreate;
 let edit: PageEdit;
 let ranking: PageRanking;
 let optionPage: PageOptions;
+let revert: PageDelete;
 let navMap;
 
 function reloadAllData() {
@@ -122,6 +123,7 @@ function reloadEverything() {
     const createElement = document.getElementById('create');
     const editElement = document.getElementById('edit');
     const rankingElement = document.getElementById('ranking');
+    const deleteElement = document.getElementById('page-delete');
 
     const tabWatched = document.getElementById('tab-watched');
     const tabPlaylist = document.getElementById('tab-playlist');
@@ -134,11 +136,12 @@ function reloadEverything() {
     Settings.load(function () {
         serverData = new ServerData();
 
+        revert = new PageDelete(opacityLayer, deleteElement, serverData);
         edit = new PageEdit(editElement, tabEdit, serverData);
-        details = new PageDetail(detailsElement, tabDetails, serverData, edit);
-        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details, edit);
-        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details, edit);
-        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details, edit);
+        details = new PageDetail(detailsElement, tabDetails, serverData, edit, revert);
+        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details, edit, revert);
+        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details, edit, revert);
+        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details, edit, revert);
         optionPage = new PageOptions(opacityLayer, pageOption, serverData);
         create = new PageCreate(createElement, tabCreate, serverData);
         ranking = new PageRanking(rankingElement, tabRanking, serverData);

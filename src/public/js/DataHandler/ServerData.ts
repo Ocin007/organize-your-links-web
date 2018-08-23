@@ -61,13 +61,24 @@ class ServerData extends AjaxRequest {
             }
             if(resObj.response !== undefined) {
                 onSuccess();
-                return;
             }
         });
     }
 
     delete(idArray: string[], callback?: Function) {
-
+        ServerData.sendAjaxRequest('../api/delete.php', idArray, function (http) {
+            ServerData.errFunction(http, 'post');
+        }, function (http) {
+            const resObj = JSON.parse(http.responseText);
+            if(resObj.error !== undefined) {
+                console.warn('Error "delete"');
+                console.warn(resObj.error);
+                return;
+            }
+            if(resObj.response !== undefined) {
+                callback();
+            }
+        });
     }
 
     getIndexList(id: ListID) {

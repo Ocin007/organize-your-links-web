@@ -30,7 +30,8 @@ class PageDetail implements Slideable, ForeachElement {
         private pageElement: HTMLElement,
         private tabElement: HTMLElement,
         private serverData: ServerData,
-        private editPage: PageEdit
+        private editPage: PageEdit,
+        private deletePage: PageDelete
     ) {}
 
     showElement() {
@@ -110,6 +111,9 @@ class PageDetail implements Slideable, ForeachElement {
     }
 
     renderPage(data: DataListElement) {
+        if(data === undefined) {
+            return;
+        }
         this.setFlags(data);
         this.episodeList = [];
         if(data.seasons.length !== 0) {
@@ -419,6 +423,9 @@ class PageDetail implements Slideable, ForeachElement {
         const instance = this;
         return ListElement.generateButton('img/edit.ico', 'edit', function () {
             const data = instance.serverData.getListElement(instance.currentIndex);
+            if(data === undefined) {
+                return;
+            }
             instance.editPage.renderPage(data);
             slideToEdit();
             setTimeout(function () {
@@ -433,7 +440,12 @@ class PageDetail implements Slideable, ForeachElement {
     private deleteButton() {
         const instance = this;
         return ListElement.generateButton('img/delete.ico', 'delete', function () {
-            //TODO: delete detail
+            const data = instance.serverData.getListElement(instance.currentIndex);
+            if(data === undefined) {
+                return;
+            }
+            instance.deletePage.showElement();
+            instance.deletePage.renderPage(data);
         });
     }
 
@@ -615,6 +627,9 @@ class PageDetail implements Slideable, ForeachElement {
         button.innerHTML = 'Zur aktuellen Folge';
         const instance = this;
         button.addEventListener('click', function () {
+            if(instance.sIndex === undefined || instance.epIndex === undefined) {
+                return;
+            }
             const firstNotWatched = instance.episodeList[instance.sIndex][instance.epIndex];
             const height = firstNotWatched.offsetTop-30;
             window.scrollTo({

@@ -151,7 +151,7 @@ class PageEdit implements Slideable, ForeachElement {
         ]);
     }
 
-    private static generateText(tag: string, text: string) {
+    static generateText(tag: string, text: string) {
         const element = document.createElement(tag);
         element.innerHTML = text;
         return element;
@@ -222,7 +222,7 @@ class PageEdit implements Slideable, ForeachElement {
         return PageCreate.createDiv(['edit-tools'], [
             PageCreate.createDiv(['generic-url-container'], [
                 PageCreate.createDiv(['edit-wrapper'], [
-                    this.createButton('button-green', 'TVDB Daten laden', function () {
+                    PageEdit.createButton('button-green', 'TVDB Daten laden', function () {
                         instance.buttonFillWithTvdbData();
                     })
                 ]),
@@ -233,7 +233,7 @@ class PageEdit implements Slideable, ForeachElement {
             this.createAddSeasonAction(),
             PageCreate.createDiv(['generic-url-container', 'edit-grow'], [
                 PageCreate.createDiv(['edit-wrapper'], [
-                    this.createButton('button-silver', 'Los', function () {
+                    PageEdit.createButton('button-silver', 'Los', function () {
                         instance.buttonFillWithGenericUrls();
                     }),
                     this.genUrl
@@ -296,7 +296,7 @@ class PageEdit implements Slideable, ForeachElement {
         ]);
     }
 
-    private createButton(token: string, label, callback: Function) {
+    static createButton(token: string, label, callback: Function) {
         const button = PageCreate.createDiv(['custom-button', token]);
         button.innerHTML = label;
         button.addEventListener('click', function () {
@@ -351,7 +351,9 @@ class PageEdit implements Slideable, ForeachElement {
     private fillThumbnailsWithData(data: any) {
         for (let s = 1; s < this.inputElementList.length+1; s++) {
             if(data[s] !== undefined && this.inputElementList[s-1] !== undefined) {
-                this.inputElementList[s-1].thumbnail.value = data[s];
+                if(this.inputElementList[s-1].thumbnail.value === '') {
+                    this.inputElementList[s-1].thumbnail.value = data[s];
+                }
             }
         }
     }
@@ -420,7 +422,7 @@ class PageEdit implements Slideable, ForeachElement {
             instance.updateEpLabels(sIndex);
         });
         const numEpisode = PageEdit.createInputNum('1');
-        const addEpisode = this.createButton('button-silver', 'Episoden hinzufügen', function () {
+        const addEpisode = PageEdit.createButton('button-silver', 'Episoden hinzufügen', function () {
             const num = parseInt(numEpisode.value);
             for (let i = 0; i < num; i++) {
                 instance.appendEpisode(episodesContainer, '', '', instance.inputElementList.indexOf(seasonObj), false);
@@ -599,7 +601,7 @@ class PageEdit implements Slideable, ForeachElement {
         const  instance = this;
         const inputS = PageEdit.createInputNum('1');
         const inputEp = PageEdit.createInputNum('1', 'episodes-per-seasons');
-        const button = this.createButton('button-silver', 'Seasons hinzufügen', function () {
+        const button = PageEdit.createButton('button-silver', 'Seasons hinzufügen', function () {
             for (let i = 0; i < parseInt(inputS.value); i++) {
                 instance.buttonAppendSeason(parseInt(inputEp.value));
             }

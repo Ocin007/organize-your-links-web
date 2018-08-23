@@ -1,0 +1,2 @@
+- backups von "/data" mit "/src/scripts/create-backup.php" erstellen
+- landen hier als .zip

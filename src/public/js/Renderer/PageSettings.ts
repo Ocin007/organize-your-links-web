@@ -256,7 +256,9 @@ class PageSettings {
         input.setAttribute('list', 'all-names-settings');
         this.initialDataId = this.settings.initialDataId;
         const index = this.serverData.getIndexOfELement({id: this.initialDataId});
-        input.value = this.serverData.getListElement(index)[this.settings.titleLanguage];
+        if(index !== -1) {
+            input.value = this.serverData.getListElement(index)[this.settings.titleLanguage];
+        }
         const instance = this;
         input.addEventListener('input', function (ev: any) {
             const index = instance.serverData.getIndexOfElementWithName(ev.target.value);

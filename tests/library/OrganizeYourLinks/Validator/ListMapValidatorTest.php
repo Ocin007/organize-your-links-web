@@ -68,4 +68,24 @@ class ListMapValidatorTest extends TestCase
         $errors = $subject->validate($data);
         $this->assertEquals($expectedErrors, $errors);
     }
+
+    public function testValidateDeleteWrong()
+    {
+        $data = ['id40'];
+        $expectedErrors = [
+            'id' => ['id40']
+        ];
+        $subject = new ListMapValidator(Mode::DELETE, $this->map);
+        $errors = $subject->validate($data);
+        $this->assertEquals($expectedErrors, $errors);
+    }
+
+    public function testValidateDeleteCorrect()
+    {
+        $data = ['id2'];
+        $expectedErrors = [];
+        $subject = new ListMapValidator(Mode::DELETE, $this->map);
+        $errors = $subject->validate($data);
+        $this->assertEquals($expectedErrors, $errors);
+    }
 }

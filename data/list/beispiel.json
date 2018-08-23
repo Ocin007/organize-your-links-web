@@ -1,0 +1,22 @@
+{
+    "id": "5b7e7fa9d625b0.44142205",
+    "tvdbId": -1,
+    "name_de": "Beispiel",
+    "name_en": "Example",
+    "name_jpn": "",
+    "list": 3,
+    "rank": 0,
+    "seasons": [
+        {
+            "url": "https://github.com/Ocin007/organize-your-links-web",
+            "thumbnail": "https://assets-cdn.github.com/images/modules/open_graph/github-mark.png",
+            "episodes": [
+                {
+                    "name": "Github",
+                    "url": "https://github.com/Ocin007/organize-your-links-web",
+                    "watched": false
+                }
+            ]
+        }
+    ]
+}

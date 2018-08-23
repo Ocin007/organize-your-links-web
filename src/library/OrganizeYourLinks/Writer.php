@@ -71,4 +71,13 @@ class Writer {
             $this->errorList['id'][] = $id;
         }
     }
+
+    public function deleteFiles($idList, $fileListMap) {
+        foreach ($idList as $id) {
+            unlink($this->directory.'/'.$this->map[$id]);
+            unset($this->map[$id]);
+        }
+        $mapStr = json_encode($this->map, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        file_put_contents($fileListMap, $mapStr);
+    }
 }

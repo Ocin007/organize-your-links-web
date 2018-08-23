@@ -3,7 +3,7 @@ class PageCreate implements Slideable, ForeachElement {
     private inputDE: HTMLInputElement;
     private inputEN: HTMLInputElement;
     private inputJPN: HTMLInputElement;
-    private tvdbID: number;
+    private tvdbID: number = -1;
 
     private msgContainer: HTMLElement;
     private tvdbSearch: TvdbSearchResults;
@@ -142,6 +142,7 @@ class PageCreate implements Slideable, ForeachElement {
         this.inputDE.value = '';
         this.inputEN.value = '';
         this.inputJPN.value = '';
+        this.tvdbID = -1;
         this.inputDE.classList.remove('name-input-error');
         this.inputEN.classList.remove('name-input-error');
         this.inputJPN.classList.remove('name-input-error');

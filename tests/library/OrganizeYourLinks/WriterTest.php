@@ -152,4 +152,32 @@ class WriterTest extends TestCase
             "id4" => "g-file.json"
         ], JSON_PRETTY_PRINT));
     }
+
+    public function testDeleteFiles()
+    {
+        $subject = new Writer($this->listDir, $this->map);
+        $subject->deleteFiles(['id1'], $this->mapFile);
+        $expected = [
+            '.',
+            '..',
+            'c-file2.json',
+            'd-file.json',
+            'g-file.json'
+        ];
+        $result = scandir($this->listDir);
+        $this->assertEquals($expected, $result);
+        file_put_contents($this->listDir.'/a-file.json', json_encode([
+            "id" => "id1",
+            "tvdbId" => -1,
+            "name_de" => "A File",
+            "name_en" => "A File",
+            "name_jpn" => "A File"
+        ], JSON_PRETTY_PRINT));
+        file_put_contents($this->mapFile, json_encode([
+            "id1" => "a-file.json",
+            "id2" => "c-file2.json",
+            "id3" => "d-file.json",
+            "id4" => "g-file.json"
+        ], JSON_PRETTY_PRINT));
+    }
 }

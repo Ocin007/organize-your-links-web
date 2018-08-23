@@ -18,7 +18,8 @@ class ListElement {
         private serverData: ServerData,
         private detailPage: PageDetail,
         private pageList: PageList,
-        private editPage: PageEdit
+        private editPage: PageEdit,
+        private deletePage: PageDelete
     ) {
         const element = this.serverData.getListElement(this.dataIndex);
         [
@@ -326,7 +327,8 @@ class ListElement {
     private createDeleteButton() {
         const instance = this;
         return ListElement.generateButton('img/delete.ico', 'delete', function () {
-            //TODO: delete
+            instance.deletePage.showElement();
+            instance.deletePage.renderPage(instance.data);
         });
     }
 

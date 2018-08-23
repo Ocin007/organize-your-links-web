@@ -7,7 +7,8 @@ class PageList implements Slideable, ForeachElement {
         private tabElement: HTMLElement,
         private serverData: ServerData,
         private detailPage: PageDetail,
-        private editPage: PageEdit
+        private editPage: PageEdit,
+        private deletePage: PageDelete
     ) {}
 
     showElement() {
@@ -78,7 +79,7 @@ class PageList implements Slideable, ForeachElement {
         for (let i = 0; i < indexList.length; i++) {
             let element = this.serverData.getListElement(indexList[i]);
             let firstChar = element[PageDetail.calcTitleLang(element)].charAt(0).toUpperCase();
-            let listElement = new ListElement(indexList[i], this.serverData, this.detailPage, this, this.editPage);
+            let listElement = new ListElement(indexList[i], this.serverData, this.detailPage, this, this.editPage, this.deletePage);
             if (this.dataList[firstChar] === undefined) {
                 this.dataList[firstChar] = [listElement];
             } else {

@@ -19,6 +19,7 @@ class ListMapValidator implements Validator {
         switch ($this->mode) {
             case Mode::PUT: return $this->validatePut($dataList);
             case Mode::UPDATE: return $this->validateUpdate($dataList);
+            case Mode::DELETE: return $this->validateDelete($dataList);
             default: return ['mode' => 'invalid'];
         }
     }
@@ -37,8 +38,25 @@ class ListMapValidator implements Validator {
         return $errors;
     }
 
+    private function validateDelete($dataList) {
+        $errors = [];
+        foreach($dataList as $data) {
+            if(!isset($this->map[$data])) {
+                if($errors === []) {
+                    $errors['id'] = [$data];
+                } else {
+                    $errors['id'][] = $data;
+                }
+            }
+        }
+        return $errors;
+    }
+
     private function validateUpdate($dataList) {
         $errors = [];
+        if($dataList['initialDataId'] === '') {
+            return [];
+        }
         if(!isset($this->map[$dataList['initialDataId']])) {
             $errors['id'] = 'unknown initialDataId';
         }
