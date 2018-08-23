@@ -40,6 +40,6 @@ Webanwendung zum Verwalten der Links von Serien mit [TVDB](https://api.thetvdb.c
 - Öffne das Verzeichnis "data"
 - Benenne die Datei "apikey.json.example" in "apikey.json" um und füge deine Daten ein
 - Zur Kommunikation mit er TVDB API wird die Datei "cacert.pem" im data-Verzeichnis benötigt. Sollte
-diese mittlerweile veraltet sein, kann sie auf <https://curl.haxx.se/docs/caextract.html>
+diese mittlerweile veraltet sein, kann sie auf <https://curl.haxx.se/docs/caextract.html> heruntergeladen werden.
 
 Nun kann die Webanwendung unter <http://localhost/organize-your-links-web/src/public/index.html> gestartet werden.
