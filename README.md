@@ -1,28 +1,45 @@
 # organize-your-links-web
 
-- index.html in src/public  
-- Benötigt composer
-- data/apikey.json.example in data/apikey.json umbenennen und TVDB API Key eintragen
-- data/cacert.pem, download: https://curl.haxx.se/docs/caextract.html
+Webanwendung zum Verwalten der Links von Serien mit [TVDB](https://api.thetvdb.com/swagger) Unterstützung.
+## Funktionalitäten
 
-Geplante Funktionen:
-- neue einträge erstellen
-- einträge bearbeiten
-- einträge löschen
-- 3 listen:
-    - fertig gesehen
-    - aktuelle playlist
-    - noch nicht angefangen
+- Einteilen der Serien in folgende Listen:
+    - Gesehen
+    - Aktuelle Playlist
+    - Noch nicht gesehen
+- Anzeige genauerer Details einer bestimmten Serie
+- Anlegen neuer Serien
+- Suchen von Serien in der TVDB
+- Bearbeiten bestehender Serien
+    - Unterstützung durch die TVDB API
+- Löschen bestehender Serien
+- Diverse weitere Optionen:
+    - Öffnen der hinterlegten Links
+    - Markieren von bestimmten Folgen als "gesehen" / "nicht gesehen"
+    - Verschieben von Serien in andere Listen
+- Zukünftig: Rangliste
 
-Aufbau Listenelement:
-- bild
-- name
-- counter (gesehen / gesamt)
-- verschieben in andere liste
-- bearbeiten / löschen
-- wenn in aktueller playlist:
-    - 'öffnen...' (klick auf name)
-        - liste der folgen, nach staffeln getrennt
-        - jeweils play-button
-    - 'play'
-    - 'als gesehen markieren'
+## Requirements
+
+- PHP-fähiger Webserver, z.B IIS (PHP 7.0, andere Versionen nicht getestet)
+- Benötgt "composer"
+- Apikey Zur Nutzung der TVDB API (nicht zwingend notwendig, damit die Webanwendung funktioniert)
+
+## Installation
+
+- Lege dieses Repo in das Root-Verzeichnis des Webservers ap
+    - per Konsole: `git clone https://github.com/Ocin007/organize-your-links-web.git`
+- Öffne im Repository die Konsole und führe folgenden Befehl aus:
+    - ohne PHPUnit: `composer install --no-dev`
+    - mit PHPUnit: `composer install`
+- Statte das Verzeichnis "data" mit Schreibrechten aus:
+    - Rechtsklick => Eigenschaften => Sicherheit => Bearbeiten...
+    - "Users" und "IIS_IUSRS" Berechtigung für "Ändern" und "Schreiben" geben
+    - Übernehmen => OK => OK
+##### Für TVDB API ()
+- Öffne das Verzeichnis "data"
+- Benenne die Datei "apikey.json.example" in "apikey.json" um und füge deine Daten ein
+- Zur Kommunikation mit er TVDB API wird die Datei "cacert.pem" im data-Verzeichnis benötigt. Sollte
+diese mittlerweile veraltet sein, kann sie auf <https://curl.haxx.se/docs/caextract.html>
+
+Nun kann die Webanwendung unter <http://localhost/organize-your-links-web/src/public/index.html> gestartet werden.
