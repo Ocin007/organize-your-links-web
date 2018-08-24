@@ -37,12 +37,12 @@ class ServerData extends AjaxRequest {
             if (resObj.response === undefined) {
                 return;
             }
+            ServerData.decodeAllElements(list);
             for (let i = 0; i < list.length; i++) {
                 if (resObj.response.indexOf(list[i].id) !== -1) {
                     instance.updateList(list[i]);
                 }
             }
-            instance.decodeAllElements();
             if (callback !== undefined) {
                 callback();
             }
@@ -167,14 +167,13 @@ class ServerData extends AjaxRequest {
         }
     }
 
-    private decodeAllElements() {
-        for (let i = 0; i < this.allElements.length; i++) {
-            this.decodeElement(i);
+    private static decodeAllElements(list: DataListElement[]) {
+        for (let i = 0; i < list.length; i++) {
+            ServerData.decodeElement(list[i]);
         }
     }
 
-    private decodeElement(index: number) {
-        const element = this.allElements[index];
+    private static decodeElement(element: DataListElement) {
         element.name_de = decodeURIComponent(element.name_de);
         element.name_en = decodeURIComponent(element.name_en);
         element.name_jpn = decodeURIComponent(element.name_jpn);

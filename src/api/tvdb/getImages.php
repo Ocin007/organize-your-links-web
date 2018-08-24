@@ -41,7 +41,7 @@ try {
 
     $success = $tvdb->getImages($id);
     if(!$success) {
-        returnError('nothing found');
+        returnError('no thumbnails found');
     }
 
     echo json_encode([

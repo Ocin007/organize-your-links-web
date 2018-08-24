@@ -324,14 +324,17 @@ class PageEdit implements Slideable, ForeachElement {
             if(resObj.error !== undefined) {
                 instance.errMsg.innerHTML = 'Error: '+resObj.error;
                 instance.errMsg.classList.add('create-msg-error');
+                instance.loadingSpinner.style.visibility = 'hidden';
                 return;
             }
             if(resObj.response === undefined) {
+                instance.loadingSpinner.style.visibility = 'hidden';
                 return;
             }
             instance.fillNameInputsWithData(resObj.response);
             instance.errMsg.innerHTML = '(1/2) Episoden ergänzt...';
             TVDB.getImages(instance.oldData.tvdbId, function (resObj: any) {
+                instance.loadingSpinner.style.visibility = 'hidden';
                 if(resObj.error !== undefined) {
                     instance.errMsg.innerHTML = 'Error: '+resObj.error;
                     instance.errMsg.classList.add('create-msg-error');
@@ -341,7 +344,6 @@ class PageEdit implements Slideable, ForeachElement {
                     return;
                 }
                 instance.fillThumbnailsWithData(resObj.response);
-                instance.loadingSpinner.style.visibility = 'hidden';
                 instance.errMsg.innerHTML = '(2/2) Thumbnails ergänzt!';
                 instance.errMsg.classList.add('create-msg-success');
             });

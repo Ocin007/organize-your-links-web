@@ -119,12 +119,12 @@ var ServerData = /** @class */ (function (_super) {
             if (resObj.response === undefined) {
                 return;
             }
+            ServerData.decodeAllElements(list);
             for (var i = 0; i < list.length; i++) {
                 if (resObj.response.indexOf(list[i].id) !== -1) {
                     instance.updateList(list[i]);
                 }
             }
-            instance.decodeAllElements();
             if (callback !== undefined) {
                 callback();
             }
@@ -238,13 +238,12 @@ var ServerData = /** @class */ (function (_super) {
             }
         }
     };
-    ServerData.prototype.decodeAllElements = function () {
-        for (var i = 0; i < this.allElements.length; i++) {
-            this.decodeElement(i);
+    ServerData.decodeAllElements = function (list) {
+        for (var i = 0; i < list.length; i++) {
+            ServerData.decodeElement(list[i]);
         }
     };
-    ServerData.prototype.decodeElement = function (index) {
-        var element = this.allElements[index];
+    ServerData.decodeElement = function (element) {
         element.name_de = decodeURIComponent(element.name_de);
         element.name_en = decodeURIComponent(element.name_en);
         element.name_jpn = decodeURIComponent(element.name_jpn);
@@ -1906,14 +1905,17 @@ var PageEdit = /** @class */ (function () {
             if (resObj.error !== undefined) {
                 instance.errMsg.innerHTML = 'Error: ' + resObj.error;
                 instance.errMsg.classList.add('create-msg-error');
+                instance.loadingSpinner.style.visibility = 'hidden';
                 return;
             }
             if (resObj.response === undefined) {
+                instance.loadingSpinner.style.visibility = 'hidden';
                 return;
             }
             instance.fillNameInputsWithData(resObj.response);
             instance.errMsg.innerHTML = '(1/2) Episoden ergänzt...';
             TVDB.getImages(instance.oldData.tvdbId, function (resObj) {
+                instance.loadingSpinner.style.visibility = 'hidden';
                 if (resObj.error !== undefined) {
                     instance.errMsg.innerHTML = 'Error: ' + resObj.error;
                     instance.errMsg.classList.add('create-msg-error');
@@ -1923,7 +1925,6 @@ var PageEdit = /** @class */ (function () {
                     return;
                 }
                 instance.fillThumbnailsWithData(resObj.response);
-                instance.loadingSpinner.style.visibility = 'hidden';
                 instance.errMsg.innerHTML = '(2/2) Thumbnails ergänzt!';
                 instance.errMsg.classList.add('create-msg-success');
             });
