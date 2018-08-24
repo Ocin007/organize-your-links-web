@@ -1780,6 +1780,7 @@ var PageEdit = /** @class */ (function () {
             });
             for (var ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
                 var name_2 = this.inputElementList[s].episodes[ep].name.value.replace(/"/g, '\'');
+                name_2 = name_2.replace(/\\/g, '');
                 this.newData.seasons[s].episodes.push({
                     name: name_2,
                     url: this.inputElementList[s].episodes[ep].url.value,

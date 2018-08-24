@@ -4,7 +4,7 @@ use OrganizeYourLinks\Validator\DataListValidator;
 use OrganizeYourLinks\Validator\ListMapValidator;
 use OrganizeYourLinks\Validator\Mode;
 use OrganizeYourLinks\Writer;
-
+//var_dump(json_decode($_POST['data'])); exit;
 require_once __DIR__.'/../../vendor/autoload.php';
 
 error_reporting(E_ALL);
