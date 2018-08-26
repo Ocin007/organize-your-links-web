@@ -133,15 +133,19 @@ function reloadEverything() {
     const tabCreate = document.getElementById('tab-create');
     const tabEdit = document.getElementById('tab-edit');
     const tabRanking = document.getElementById('tab-ranking');
+
+    const tabWatchedCount = document.getElementById('tab-watched-count');
+    const tabPlaylistCount = document.getElementById('tab-playlist-count');
+    const tabNotWatchedCount = document.getElementById('tab-not-watched-count');
     Settings.load(function () {
         serverData = new ServerData();
 
         revert = new PageDelete(opacityLayer, deleteElement, serverData);
         edit = new PageEdit(editElement, tabEdit, serverData);
         details = new PageDetail(detailsElement, tabDetails, serverData, edit, revert);
-        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details, edit, revert);
-        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details, edit, revert);
-        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details, edit, revert);
+        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, tabPlaylistCount, serverData, details, edit, revert);
+        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, tabWatchedCount, serverData, details, edit, revert);
+        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, tabNotWatchedCount, serverData, details, edit, revert);
         optionPage = new PageOptions(opacityLayer, pageOption, serverData);
         create = new PageCreate(createElement, tabCreate, serverData);
         ranking = new PageRanking(rankingElement, tabRanking, serverData);

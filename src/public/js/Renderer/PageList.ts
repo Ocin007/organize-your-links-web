@@ -5,6 +5,7 @@ class PageList implements Slideable, ForeachElement {
         private readonly listID: ListID,
         private pageElement: HTMLElement,
         private tabElement: HTMLElement,
+        private tabCount: HTMLElement,
         private serverData: ServerData,
         private detailPage: PageDetail,
         private editPage: PageEdit,
@@ -76,6 +77,7 @@ class PageList implements Slideable, ForeachElement {
     generateMap() {
         this.dataList = {};
         const indexList = this.serverData.getIndexList(this.listID);
+        this.tabCount.innerHTML = indexList.length.toString();
         for (let i = 0; i < indexList.length; i++) {
             let element = this.serverData.getListElement(indexList[i]);
             let firstChar = element[PageDetail.calcTitleLang(element)].charAt(0).toUpperCase();

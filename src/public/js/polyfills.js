@@ -2262,10 +2262,11 @@ var PageEdit = /** @class */ (function () {
 }());
 //# sourceMappingURL=PageEdit.js.map
 var PageList = /** @class */ (function () {
-    function PageList(listID, pageElement, tabElement, serverData, detailPage, editPage, deletePage) {
+    function PageList(listID, pageElement, tabElement, tabCount, serverData, detailPage, editPage, deletePage) {
         this.listID = listID;
         this.pageElement = pageElement;
         this.tabElement = tabElement;
+        this.tabCount = tabCount;
         this.serverData = serverData;
         this.detailPage = detailPage;
         this.editPage = editPage;
@@ -2325,6 +2326,7 @@ var PageList = /** @class */ (function () {
     PageList.prototype.generateMap = function () {
         this.dataList = {};
         var indexList = this.serverData.getIndexList(this.listID);
+        this.tabCount.innerHTML = indexList.length.toString();
         for (var i = 0; i < indexList.length; i++) {
             var element = this.serverData.getListElement(indexList[i]);
             var firstChar = element[PageDetail.calcTitleLang(element)].charAt(0).toUpperCase();
@@ -3697,14 +3699,17 @@ function reloadEverything() {
     var tabCreate = document.getElementById('tab-create');
     var tabEdit = document.getElementById('tab-edit');
     var tabRanking = document.getElementById('tab-ranking');
+    var tabWatchedCount = document.getElementById('tab-watched-count');
+    var tabPlaylistCount = document.getElementById('tab-playlist-count');
+    var tabNotWatchedCount = document.getElementById('tab-not-watched-count');
     Settings.load(function () {
         serverData = new ServerData();
         revert = new PageDelete(opacityLayer, deleteElement, serverData);
         edit = new PageEdit(editElement, tabEdit, serverData);
         details = new PageDetail(detailsElement, tabDetails, serverData, edit, revert);
-        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, serverData, details, edit, revert);
-        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, serverData, details, edit, revert);
-        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, serverData, details, edit, revert);
+        playlist = new PageList(ListID.PLAYLIST, playlistElement, tabPlaylist, tabPlaylistCount, serverData, details, edit, revert);
+        watched = new PageList(ListID.WATCHED, watchedElement, tabWatched, tabWatchedCount, serverData, details, edit, revert);
+        notWatched = new PageList(ListID.NOT_WATCHED, notWatchedElement, tabNotWatched, tabNotWatchedCount, serverData, details, edit, revert);
         optionPage = new PageOptions(opacityLayer, pageOption, serverData);
         create = new PageCreate(createElement, tabCreate, serverData);
         ranking = new PageRanking(rankingElement, tabRanking, serverData);
