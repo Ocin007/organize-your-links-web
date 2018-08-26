@@ -6,7 +6,7 @@ Webanwendung zum Verwalten der Links von Serien mit [TVDB](https://api.thetvdb.c
 - Einteilen der Serien in folgende Listen:
     - Gesehen
     - Aktuelle Playlist
-    - Noch nicht gesehen
+    - Nicht gesehen
 - Anzeige genauerer Details einer bestimmten Serie
 - Anlegen neuer Serien
 - Suchen von Serien in der TVDB
