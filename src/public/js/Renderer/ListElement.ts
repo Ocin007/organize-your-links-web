@@ -105,6 +105,13 @@ class ListElement {
         }
     }
 
+    openSeriesMainPage() {
+        const len = this.openTab.push(window.open(this.data.seasons[this.sIndex].url));
+        if(this.openTab[len-1] !== null) {
+            return true;
+        }
+    }
+
     closeTabButton() {
         let success;
         for (let i = 0; i < this.openTab.length; i++) {

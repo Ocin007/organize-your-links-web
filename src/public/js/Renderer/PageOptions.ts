@@ -151,6 +151,9 @@ class PageOptions {
             'img/play.ico', 'play', 'Ungesehene Folgen in Tab öffnen', PageOptions.playButton, 'no-border'
         ));
         container.appendChild(this.createAction(
+            'img/play.ico', 'play', 'Weiterleitungen öffnen', PageOptions.openSeriesMainPage
+        ));
+        container.appendChild(this.createAction(
             'img/close.ico', 'close-tab', 'Geöffnete Tabs schließen', PageOptions.closeTabButton
         ));
         container.appendChild(this.createAction(
@@ -374,6 +377,12 @@ class PageOptions {
     private static playButton(element: ListElement) {
         if(!element.currentEpWatched()) {
             return element.playButton();
+        }
+    }
+
+    private static openSeriesMainPage(element: ListElement) {
+        if(!element.currentEpWatched()) {
+            return element.openSeriesMainPage();
         }
     }
 

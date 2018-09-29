@@ -475,6 +475,12 @@ var ListElement = /** @class */ (function () {
             return true;
         }
     };
+    ListElement.prototype.openSeriesMainPage = function () {
+        var len = this.openTab.push(window.open(this.data.seasons[this.sIndex].url));
+        if (this.openTab[len - 1] !== null) {
+            return true;
+        }
+    };
     ListElement.prototype.closeTabButton = function () {
         var success;
         for (var i = 0; i < this.openTab.length; i++) {
@@ -2502,6 +2508,7 @@ var PageOptions = /** @class */ (function () {
     PageOptions.prototype.createActionsContainerForPlaylist = function () {
         var container = PageDetail.createDiv('opt-action-container');
         container.appendChild(this.createAction('img/play.ico', 'play', 'Ungesehene Folgen in Tab öffnen', PageOptions.playButton, 'no-border'));
+        container.appendChild(this.createAction('img/play.ico', 'play', 'Weiterleitungen öffnen', PageOptions.openSeriesMainPage));
         container.appendChild(this.createAction('img/close.ico', 'close-tab', 'Geöffnete Tabs schließen', PageOptions.closeTabButton));
         container.appendChild(this.createAction('img/watched.ico', 'watched', 'Folgen als gesehen markieren', PageOptions.watchedButton));
         container.appendChild(this.createAction('img/not-watched.ico', 'not-watched', 'Folgen als nicht gesehen markieren', PageOptions.notWatchedButton));
@@ -2694,6 +2701,11 @@ var PageOptions = /** @class */ (function () {
     PageOptions.playButton = function (element) {
         if (!element.currentEpWatched()) {
             return element.playButton();
+        }
+    };
+    PageOptions.openSeriesMainPage = function (element) {
+        if (!element.currentEpWatched()) {
+            return element.openSeriesMainPage();
         }
     };
     PageOptions.closeTabButton = function (element) {
