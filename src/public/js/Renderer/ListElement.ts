@@ -206,7 +206,7 @@ class ListElement {
         const instance = this;
         const thumbnail = ListElement.generateButton(
             this.data.seasons[this.sIndex].thumbnail, 'thumbnail', function () {
-                window.open(instance.data.seasons[instance.sIndex].url);
+                instance.openSeriesMainPage();
             });
         thumbnail.classList.add('thumbnail');
         return thumbnail;

@@ -568,7 +568,7 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.generateThumbnail = function () {
         var instance = this;
         var thumbnail = ListElement.generateButton(this.data.seasons[this.sIndex].thumbnail, 'thumbnail', function () {
-            window.open(instance.data.seasons[instance.sIndex].url);
+            instance.openSeriesMainPage();
         });
         thumbnail.classList.add('thumbnail');
         return thumbnail;
