@@ -24,6 +24,7 @@ function reloadAllData() {
             active: Settings.startPage,
             flag: true
         };
+        document.getElementById('loadsymbol').style.display = 'none';
         switch (Settings.startPage) {
             case ListID.WATCHED:
                 watched.showElement();

@@ -1,5 +1,6 @@
 .page-list {
-    display: block;
+    /*display: block;*/
+    display: none;
 }
 .list-segment {
     display: flex;

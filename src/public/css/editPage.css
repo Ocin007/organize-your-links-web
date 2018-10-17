@@ -1,7 +1,8 @@
 .page-edit {
     background-color: #dedede;
     border-radius: 5px;
-    display: flex;
+    /*display: flex;*/
+    display: none;
     flex-direction: column;
     align-items: center;
     min-height: 440px;
