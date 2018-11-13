@@ -381,12 +381,32 @@ class PageEdit implements Slideable, ForeachElement {
                 }
             }
         }
-        // if(data[0] !== undefined) {
-        //     let epContainer = this.appendSeason('', '');
-        //     for (let ep = 1; ep < Object.keys(data[0]).length+1; ep++) {
-        //         this.appendEpisode(epContainer, data[0][ep], '', Object.keys(data).length-1, false);
-        //     }
-        // }
+        let s = Object.keys(data).length;
+        if(data[0] !== undefined) {
+            let epContainer;
+            if(this.inputElementList.length < s) {
+                epContainer = this.appendSeason('', '');
+            } else {
+                epContainer = this.seasonContainer.children[s-1].lastChild;
+            }
+            const specials = '------------------------- SPECIALS -------------------------';
+            if(this.inputElementList[s-1].episodes.length === 0) {
+                this.appendEpisode(epContainer, specials, '', s-1, false);
+            } else {
+                if(this.inputElementList[s-1].episodes[0].name.value === '') {
+                    this.inputElementList[s-1].episodes[0].name.value = specials;
+                }
+            }
+            for (let ep = 1; ep < Object.keys(data[0]).length+1; ep++) {
+                if(this.inputElementList[s-1].episodes.length < ep+1) {
+                    this.appendEpisode(epContainer, data[0][ep], '', s-1, false);
+                } else {
+                    if(this.inputElementList[s-1].episodes[ep].name.value === '') {
+                        this.inputElementList[s-1].episodes[ep].name.value = data[0][ep];
+                    }
+                }
+            }
+        }
     }
 
     private buttonAppendSeason(numEpisodes: number) {
