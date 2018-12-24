@@ -3,23 +3,30 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 'on');
 
+$count = 0;
+
 function zipDir(ZipArchive $zip, $dir, $localName) {
+    global $count;
     $array = scandir($dir);
-    for($i = 2; $i < count($array); $i++) {
-        $location = $dir.'/'.$array[$i];
-        $newLocalName = ($localName === '') ? $array[$i] : $localName.'/'.$array[$i];
-        if(is_file($location)) {
-            $zip->addFile($location, $newLocalName);
-        } else if(is_dir($location)) {
-            zipDir($zip, $location, $newLocalName);
+    foreach ($array as $key => $value) {
+        if($value !== '.' && $value !== '..') {
+            $location = $dir.'/'.$value;
+            $newLocalName = ($localName === '') ? $value : $localName.'/'.$value;
+            if(is_file($location)) {
+                echo 'Zip: '.$location.PHP_EOL;
+                $zip->addFile($location, $newLocalName);
+                $count++;
+            } else if(is_dir($location)) {
+                zipDir($zip, $location, $newLocalName);
+            }
         }
     }
 }
 
 $backupDir = __DIR__.'/../../data-backup';
 $dir = __DIR__.'/../../data';
-$count = count(scandir($backupDir)) - 1;
-$zipName = $backupDir.'/backup-nr'.$count.'.zip';
+$date = date('y-m-d');
+$zipName = $backupDir.'/stand-'.$date.'.zip';
 
 $zip = new ZipArchive();
 $code = $zip->open($zipName, ZipArchive::CREATE);
@@ -30,4 +37,4 @@ if ($code !== TRUE) {
 
 zipDir($zip, $dir, '');
 $zip->close();
-echo 'Fertig';
+echo 'Fertig ('.$count.' Dateien)'.PHP_EOL;
