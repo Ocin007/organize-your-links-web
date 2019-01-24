@@ -6,14 +6,17 @@
     "name_jpn": "",
     "list": 3,
     "rank": 0,
+    "favorite": false,
     "seasons": [
         {
             "url": "https://github.com/Ocin007/organize-your-links-web",
             "thumbnail": "https://assets-cdn.github.com/images/modules/open_graph/github-mark.png",
+            "favorite": false,
             "episodes": [
                 {
                     "name": "Github",
                     "url": "https://github.com/Ocin007/organize-your-links-web",
+                    "favorite": false,
                     "watched": false
                 }
             ]

@@ -14,7 +14,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-
+//TODO: favorite: true|false
     public function testValidateTwoEmptyMembers()
     {
         $testData = [[], []];
@@ -44,7 +44,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-
+//TODO: favorite: true|false
     public function testValidateWrongTypes()
     {
         $testData = [
@@ -75,7 +75,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-
+//TODO: favorite: true|false
     public function testValidateEmptySeason()
     {
         $testData = [
@@ -95,7 +95,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-
+//TODO: favorite: true|false
     public function testValidateWrongSeason()
     {
         $testData = [
@@ -126,7 +126,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-
+//TODO: favorite: true|false
     public function testValidateWrongEpisode()
     {
         $testData = [
@@ -166,7 +166,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-
+//TODO: favorite: true|false
     public function testValidateOneCorrectOneWrong()
     {
         $testData = [
@@ -252,7 +252,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-
+//TODO: favorite: true|false
     public function testValidateTwoCorrectElements()
     {
         $testData = [

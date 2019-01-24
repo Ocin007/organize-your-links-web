@@ -20,7 +20,7 @@ class DataListValidator implements Validator {
         }
         return $errors;
     }
-
+//TODO: favorite: true|false
     private function checkElement($data) {
         $errors = [];
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'id', 'string'));
@@ -62,7 +62,7 @@ class DataListValidator implements Validator {
         }
         return $errors;
     }
-
+//TODO: favorite: true|false
     private function validateSeason($season) {
         $errors = [];
         $errors = array_merge($errors, $this->checkForKeyAndType($season, 'thumbnail', 'string'));
@@ -91,7 +91,7 @@ class DataListValidator implements Validator {
         }
         return $errors;
     }
-
+//TODO: favorite: true|false
     private function validateEpisode($episode) {
         $errors = [];
         $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'name', 'string'));

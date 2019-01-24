@@ -1,3 +1,4 @@
+//TODO: favorite: true|false
 class PageEdit implements Slideable, ForeachElement {
 
     private oldData: DataListElement;
@@ -8,10 +9,12 @@ class PageEdit implements Slideable, ForeachElement {
         label: HTMLElement,
         url: HTMLInputElement,
         thumbnail: HTMLInputElement,
+        favorite: boolean,
         episodes: {
             label: HTMLElement,
             url: HTMLInputElement,
             name: HTMLInputElement,
+            favorite: boolean,
             watched: boolean
         }[]
     }[] = [];
@@ -101,6 +104,7 @@ class PageEdit implements Slideable, ForeachElement {
             name_jpn: this.oldData.name_jpn,
             list: this.oldData.list,
             rank: this.oldData.rank,
+            favorite: this.oldData.favorite,
             seasons: []
         };
         this.inputElementList = [];
@@ -119,12 +123,13 @@ class PageEdit implements Slideable, ForeachElement {
     private generateSeasonsContainer() {
         this.seasonContainer = PageCreate.createDiv(['edit-season-container']);
         for (let s = 0; s < this.oldData.seasons.length; s++) {
-            let epContainer = this.appendSeason(this.oldData.seasons[s].url, this.oldData.seasons[s].thumbnail);
+            let epContainer = this.appendSeason(this.oldData.seasons[s].url, this.oldData.seasons[s].thumbnail, this.oldData.seasons[s].favorite);
             for (let ep = 0; ep < this.oldData.seasons[s].episodes.length; ep++) {
                 let name = this.oldData.seasons[s].episodes[ep].name;
                 let url = this.oldData.seasons[s].episodes[ep].url;
                 let watched = this.oldData.seasons[s].episodes[ep].watched;
-                this.appendEpisode(epContainer, name, url, s, watched);
+                let favorite = this.oldData.seasons[s].episodes[ep].favorite;
+                this.appendEpisode(epContainer, name, url, s, watched, favorite);
             }
         }
         return this.seasonContainer;
@@ -189,6 +194,7 @@ class PageEdit implements Slideable, ForeachElement {
             this.newData.seasons.push({
                 url: this.inputElementList[s].url.value,
                 thumbnail: this.inputElementList[s].thumbnail.value,
+                favorite: this.inputElementList[s].favorite,
                 episodes: []
             });
             for (let ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
@@ -197,6 +203,7 @@ class PageEdit implements Slideable, ForeachElement {
                 this.newData.seasons[s].episodes.push({
                     name: name,
                     url: this.inputElementList[s].episodes[ep].url.value,
+                    favorite: this.inputElementList[s].episodes[ep].favorite,
                     watched: this.inputElementList[s].episodes[ep].watched
                 });
             }
@@ -366,13 +373,13 @@ class PageEdit implements Slideable, ForeachElement {
             if(data[s] !== undefined) {
                 let epContainer;
                 if(this.inputElementList.length < s) {
-                    epContainer = this.appendSeason('', '');
+                    epContainer = this.appendSeason('', '', false);
                 } else {
                     epContainer = this.seasonContainer.children[s-1].lastChild;
                 }
                 for (let ep = 1; ep < Object.keys(data[s]).length+1; ep++) {
                     if(this.inputElementList[s-1].episodes.length < ep) {
-                        this.appendEpisode(epContainer, data[s][ep], '', s-1, false);
+                        this.appendEpisode(epContainer, data[s][ep], '', s-1, false, false);
                     } else {
                         if(this.inputElementList[s-1].episodes[ep-1].name.value === '') {
                             this.inputElementList[s-1].episodes[ep-1].name.value = data[s][ep];
@@ -385,13 +392,13 @@ class PageEdit implements Slideable, ForeachElement {
         if(data[0] !== undefined) {
             let epContainer;
             if(this.inputElementList.length < s) {
-                epContainer = this.appendSeason('', '');
+                epContainer = this.appendSeason('', '', false);
             } else {
                 epContainer = this.seasonContainer.children[s-1].lastChild;
             }
             const specials = '------------------------- SPECIALS -------------------------';
             if(this.inputElementList[s-1].episodes.length === 0) {
-                this.appendEpisode(epContainer, specials, '', s-1, false);
+                this.appendEpisode(epContainer, specials, '', s-1, false, false);
             } else {
                 if(this.inputElementList[s-1].episodes[0].name.value === '') {
                     this.inputElementList[s-1].episodes[0].name.value = specials;
@@ -399,7 +406,7 @@ class PageEdit implements Slideable, ForeachElement {
             }
             for (let ep = 1; ep < Object.keys(data[0]).length+1; ep++) {
                 if(this.inputElementList[s-1].episodes.length < ep+1) {
-                    this.appendEpisode(epContainer, data[0][ep], '', s-1, false);
+                    this.appendEpisode(epContainer, data[0][ep], '', s-1, false, false);
                 } else {
                     if(this.inputElementList[s-1].episodes[ep].name.value === '') {
                         this.inputElementList[s-1].episodes[ep].name.value = data[0][ep];
@@ -410,13 +417,13 @@ class PageEdit implements Slideable, ForeachElement {
     }
 
     private buttonAppendSeason(numEpisodes: number) {
-        const container = this.appendSeason('', '');
+        const container = this.appendSeason('', '', false);
         for (let i = 0; i < numEpisodes; i++) {
-            this.appendEpisode(container, '', '', this.inputElementList.length-1, false);
+            this.appendEpisode(container, '', '', this.inputElementList.length-1, false, false);
         }
     }
 
-    private appendSeason(url: string, thumbnail: string) {
+    private appendSeason(url: string, thumbnail: string, favorite: boolean) {
         const instance = this;
         const episodesContainer = PageCreate.createDiv(['edit-episodes-container', 'background-gray']);
         const urlInput = PageEdit.createInputText('Url Weiterleitung', url);
@@ -426,6 +433,7 @@ class PageEdit implements Slideable, ForeachElement {
             label: label,
             url: urlInput,
             thumbnail: thumbnailInput,
+            favorite: favorite,
             episodes: []
         };
         this.inputElementList.push(seasonObj);
@@ -448,7 +456,7 @@ class PageEdit implements Slideable, ForeachElement {
         const addEpisode = PageEdit.createButton('button-silver', 'Episoden hinzufügen', function () {
             const num = parseInt(numEpisode.value);
             for (let i = 0; i < num; i++) {
-                instance.appendEpisode(episodesContainer, '', '', instance.inputElementList.indexOf(seasonObj), false);
+                instance.appendEpisode(episodesContainer, '', '', instance.inputElementList.indexOf(seasonObj), false, false);
             }
         });
         const season = PageCreate.createDiv(['edit-season'], [
@@ -472,7 +480,7 @@ class PageEdit implements Slideable, ForeachElement {
         return episodesContainer;
     }
 
-    private appendEpisode(container: HTMLElement, name: string, url: string, sIndex: number, watched: boolean) {
+    private appendEpisode(container: HTMLElement, name: string, url: string, sIndex: number, watched: boolean, favorite: boolean) {
         const instance = this;
         const sObj = this.inputElementList[sIndex];
         const close = PageDetail.createImg('img/close.ico', 'delete');
@@ -500,6 +508,7 @@ class PageEdit implements Slideable, ForeachElement {
             label: label,
             url: urlInput,
             name: nameInput,
+            favorite: favorite,
             watched: watched
         };
         sObj.episodes.push(epObj);

@@ -1,3 +1,4 @@
+//TODO: favorite: true|false
 interface DataListElement {
     id: string,
     tvdbId: number,
@@ -6,12 +7,15 @@ interface DataListElement {
     name_jpn: string,
     list: ListID,
     rank: number,
+    favorite: boolean,
     seasons: {
         thumbnail: string,
         url: string,
+        favorite: boolean,
         episodes: {
             name: string,
             url: string,
+            favorite: boolean,
             watched: boolean
         }[]
     }[]

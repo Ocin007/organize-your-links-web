@@ -1,3 +1,4 @@
+//TODO: favorite: true|false
 class ListElement {
     private sIndex: number;
     private epIndex: number;

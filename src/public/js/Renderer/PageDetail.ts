@@ -1,3 +1,4 @@
+//TODO: favorite: true|false
 class PageDetail implements Slideable, ForeachElement {
 
     private readonly colorBrightness = Settings.colorBrightness;

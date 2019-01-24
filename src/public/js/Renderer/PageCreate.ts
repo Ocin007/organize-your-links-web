@@ -1,3 +1,4 @@
+//TODO: favorite: true|false
 class PageCreate implements Slideable, ForeachElement {
 
     private inputDE: HTMLInputElement;
@@ -223,6 +224,7 @@ class PageCreate implements Slideable, ForeachElement {
             name_jpn: this.inputJPN.value,
             list: ListID.NOT_WATCHED,
             rank: 0,
+            favorite: false,
             seasons: []
         };
     }
