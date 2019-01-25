@@ -1,4 +1,3 @@
-/*TODO: favorite: #e8b923*/
 .list-element {
     display: flex;
     flex-direction: column;
@@ -10,9 +9,14 @@
     margin-right: 10px;
     margin-left: 15px;
     margin-bottom: 30px;
-    width: 330px;
+    /*width: 330px;*/
+    width: 385px;
     height: 133px;
     justify-content: space-between;
+}
+.favorite-list-element {
+    background-color: transparent;
+    background: linear-gradient(#f7cd54, #b48500) !important;
 }
 .list-img-label {
     display: flex;
@@ -67,7 +71,10 @@
     display: flex;
     flex-direction: row;
     justify-content: center;
-    border-top: 1px solid #adadad;/*TODO: #a5841b*/
+    border-top: 1px solid #adadad;
+}
+.favorite-list-button-container {
+    border-top: 1px solid #6e560b !important;
 }
 .list-button-container img {
     padding: 5px;

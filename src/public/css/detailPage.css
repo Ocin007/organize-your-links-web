@@ -1,10 +1,14 @@
-/*TODO: favorite: true|false*/
 .page-detail {
     background-color: #dedede;
     border-radius: 5px;
     /*display: flex;*/
     display: none;
     flex-direction: row;
+}
+.series-favorite-button {
+    position: absolute;
+    right: 10px;
+    top: 10px;
 }
 .big-thumbnail {
     display: flex;
@@ -135,6 +139,9 @@
 }
 .episode-detail:hover p {
     color: #78d561;
+}
+.font-gold-hover:hover p {
+    color: #e8b923 !important;
 }
 .episode-detail p:hover {
     /*text-decoration: underline;*/

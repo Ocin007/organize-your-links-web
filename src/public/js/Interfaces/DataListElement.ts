@@ -1,4 +1,3 @@
-//TODO: favorite: true|false
 interface DataListElement {
     id: string,
     tvdbId: number,

@@ -20,7 +20,7 @@ class DataListValidator implements Validator {
         }
         return $errors;
     }
-//TODO: favorite: true|false
+
     private function checkElement($data) {
         $errors = [];
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'id', 'string'));
@@ -28,6 +28,7 @@ class DataListValidator implements Validator {
         $errors = array_merge($errors, $this->checkTitle($data));
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'list', 'integer'));
         $errors = array_merge($errors, $this->checkForKeyAndType($data, 'rank', 'integer'));
+        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'favorite', 'boolean'));
         $seasonErrors = $this->checkForKeyAndType($data, 'seasons', 'array');
         if(count($seasonErrors) === 0) {
             $seasonErrors = $this->validateSeasons($data['seasons']);
@@ -62,11 +63,12 @@ class DataListValidator implements Validator {
         }
         return $errors;
     }
-//TODO: favorite: true|false
+
     private function validateSeason($season) {
         $errors = [];
         $errors = array_merge($errors, $this->checkForKeyAndType($season, 'thumbnail', 'string'));
         $errors = array_merge($errors, $this->checkForKeyAndType($season, 'url', 'string'));
+        $errors = array_merge($errors, $this->checkForKeyAndType($season, 'favorite', 'boolean'));
         $episodeErrors = $this->checkForKeyAndType($season, 'episodes', 'array');
         if(count($episodeErrors) === 0) {
             $episodeErrors = $this->validateEpisodes($season['episodes']);
@@ -91,11 +93,12 @@ class DataListValidator implements Validator {
         }
         return $errors;
     }
-//TODO: favorite: true|false
+
     private function validateEpisode($episode) {
         $errors = [];
         $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'name', 'string'));
         $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'url', 'string'));
+        $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'favorite', 'boolean'));
         $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'watched', 'boolean'));
         return $errors;
     }

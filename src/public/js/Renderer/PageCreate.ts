@@ -1,4 +1,3 @@
-//TODO: favorite: true|false
 class PageCreate implements Slideable, ForeachElement {
 
     private inputDE: HTMLInputElement;

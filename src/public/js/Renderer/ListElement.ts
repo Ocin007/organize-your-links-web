@@ -1,4 +1,3 @@
-//TODO: favorite: true|false
 class ListElement {
     private sIndex: number;
     private epIndex: number;
@@ -10,6 +9,7 @@ class ListElement {
     private openTab: Window[] = [];
 
     private watchedStatus: HTMLImageElement;
+    private favoriteStatus: HTMLImageElement;
     private countEp: HTMLSpanElement;
     private episode: HTMLParagraphElement;
     private thumbnail: HTMLImageElement;
@@ -189,6 +189,9 @@ class ListElement {
         listElement.id = this.getId();
         listElement.classList.add('list-element');
         listElement.classList.add('shadow-bottom');
+        if(this.data.favorite) {
+            listElement.classList.add('favorite-list-element');
+        }
         const imgLabelContainer = document.createElement('div');
         imgLabelContainer.classList.add('list-img-label');
         if(this.data.seasons.length !== 0) {
@@ -216,6 +219,9 @@ class ListElement {
     private generateButtonContainer() {
         const container = document.createElement('div');
         container.classList.add('list-button-container');
+        if(this.data.favorite) {
+            container.classList.add('favorite-list-button-container');
+        }
         switch (this.data.list) {
             case ListID.WATCHED:
                 container.appendChild(this.createArrowRightButton());
@@ -229,6 +235,7 @@ class ListElement {
                 break;
         }
         if(this.data.seasons.length !== 0) {
+            container.appendChild(this.createFavoriteButton());
             container.appendChild(this.createPlayButton());
             container.appendChild(this.createWatchedButton());
         }
@@ -279,6 +286,19 @@ class ListElement {
         navMap[newListId - 1].renderList();
     }
 
+    private createFavoriteButton() {
+        this.favoriteStatus = document.createElement('img');
+        this.setAttributesFavorites(this.data.seasons[this.sIndex].episodes[this.epIndex].favorite);
+        const instance = this;
+        this.favoriteStatus.addEventListener('click', function () {
+            const oldBool = instance.data.seasons[instance.sIndex].episodes[instance.epIndex].favorite;
+            instance.data.seasons[instance.sIndex].episodes[instance.epIndex].favorite = !oldBool;
+            instance.setAttributesFavorites(!oldBool);
+            instance.serverData.put([instance.data]);
+        });
+        return this.favoriteStatus;
+    }
+
     private createPlayButton() {
         const instance = this;
         return ListElement.generateButton('img/play.ico', 'play', function () {
@@ -316,7 +336,17 @@ class ListElement {
             this.watchedStatus.src = 'img/not-watched.ico';
             this.watchedStatus.alt = 'not-watched';
         }
-    };
+    }
+
+    private setAttributesFavorites(bool: boolean) {
+        if (bool) {
+            this.favoriteStatus.src = 'img/favorite.ico';
+            this.favoriteStatus.alt = 'favorite';
+        } else {
+            this.favoriteStatus.src = 'img/not-favorite.ico';
+            this.favoriteStatus.alt = 'not-favorite';
+        }
+    }
 
     private createEditButton() {
         const instance = this;
@@ -428,6 +458,7 @@ class ListElement {
         this.countEp.innerHTML = this.epCount.toString();
         this.thumbnail.src = this.data.seasons[this.sIndex].thumbnail;
         this.setAttributesWatched(this.data.seasons[this.sIndex].episodes[this.epIndex].watched);
+        this.setAttributesFavorites(this.data.seasons[this.sIndex].episodes[this.epIndex].favorite);
     }
 
     static getIndicesAndCountOfFirstNotWatched(data: DataListElement) {

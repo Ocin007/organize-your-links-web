@@ -14,7 +14,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-//TODO: favorite: true|false
+
     public function testValidateTwoEmptyMembers()
     {
         $testData = [[], []];
@@ -27,6 +27,7 @@ class DataListValidatorTest extends TestCase
                 'name_jpn' => 'missing',
                 'list' => 'missing',
                 'rank' => 'missing',
+                'favorite' => 'missing',
                 'seasons' => 'missing'
             ],
             1 => [
@@ -37,6 +38,7 @@ class DataListValidatorTest extends TestCase
                 'name_jpn' => 'missing',
                 'list' => 'missing',
                 'rank' => 'missing',
+                'favorite' => 'missing',
                 'seasons' => 'missing'
             ]
         ];
@@ -44,7 +46,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-//TODO: favorite: true|false
+
     public function testValidateWrongTypes()
     {
         $testData = [
@@ -56,6 +58,7 @@ class DataListValidatorTest extends TestCase
                 'name_jpn' => false,
                 'list' => false,
                 'rank' => false,
+                'favorite' => 'string',
                 'seasons' => false
             ]
         ];
@@ -68,6 +71,7 @@ class DataListValidatorTest extends TestCase
                 'name_jpn' => 'wrong type',
                 'list' => 'wrong type',
                 'rank' => 'wrong type',
+                'favorite' => 'wrong type',
                 'seasons' => 'wrong type'
             ]
         ];
@@ -75,7 +79,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-//TODO: favorite: true|false
+
     public function testValidateEmptySeason()
     {
         $testData = [
@@ -87,6 +91,7 @@ class DataListValidatorTest extends TestCase
                 'name_jpn' => 'japan',
                 'list' => 1,
                 'rank' => 0,
+                'favorite' => false,
                 'seasons' => []
             ]
         ];
@@ -95,7 +100,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-//TODO: favorite: true|false
+
     public function testValidateWrongSeason()
     {
         $testData = [
@@ -107,6 +112,7 @@ class DataListValidatorTest extends TestCase
                 'name_jpn' => '   ',
                 'list' => 1,
                 'rank' => 0,
+                'favorite' => false,
                 'seasons' => [[]]
             ]
         ];
@@ -117,6 +123,7 @@ class DataListValidatorTest extends TestCase
                     0 => [
                         'thumbnail' => 'missing',
                         'url' => 'missing',
+                        'favorite' => 'missing',
                         'episodes' => 'missing'
                     ]
                 ]
@@ -126,7 +133,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-//TODO: favorite: true|false
+
     public function testValidateWrongEpisode()
     {
         $testData = [
@@ -138,10 +145,12 @@ class DataListValidatorTest extends TestCase
                 'name_jpn' => '',
                 'list' => 1,
                 'rank' => 0,
+                'favorite' => false,
                 'seasons' => [
                     [
                         'thumbnail' => '',
                         'url' => '',
+                        'favorite' => false,
                         'episodes' => [[]]
                     ]
                 ]
@@ -155,6 +164,7 @@ class DataListValidatorTest extends TestCase
                             0 => [
                                 'name' => 'missing',
                                 'url' => 'missing',
+                                'favorite' => 'missing',
                                 'watched' => 'missing'
                             ]
                         ]
@@ -166,7 +176,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-//TODO: favorite: true|false
+
     public function testValidateOneCorrectOneWrong()
     {
         $testData = [
@@ -178,14 +188,17 @@ class DataListValidatorTest extends TestCase
                 'name_jpn' => '',
                 'list' => 1,
                 'rank' => 0,
+                'favorite' => false,
                 'seasons' => [
                     [
                         'thumbnail' => '',
                         'url' => '',
+                        'favorite' => false,
                         'episodes' => [
                             [
                                 'name' => '',
                                 'url' => '',
+                                'favorite' => false,
                                 'watched' => true,
                             ]
                         ]
@@ -200,10 +213,12 @@ class DataListValidatorTest extends TestCase
                     [
                         'thumbnail' => '',
                         'url' => '',
+                        'favorite' => false,
                         'episodes' => [
                             [
                                 'name' => '',
                                 'url' => '',
+                                'favorite' => false,
                                 'watched' => true,
                             ]
                         ]
@@ -214,9 +229,11 @@ class DataListValidatorTest extends TestCase
                             [
                                 'name' => '',
                                 'url' => '',
+                                'favorite' => false,
                                 'watched' => true,
                             ],
                             [
+                                'favorite' => 'false',
                                 'watched' => 'false'
                             ]
                         ]
@@ -233,14 +250,17 @@ class DataListValidatorTest extends TestCase
                 'name_jpn' => 'missing',
                 'list' => 'wrong type',
                 'rank' => 'missing',
+                'favorite' => 'missing',
                 'seasons' => [
                     1 => [
                         'thumbnail' => 'wrong type',
                         'url' => 'missing',
+                        'favorite' => 'missing',
                         'episodes' => [
                             1 => [
                                 'name' => 'missing',
                                 'url' => 'missing',
+                                'favorite' => 'wrong type',
                                 'watched' => 'wrong type',
                             ]
                         ]
@@ -252,7 +272,7 @@ class DataListValidatorTest extends TestCase
         $errors = $subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
-//TODO: favorite: true|false
+
     public function testValidateTwoCorrectElements()
     {
         $testData = [
@@ -264,19 +284,23 @@ class DataListValidatorTest extends TestCase
                 'name_jpn' => '',
                 'list' => 1,
                 'rank' => 0,
+                'favorite' => false,
                 'seasons' => [
                     [
                         'thumbnail' => '',
                         'url' => '',
+                        'favorite' => false,
                         'episodes' => [
                             [
                                 'name' => '',
                                 'url' => '',
+                                'favorite' => false,
                                 'watched' => true,
                             ],
                             [
                                 'name' => '',
                                 'url' => '',
+                                'favorite' => false,
                                 'watched' => true,
                             ]
                         ]
@@ -284,15 +308,18 @@ class DataListValidatorTest extends TestCase
                     [
                         'thumbnail' => '',
                         'url' => '',
+                        'favorite' => false,
                         'episodes' => [
                             [
                                 'name' => '',
                                 'url' => '',
+                                'favorite' => false,
                                 'watched' => true,
                             ],
                             [
                                 'name' => '',
                                 'url' => '',
+                                'favorite' => false,
                                 'watched' => true,
                             ]
                         ]
@@ -307,19 +334,23 @@ class DataListValidatorTest extends TestCase
                 'name_jpn' => 'japan',
                 'list' => 1,
                 'rank' => 0,
+                'favorite' => false,
                 'seasons' => [
                     [
                         'thumbnail' => '',
                         'url' => '',
+                        'favorite' => false,
                         'episodes' => [
                             [
                                 'name' => '',
                                 'url' => '',
+                                'favorite' => false,
                                 'watched' => true,
                             ],
                             [
                                 'name' => '',
                                 'url' => '',
+                                'favorite' => false,
                                 'watched' => true,
                             ]
                         ]
@@ -327,15 +358,18 @@ class DataListValidatorTest extends TestCase
                     [
                         'thumbnail' => '',
                         'url' => '',
+                        'favorite' => false,
                         'episodes' => [
                             [
                                 'name' => '',
                                 'url' => '',
+                                'favorite' => false,
                                 'watched' => true,
                             ],
                             [
                                 'name' => '',
                                 'url' => '',
+                                'favorite' => false,
                                 'watched' => true,
                             ]
                         ]

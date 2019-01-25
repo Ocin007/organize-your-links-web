@@ -552,6 +552,9 @@ var ListElement = /** @class */ (function () {
         listElement.id = this.getId();
         listElement.classList.add('list-element');
         listElement.classList.add('shadow-bottom');
+        if (this.data.favorite) {
+            listElement.classList.add('favorite-list-element');
+        }
         var imgLabelContainer = document.createElement('div');
         imgLabelContainer.classList.add('list-img-label');
         if (this.data.seasons.length !== 0) {
@@ -576,6 +579,9 @@ var ListElement = /** @class */ (function () {
     ListElement.prototype.generateButtonContainer = function () {
         var container = document.createElement('div');
         container.classList.add('list-button-container');
+        if (this.data.favorite) {
+            container.classList.add('favorite-list-button-container');
+        }
         switch (this.data.list) {
             case ListID.WATCHED:
                 container.appendChild(this.createArrowRightButton());
@@ -589,6 +595,7 @@ var ListElement = /** @class */ (function () {
                 break;
         }
         if (this.data.seasons.length !== 0) {
+            container.appendChild(this.createFavoriteButton());
             container.appendChild(this.createPlayButton());
             container.appendChild(this.createWatchedButton());
         }
@@ -634,6 +641,18 @@ var ListElement = /** @class */ (function () {
         navMap[newListId - 1].generateMap();
         navMap[newListId - 1].renderList();
     };
+    ListElement.prototype.createFavoriteButton = function () {
+        this.favoriteStatus = document.createElement('img');
+        this.setAttributesFavorites(this.data.seasons[this.sIndex].episodes[this.epIndex].favorite);
+        var instance = this;
+        this.favoriteStatus.addEventListener('click', function () {
+            var oldBool = instance.data.seasons[instance.sIndex].episodes[instance.epIndex].favorite;
+            instance.data.seasons[instance.sIndex].episodes[instance.epIndex].favorite = !oldBool;
+            instance.setAttributesFavorites(!oldBool);
+            instance.serverData.put([instance.data]);
+        });
+        return this.favoriteStatus;
+    };
     ListElement.prototype.createPlayButton = function () {
         var instance = this;
         return ListElement.generateButton('img/play.ico', 'play', function () {
@@ -670,7 +689,16 @@ var ListElement = /** @class */ (function () {
             this.watchedStatus.alt = 'not-watched';
         }
     };
-    ;
+    ListElement.prototype.setAttributesFavorites = function (bool) {
+        if (bool) {
+            this.favoriteStatus.src = 'img/favorite.ico';
+            this.favoriteStatus.alt = 'favorite';
+        }
+        else {
+            this.favoriteStatus.src = 'img/not-favorite.ico';
+            this.favoriteStatus.alt = 'not-favorite';
+        }
+    };
     ListElement.prototype.createEditButton = function () {
         var instance = this;
         return ListElement.generateButton('img/edit.ico', 'edit', function () {
@@ -772,6 +800,7 @@ var ListElement = /** @class */ (function () {
         this.countEp.innerHTML = this.epCount.toString();
         this.thumbnail.src = this.data.seasons[this.sIndex].thumbnail;
         this.setAttributesWatched(this.data.seasons[this.sIndex].episodes[this.epIndex].watched);
+        this.setAttributesFavorites(this.data.seasons[this.sIndex].episodes[this.epIndex].favorite);
     };
     ListElement.getIndicesAndCountOfFirstNotWatched = function (data) {
         var sIndex, epIndex, epCount = 0, maxCount = 0, success = false;
@@ -987,6 +1016,7 @@ var PageCreate = /** @class */ (function () {
             name_jpn: this.inputJPN.value,
             list: ListID.NOT_WATCHED,
             rank: 0,
+            favorite: false,
             seasons: []
         };
     };
@@ -1141,8 +1171,38 @@ var PageDetail = /** @class */ (function () {
         _a = ListElement.getIndicesAndCountOfFirstNotWatched(data), this.sIndex = _a[0], this.epIndex = _a[1], this.epCount = _a[2], this.maxCount = _a[3], this.success = _a[4];
         var _a;
     };
+    PageDetail.prototype.setupSeriesFavoriteButton = function (data) {
+        var favoriteButton = PageDetail.createImg('', '');
+        favoriteButton.classList.add('series-favorite-button');
+        if (data.favorite) {
+            favoriteButton.src = 'img/favorite-big.ico';
+            favoriteButton.alt = 'favorite-big';
+        }
+        else {
+            favoriteButton.src = 'img/not-favorite-big.ico';
+            favoriteButton.alt = 'not-favorite-big';
+        }
+        var instance = this;
+        favoriteButton.addEventListener('click', function () {
+            var oldBool = data.favorite;
+            data.favorite = !oldBool;
+            if (oldBool) {
+                favoriteButton.src = 'img/not-favorite-big.ico';
+                favoriteButton.alt = 'not-favorite-big';
+            }
+            else {
+                favoriteButton.src = 'img/favorite-big.ico';
+                favoriteButton.alt = 'favorite-big';
+            }
+            instance.serverData.put([data], function () {
+                instance.listElementMap[data.id].renderPageList();
+            });
+        });
+        return favoriteButton;
+    };
     PageDetail.prototype.renderDetailsContainer = function (data) {
         this.detailContainer.innerHTML = '';
+        this.detailContainer.appendChild(this.setupSeriesFavoriteButton(data));
         var titleContainer = this.generateTitleContainer(data);
         this.detailContainer.appendChild(titleContainer);
         var epCount = 0;
@@ -1245,6 +1305,14 @@ var PageDetail = /** @class */ (function () {
             watchedSeason = PageDetail.createImg('img/not-watched.ico', 'not-watched');
         }
         label.appendChild(watchedSeason);
+        var favoriteSeason;
+        if (data.seasons[sIndex].favorite) {
+            favoriteSeason = PageDetail.createImg('img/favorite.ico', 'favorite');
+        }
+        else {
+            favoriteSeason = PageDetail.createImg('img/not-favorite.ico', 'not-favorite');
+        }
+        label.appendChild(favoriteSeason);
         segment.appendChild(label);
         var epContainer = PageDetail.createDiv('episode-container');
         epContainer.classList.add('background-gray');
@@ -1266,13 +1334,27 @@ var PageDetail = /** @class */ (function () {
                 watchedSeason.alt = 'watched';
             }
             for (var ep = 0; ep < seasonElements.length; ep++) {
-                PageDetail.setAttributes(!oldBool, seasonElements[ep][0], seasonElements[ep][1]);
+                PageDetail.setAttributesWatched(!oldBool, seasonElements[ep][0], seasonElements[ep][1]);
                 data.seasons[sIndex].episodes[ep].watched = !oldBool;
             }
             instance.updateInfo(data);
             instance.updateThumbnail(data);
             instance.serverData.put([data], function () {
                 instance.listElementMap[data.id].renderPageList();
+            });
+        });
+        favoriteSeason.addEventListener('click', function () {
+            var oldBool = data.seasons[sIndex].favorite;
+            if (oldBool) {
+                favoriteSeason.src = 'img/not-favorite.ico';
+                favoriteSeason.alt = 'not-favorite';
+            }
+            else {
+                favoriteSeason.src = 'img/favorite.ico';
+                favoriteSeason.alt = 'favorite';
+            }
+            data.seasons[sIndex].favorite = !oldBool;
+            instance.serverData.put([data], function () {
             });
         });
         segment.appendChild(epContainer);
@@ -1322,6 +1404,8 @@ var PageDetail = /** @class */ (function () {
         container.appendChild(this.playButton(sIndex, epIndex, data));
         var watchedButton = this.watchedButton(sIndex, epIndex, data, episode, watchedSeason);
         container.appendChild(watchedButton);
+        var favoriteButton = this.favoriteButton(sIndex, epIndex, data, episode);
+        container.appendChild(favoriteButton);
         return [container, watchedButton];
     };
     PageDetail.prototype.generateButtonContainer = function () {
@@ -1339,12 +1423,12 @@ var PageDetail = /** @class */ (function () {
     };
     PageDetail.prototype.watchedButton = function (sIndex, epIndex, data, episode, watchedSeason) {
         var watchedStatus = document.createElement('img');
-        PageDetail.setAttributes(data.seasons[sIndex].episodes[epIndex].watched, episode, watchedStatus);
+        PageDetail.setAttributesWatched(data.seasons[sIndex].episodes[epIndex].watched, episode, watchedStatus);
         var instance = this;
         watchedStatus.addEventListener('click', function () {
             var oldBool = data.seasons[sIndex].episodes[epIndex].watched;
             data.seasons[sIndex].episodes[epIndex].watched = !oldBool;
-            PageDetail.setAttributes(!oldBool, episode, watchedStatus);
+            PageDetail.setAttributesWatched(!oldBool, episode, watchedStatus);
             instance.updateInfo(data);
             instance.updateThumbnail(data);
             PageDetail.updateWatchedSeason(watchedSeason, data, sIndex);
@@ -1354,7 +1438,21 @@ var PageDetail = /** @class */ (function () {
         });
         return watchedStatus;
     };
-    PageDetail.setAttributes = function (bool, episode, watchedStatus) {
+    PageDetail.prototype.favoriteButton = function (sIndex, epIndex, data, episode) {
+        var favoriteStatus = document.createElement('img');
+        PageDetail.setAttributesFavorite(data.seasons[sIndex].episodes[epIndex].favorite, episode, favoriteStatus);
+        var instance = this;
+        favoriteStatus.addEventListener('click', function () {
+            var oldBool = data.seasons[sIndex].episodes[epIndex].favorite;
+            data.seasons[sIndex].episodes[epIndex].favorite = !oldBool;
+            PageDetail.setAttributesFavorite(!oldBool, episode, favoriteStatus);
+            instance.serverData.put([data], function () {
+                instance.listElementMap[data.id].renderPageList();
+            });
+        });
+        return favoriteStatus;
+    };
+    PageDetail.setAttributesWatched = function (bool, episode, watchedStatus) {
         if (bool) {
             watchedStatus.src = 'img/watched.ico';
             watchedStatus.alt = 'watched';
@@ -1366,6 +1464,20 @@ var PageDetail = /** @class */ (function () {
             watchedStatus.alt = 'not-watched';
             episode.classList.remove('font-lighter-green');
             episode.classList.add('font-green');
+        }
+    };
+    PageDetail.setAttributesFavorite = function (bool, episode, favoriteStatus) {
+        if (bool) {
+            favoriteStatus.src = 'img/favorite.ico';
+            favoriteStatus.alt = 'favorite';
+            episode.classList.add('font-gold');
+            episode.classList.add('font-gold-hover');
+        }
+        else {
+            favoriteStatus.src = 'img/not-favorite.ico';
+            favoriteStatus.alt = 'not-favorite';
+            episode.classList.remove('font-gold');
+            episode.classList.remove('font-gold-hover');
         }
     };
     PageDetail.prototype.updateInfo = function (data) {
@@ -1700,6 +1812,7 @@ var PageEdit = /** @class */ (function () {
             name_jpn: this.oldData.name_jpn,
             list: this.oldData.list,
             rank: this.oldData.rank,
+            favorite: this.oldData.favorite,
             seasons: []
         };
         this.inputElementList = [];
@@ -1716,12 +1829,13 @@ var PageEdit = /** @class */ (function () {
     PageEdit.prototype.generateSeasonsContainer = function () {
         this.seasonContainer = PageCreate.createDiv(['edit-season-container']);
         for (var s = 0; s < this.oldData.seasons.length; s++) {
-            var epContainer = this.appendSeason(this.oldData.seasons[s].url, this.oldData.seasons[s].thumbnail);
+            var epContainer = this.appendSeason(this.oldData.seasons[s].url, this.oldData.seasons[s].thumbnail, this.oldData.seasons[s].favorite);
             for (var ep = 0; ep < this.oldData.seasons[s].episodes.length; ep++) {
                 var name_1 = this.oldData.seasons[s].episodes[ep].name;
                 var url = this.oldData.seasons[s].episodes[ep].url;
                 var watched_1 = this.oldData.seasons[s].episodes[ep].watched;
-                this.appendEpisode(epContainer, name_1, url, s, watched_1);
+                var favorite = this.oldData.seasons[s].episodes[ep].favorite;
+                this.appendEpisode(epContainer, name_1, url, s, watched_1, favorite);
             }
         }
         return this.seasonContainer;
@@ -1782,6 +1896,7 @@ var PageEdit = /** @class */ (function () {
             this.newData.seasons.push({
                 url: this.inputElementList[s].url.value,
                 thumbnail: this.inputElementList[s].thumbnail.value,
+                favorite: this.inputElementList[s].favorite,
                 episodes: []
             });
             for (var ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
@@ -1790,6 +1905,7 @@ var PageEdit = /** @class */ (function () {
                 this.newData.seasons[s].episodes.push({
                     name: name_2,
                     url: this.inputElementList[s].episodes[ep].url.value,
+                    favorite: this.inputElementList[s].episodes[ep].favorite,
                     watched: this.inputElementList[s].episodes[ep].watched
                 });
             }
@@ -1951,14 +2067,14 @@ var PageEdit = /** @class */ (function () {
             if (data[s_1] !== undefined) {
                 var epContainer = void 0;
                 if (this.inputElementList.length < s_1) {
-                    epContainer = this.appendSeason('', '');
+                    epContainer = this.appendSeason('', '', false);
                 }
                 else {
                     epContainer = this.seasonContainer.children[s_1 - 1].lastChild;
                 }
                 for (var ep = 1; ep < Object.keys(data[s_1]).length + 1; ep++) {
                     if (this.inputElementList[s_1 - 1].episodes.length < ep) {
-                        this.appendEpisode(epContainer, data[s_1][ep], '', s_1 - 1, false);
+                        this.appendEpisode(epContainer, data[s_1][ep], '', s_1 - 1, false, false);
                     }
                     else {
                         if (this.inputElementList[s_1 - 1].episodes[ep - 1].name.value === '') {
@@ -1972,14 +2088,14 @@ var PageEdit = /** @class */ (function () {
         if (data[0] !== undefined) {
             var epContainer = void 0;
             if (this.inputElementList.length < s) {
-                epContainer = this.appendSeason('', '');
+                epContainer = this.appendSeason('', '', false);
             }
             else {
                 epContainer = this.seasonContainer.children[s - 1].lastChild;
             }
             var specials = '------------------------- SPECIALS -------------------------';
             if (this.inputElementList[s - 1].episodes.length === 0) {
-                this.appendEpisode(epContainer, specials, '', s - 1, false);
+                this.appendEpisode(epContainer, specials, '', s - 1, false, false);
             }
             else {
                 if (this.inputElementList[s - 1].episodes[0].name.value === '') {
@@ -1988,7 +2104,7 @@ var PageEdit = /** @class */ (function () {
             }
             for (var ep = 1; ep < Object.keys(data[0]).length + 1; ep++) {
                 if (this.inputElementList[s - 1].episodes.length < ep + 1) {
-                    this.appendEpisode(epContainer, data[0][ep], '', s - 1, false);
+                    this.appendEpisode(epContainer, data[0][ep], '', s - 1, false, false);
                 }
                 else {
                     if (this.inputElementList[s - 1].episodes[ep].name.value === '') {
@@ -1999,12 +2115,12 @@ var PageEdit = /** @class */ (function () {
         }
     };
     PageEdit.prototype.buttonAppendSeason = function (numEpisodes) {
-        var container = this.appendSeason('', '');
+        var container = this.appendSeason('', '', false);
         for (var i = 0; i < numEpisodes; i++) {
-            this.appendEpisode(container, '', '', this.inputElementList.length - 1, false);
+            this.appendEpisode(container, '', '', this.inputElementList.length - 1, false, false);
         }
     };
-    PageEdit.prototype.appendSeason = function (url, thumbnail) {
+    PageEdit.prototype.appendSeason = function (url, thumbnail, favorite) {
         var instance = this;
         var episodesContainer = PageCreate.createDiv(['edit-episodes-container', 'background-gray']);
         var urlInput = PageEdit.createInputText('Url Weiterleitung', url);
@@ -2014,6 +2130,7 @@ var PageEdit = /** @class */ (function () {
             label: label,
             url: urlInput,
             thumbnail: thumbnailInput,
+            favorite: favorite,
             episodes: []
         };
         this.inputElementList.push(seasonObj);
@@ -2037,7 +2154,7 @@ var PageEdit = /** @class */ (function () {
         var addEpisode = PageEdit.createButton('button-silver', 'Episoden hinzufügen', function () {
             var num = parseInt(numEpisode.value);
             for (var i = 0; i < num; i++) {
-                instance.appendEpisode(episodesContainer, '', '', instance.inputElementList.indexOf(seasonObj), false);
+                instance.appendEpisode(episodesContainer, '', '', instance.inputElementList.indexOf(seasonObj), false, false);
             }
         });
         var season = PageCreate.createDiv(['edit-season'], [
@@ -2060,7 +2177,7 @@ var PageEdit = /** @class */ (function () {
         this.seasonContainer.appendChild(season);
         return episodesContainer;
     };
-    PageEdit.prototype.appendEpisode = function (container, name, url, sIndex, watched) {
+    PageEdit.prototype.appendEpisode = function (container, name, url, sIndex, watched, favorite) {
         var instance = this;
         var sObj = this.inputElementList[sIndex];
         var close = PageDetail.createImg('img/close.ico', 'delete');
@@ -2089,6 +2206,7 @@ var PageEdit = /** @class */ (function () {
             label: label,
             url: urlInput,
             name: nameInput,
+            favorite: favorite,
             watched: watched
         };
         sObj.episodes.push(epObj);

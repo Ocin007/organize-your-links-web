@@ -1,4 +1,3 @@
-//TODO: favorite: true|false
 class PageEdit implements Slideable, ForeachElement {
 
     private oldData: DataListElement;

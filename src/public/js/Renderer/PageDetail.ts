@@ -1,4 +1,3 @@
-//TODO: favorite: true|false
 class PageDetail implements Slideable, ForeachElement {
 
     private readonly colorBrightness = Settings.colorBrightness;
@@ -137,8 +136,37 @@ class PageDetail implements Slideable, ForeachElement {
         ] = ListElement.getIndicesAndCountOfFirstNotWatched(data);
     }
 
+    private setupSeriesFavoriteButton(data: DataListElement) {
+        let favoriteButton = PageDetail.createImg('', '');
+        favoriteButton.classList.add('series-favorite-button');
+        if(data.favorite) {
+            favoriteButton.src = 'img/favorite-big.ico';
+            favoriteButton.alt = 'favorite-big';
+        } else {
+            favoriteButton.src = 'img/not-favorite-big.ico';
+            favoriteButton.alt = 'not-favorite-big';
+        }
+        const instance = this;
+        favoriteButton.addEventListener('click', function () {
+            const oldBool = data.favorite;
+            data.favorite = !oldBool;
+            if(oldBool) {
+                favoriteButton.src = 'img/not-favorite-big.ico';
+                favoriteButton.alt = 'not-favorite-big';
+            } else {
+                favoriteButton.src = 'img/favorite-big.ico';
+                favoriteButton.alt = 'favorite-big';
+            }
+            instance.serverData.put([data], function () {
+                instance.listElementMap[data.id].renderPageList();
+            });
+        });
+        return favoriteButton;
+    }
+
     private renderDetailsContainer(data: DataListElement) {
         this.detailContainer.innerHTML = '';
+        this.detailContainer.appendChild(this.setupSeriesFavoriteButton(data));
         const titleContainer = this.generateTitleContainer(data);
         this.detailContainer.appendChild(titleContainer);
         let epCount = 0;
@@ -246,6 +274,13 @@ class PageDetail implements Slideable, ForeachElement {
             watchedSeason = PageDetail.createImg('img/not-watched.ico', 'not-watched');
         }
         label.appendChild(watchedSeason);
+        let favoriteSeason;
+        if(data.seasons[sIndex].favorite) {
+            favoriteSeason = PageDetail.createImg('img/favorite.ico', 'favorite');
+        } else {
+            favoriteSeason = PageDetail.createImg('img/not-favorite.ico', 'not-favorite');
+        }
+        label.appendChild(favoriteSeason);
         segment.appendChild(label);
         const epContainer = PageDetail.createDiv('episode-container');
         epContainer.classList.add('background-gray');
@@ -266,13 +301,27 @@ class PageDetail implements Slideable, ForeachElement {
                 watchedSeason.alt = 'watched';
             }
             for (let ep = 0; ep < seasonElements.length; ep++) {
-                PageDetail.setAttributes(!oldBool, seasonElements[ep][0], seasonElements[ep][1]);
+                PageDetail.setAttributesWatched(!oldBool, seasonElements[ep][0], seasonElements[ep][1]);
                 data.seasons[sIndex].episodes[ep].watched = !oldBool;
             }
             instance.updateInfo(data);
             instance.updateThumbnail(data);
             instance.serverData.put([data], function () {
                 instance.listElementMap[data.id].renderPageList();
+            });
+        });
+        favoriteSeason.addEventListener('click', function () {
+            const oldBool = data.seasons[sIndex].favorite;
+            if(oldBool) {
+                favoriteSeason.src = 'img/not-favorite.ico';
+                favoriteSeason.alt = 'not-favorite';
+            } else {
+                favoriteSeason.src = 'img/favorite.ico';
+                favoriteSeason.alt = 'favorite';
+            }
+            data.seasons[sIndex].favorite = !oldBool;
+            instance.serverData.put([data], function () {
+
             });
         });
         segment.appendChild(epContainer);
@@ -324,6 +373,8 @@ class PageDetail implements Slideable, ForeachElement {
         container.appendChild(this.playButton(sIndex, epIndex, data));
         const watchedButton = this.watchedButton(sIndex, epIndex, data, episode, watchedSeason);
         container.appendChild(watchedButton);
+        const favoriteButton = this.favoriteButton(sIndex, epIndex, data, episode);
+        container.appendChild(favoriteButton);
         return [container, watchedButton];
     }
 
@@ -344,12 +395,12 @@ class PageDetail implements Slideable, ForeachElement {
 
     private watchedButton(sIndex: number, epIndex: number, data: DataListElement, episode: HTMLElement, watchedSeason: HTMLImageElement) {
         const watchedStatus = document.createElement('img');
-        PageDetail.setAttributes(data.seasons[sIndex].episodes[epIndex].watched, episode, watchedStatus);
+        PageDetail.setAttributesWatched(data.seasons[sIndex].episodes[epIndex].watched, episode, watchedStatus);
         const instance = this;
         watchedStatus.addEventListener('click', function () {
             const oldBool = data.seasons[sIndex].episodes[epIndex].watched;
             data.seasons[sIndex].episodes[epIndex].watched = !oldBool;
-            PageDetail.setAttributes(!oldBool, episode, watchedStatus);
+            PageDetail.setAttributesWatched(!oldBool, episode, watchedStatus);
             instance.updateInfo(data);
             instance.updateThumbnail(data);
             PageDetail.updateWatchedSeason(watchedSeason, data, sIndex);
@@ -360,7 +411,22 @@ class PageDetail implements Slideable, ForeachElement {
         return watchedStatus;
     }
 
-    private static setAttributes(bool: boolean, episode: HTMLElement, watchedStatus: HTMLImageElement) {
+    private favoriteButton(sIndex: number, epIndex: number, data: DataListElement, episode: HTMLElement) {
+        const favoriteStatus = document.createElement('img');
+        PageDetail.setAttributesFavorite(data.seasons[sIndex].episodes[epIndex].favorite, episode, favoriteStatus);
+        const instance = this;
+        favoriteStatus.addEventListener('click', function () {
+            const oldBool = data.seasons[sIndex].episodes[epIndex].favorite;
+            data.seasons[sIndex].episodes[epIndex].favorite = !oldBool;
+            PageDetail.setAttributesFavorite(!oldBool, episode, favoriteStatus);
+            instance.serverData.put([data], function () {
+                instance.listElementMap[data.id].renderPageList();
+            });
+        });
+        return favoriteStatus;
+    }
+
+    private static setAttributesWatched(bool: boolean, episode: HTMLElement, watchedStatus: HTMLImageElement) {
         if (bool) {
             watchedStatus.src = 'img/watched.ico';
             watchedStatus.alt = 'watched';
@@ -371,6 +437,20 @@ class PageDetail implements Slideable, ForeachElement {
             watchedStatus.alt = 'not-watched';
             episode.classList.remove('font-lighter-green');
             episode.classList.add('font-green');
+        }
+    }
+
+    private static setAttributesFavorite(bool: boolean, episode: HTMLElement, favoriteStatus: HTMLImageElement) {
+        if (bool) {
+            favoriteStatus.src = 'img/favorite.ico';
+            favoriteStatus.alt = 'favorite';
+            episode.classList.add('font-gold');
+            episode.classList.add('font-gold-hover');
+        } else {
+            favoriteStatus.src = 'img/not-favorite.ico';
+            favoriteStatus.alt = 'not-favorite';
+            episode.classList.remove('font-gold');
+            episode.classList.remove('font-gold-hover');
         }
     }
 
