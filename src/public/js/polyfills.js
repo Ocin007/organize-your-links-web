@@ -3625,7 +3625,7 @@ function reorderSiblings(html, slideRangeForDiagonal, relSpeed, callback) {
             }
         }
         else {
-            slideRightMax = current.getBoundingClientRect().left - 35;
+            slideRightMax = current.getBoundingClientRect().left - 15;
             if (i + 1 === html.parentElement.children.length) {
                 moveSiblingLeft(current, relSpeed, newCallback);
             }
@@ -3637,7 +3637,7 @@ function reorderSiblings(html, slideRangeForDiagonal, relSpeed, callback) {
 }
 function moveSiblingLeft(element, relSpeed, callback) {
     element.style.position = 'relative';
-    var leftRange = 365;
+    var leftRange = element.getBoundingClientRect().width + 25;
     var stepRange = leftRange * relSpeed;
     var current = 0;
     var interval = setInterval(function () {
@@ -3654,7 +3654,7 @@ function moveSiblingLeft(element, relSpeed, callback) {
 }
 function moveSiblingDiagonal(element, slideRightMax, relSpeed, callback) {
     element.style.position = 'relative';
-    var topRange = 168;
+    var topRange = element.getBoundingClientRect().height + 30;
     var stepRangeTop = topRange * relSpeed;
     var stepRangeRight = slideRightMax * relSpeed;
     var currentTop = 0;
@@ -3685,7 +3685,7 @@ function slideListElementLeft(listElement, relSpeed, callback) {
     navMap.flag = false;
     var html = listElement.getElement();
     html.style.position = 'relative';
-    var slideRangeForDiagonal = html.getBoundingClientRect().left - 35;
+    var slideRangeForDiagonal = html.getBoundingClientRect().left - 15;
     var slideRange = html.getBoundingClientRect().right + 10;
     var stepRange = slideRange * relSpeed;
     var currentRange = 0;
@@ -3703,7 +3703,7 @@ function slideListElementRight(listElement, relSpeed, callback) {
     navMap.flag = false;
     var html = listElement.getElement();
     html.style.position = 'relative';
-    var slideRangeForDiagonal = html.getBoundingClientRect().left - 35;
+    var slideRangeForDiagonal = html.getBoundingClientRect().left - 15;
     var slideRange = (innerWidth - html.getBoundingClientRect().left) + 10;
     var stepRange = slideRange * relSpeed;
     var currentRange = 0;

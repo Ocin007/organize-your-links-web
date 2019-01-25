@@ -266,7 +266,7 @@ function reorderSiblings(html: HTMLElement, slideRangeForDiagonal: number, relSp
                 moveSiblingDiagonal(current, slideRightMax, relSpeed);
             }
         } else {
-            slideRightMax = current.getBoundingClientRect().left-35;
+            slideRightMax = current.getBoundingClientRect().left-15;
             if(i + 1 === html.parentElement.children.length) {
                 moveSiblingLeft(current, relSpeed, newCallback);
             } else {
@@ -278,7 +278,7 @@ function reorderSiblings(html: HTMLElement, slideRangeForDiagonal: number, relSp
 
 function moveSiblingLeft(element: any, relSpeed: number, callback?: Function) {
     element.style.position = 'relative';
-    const leftRange = 365;
+    const leftRange = element.getBoundingClientRect().width+25;
     const stepRange = leftRange * relSpeed;
     let current = 0;
     const interval = setInterval(function () {
@@ -296,7 +296,7 @@ function moveSiblingLeft(element: any, relSpeed: number, callback?: Function) {
 
 function moveSiblingDiagonal(element: any, slideRightMax: number, relSpeed: number, callback?: Function) {
     element.style.position = 'relative';
-    const topRange = 168;
+    const topRange = element.getBoundingClientRect().height+30;
     const stepRangeTop = topRange * relSpeed;
     const stepRangeRight = slideRightMax * relSpeed;
     let currentTop = 0;
@@ -328,7 +328,7 @@ function slideListElementLeft(listElement: ListElement, relSpeed: number, callba
     navMap.flag = false;
     const html = listElement.getElement();
     html.style.position = 'relative';
-    const slideRangeForDiagonal = html.getBoundingClientRect().left-35;
+    const slideRangeForDiagonal = html.getBoundingClientRect().left-15;
     const slideRange = html.getBoundingClientRect().right+10;
     const stepRange = slideRange * relSpeed;
     let currentRange = 0;
@@ -347,7 +347,7 @@ function slideListElementRight(listElement: ListElement, relSpeed: number, callb
     navMap.flag = false;
     const html = listElement.getElement();
     html.style.position = 'relative';
-    const slideRangeForDiagonal = html.getBoundingClientRect().left-35;
+    const slideRangeForDiagonal = html.getBoundingClientRect().left-15;
     const slideRange = (innerWidth - html.getBoundingClientRect().left)+10;
     const stepRange = slideRange * relSpeed;
     let currentRange = 0;
