@@ -14,6 +14,9 @@ class Settings extends AjaxRequest {
             Settings.errFunction(http, 'load');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
+            if(Settings.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if (resObj.error !== undefined) {
                 console.warn('Error "get"');
                 console.warn(resObj.error);
@@ -32,6 +35,9 @@ class Settings extends AjaxRequest {
             Settings.errFunction(http, 'load');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
+            if(Settings.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if (resObj.error !== undefined) {
                 console.warn('Error "get"');
                 console.warn(resObj.error);

@@ -1,7 +1,6 @@
 <?php
 
-require_once __DIR__.'/../../vendor/autoload.php';
-
+require_once __DIR__ . '/includes/checkForCorrectInstallation.php';
 
 use OrganizeYourLinks\OrganizeYourLinks\Sorter;
 use OrganizeYourLinks\Reader;
@@ -9,9 +8,6 @@ use OrganizeYourLinks\Reader;
 error_reporting(E_ALL);
 ini_set('display_errors', 'on');
 header('Access-Control-Allow-Origin: *');
-
-const LIST_DIR = __DIR__.'/../../data/list';
-const SETTINGS_FILE = __DIR__.'/../../data/settings.json';
 
 
 try {
@@ -26,13 +22,17 @@ try {
     $sorter->sort($content);
 } catch (Exception $e) {
     echo json_encode([
-        'error' => $e->getMessage()
+        'error' => $e->getMessage(),
+        'composer_missing' => false,
+        'data_dir_not_writable' => false
     ], JSON_PRETTY_PRINT);
     exit;
 }
 
 $response = [
-    'response' => $content
+    'response' => $content,
+    'composer_missing' => false,
+    'data_dir_not_writable' => false
 ];
 
 echo json_encode($response, JSON_PRETTY_PRINT);

@@ -64,6 +64,21 @@ var AjaxRequest = /** @class */ (function () {
         var errWindow = window.open();
         errWindow.document.write(http.responseText);
     };
+    AjaxRequest.checkForErrorNotifications = function (resObj) {
+        if (resObj.composer_missing === false && resObj.data_dir_not_writable === false) {
+            document.getElementById('notification-container').style.display = 'none';
+            return false;
+        }
+        document.getElementById('loadsymbol').style.display = 'none';
+        document.getElementById('notification-container').style.display = 'flex';
+        if (resObj.composer_missing) {
+            document.getElementById('notification-composer-not-installed').style.display = 'flex';
+        }
+        if (resObj.data_dir_not_writable) {
+            document.getElementById('notification-data-dir-not-writable').style.display = 'flex';
+        }
+        return true;
+    };
     return AjaxRequest;
 }());
 //# sourceMappingURL=AjaxRequest.js.map
@@ -93,6 +108,9 @@ var ServerData = /** @class */ (function (_super) {
             ServerData.errFunction(http, 'get');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
+            if (ServerData.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if (resObj.error !== undefined) {
                 console.warn('Error "get"');
                 console.warn(resObj.error);
@@ -112,6 +130,9 @@ var ServerData = /** @class */ (function (_super) {
             ServerData.errFunction(http, 'put');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
+            if (ServerData.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if (resObj.error !== undefined) {
                 console.warn('Error "put"');
                 console.warn(resObj.error);
@@ -136,6 +157,9 @@ var ServerData = /** @class */ (function (_super) {
             ServerData.errFunction(http, 'post');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
+            if (ServerData.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if (resObj.error !== undefined) {
                 onError(resObj.error);
                 return;
@@ -150,6 +174,9 @@ var ServerData = /** @class */ (function (_super) {
             ServerData.errFunction(http, 'post');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
+            if (ServerData.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if (resObj.error !== undefined) {
                 console.warn('Error "delete"');
                 console.warn(resObj.error);
@@ -305,6 +332,9 @@ var Settings = /** @class */ (function (_super) {
             Settings.errFunction(http, 'load');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
+            if (Settings.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if (resObj.error !== undefined) {
                 console.warn('Error "get"');
                 console.warn(resObj.error);
@@ -322,6 +352,9 @@ var Settings = /** @class */ (function (_super) {
             Settings.errFunction(http, 'load');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
+            if (Settings.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if (resObj.error !== undefined) {
                 console.warn('Error "get"');
                 console.warn(resObj.error);
@@ -377,6 +410,9 @@ var TVDB = /** @class */ (function (_super) {
             TVDB.errFunction(http, 'search');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
+            if (TVDB.checkForErrorNotifications(resObj)) {
+                return;
+            }
             callback(resObj);
         });
     };
@@ -385,6 +421,9 @@ var TVDB = /** @class */ (function (_super) {
             TVDB.errFunction(http, 'getEpisodes');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
+            if (TVDB.checkForErrorNotifications(resObj)) {
+                return;
+            }
             callback(resObj);
         });
     };
@@ -393,6 +432,9 @@ var TVDB = /** @class */ (function (_super) {
             TVDB.errFunction(http, 'getImages');
         }, function (http) {
             var resObj = JSON.parse(http.responseText);
+            if (TVDB.checkForErrorNotifications(resObj)) {
+                return;
+            }
             callback(resObj);
         });
     };

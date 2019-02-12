@@ -1,21 +1,19 @@
 <?php
 
-use OrganizeYourLinks\ExternalApi\TvdbApi;
+require_once __DIR__ . '/../includes/checkForCorrectInstallation.php';
 
-require_once __DIR__.'/../../../vendor/autoload.php';
+use OrganizeYourLinks\ExternalApi\TvdbApi;
 
 
 error_reporting(E_ERROR);
 //ini_set('display_errors', 'on');
 header('Access-Control-Allow-Origin: *');
 
-const KEY_FILE = __DIR__.'/../../../data/apikey.json';
-const TOKEN_FILE = __DIR__.'/../../../data/apitoken.json';
-const CERT_FILE = __DIR__.'/../../../data/cacert.pem';
-
 function returnError($e) {
     echo json_encode([
-        'error' => $e
+        'error' => $e,
+        'composer_missing' => false,
+        'data_dir_not_writable' => false
     ], JSON_PRETTY_PRINT);
     exit;
 }
@@ -42,7 +40,9 @@ try {
     $tvdb->getEpisodes($id);
 
     echo json_encode([
-        'response' => $tvdb->getContent()
+        'response' => $tvdb->getContent(),
+        'composer_missing' => false,
+        'data_dir_not_writable' => false
     ], JSON_PRETTY_PRINT);
 
 } catch (Exception $e) {

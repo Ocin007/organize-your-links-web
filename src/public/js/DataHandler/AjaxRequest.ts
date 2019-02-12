@@ -31,4 +31,20 @@ class AjaxRequest {
         const errWindow = window.open();
         errWindow.document.write(http.responseText);
     }
+
+    static checkForErrorNotifications(resObj: any) {
+        if(resObj.composer_missing === false && resObj.data_dir_not_writable === false) {
+            document.getElementById('notification-container').style.display = 'none';
+            return false;
+        }
+        document.getElementById('loadsymbol').style.display = 'none';
+        document.getElementById('notification-container').style.display = 'flex';
+        if(resObj.composer_missing) {
+            document.getElementById('notification-composer-not-installed').style.display = 'flex';
+        }
+        if(resObj.data_dir_not_writable) {
+            document.getElementById('notification-data-dir-not-writable').style.display = 'flex';
+        }
+        return true;
+    }
 }

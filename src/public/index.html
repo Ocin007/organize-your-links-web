@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/editPage.css">
     <link rel="stylesheet" href="css/deletePage.css">
     <link rel="stylesheet" href="css/rankingPage.css">
+    <link rel="stylesheet" href="css/notifications.css">
     <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
     <script src="js/polyfills.js"></script>
 </head>
@@ -107,6 +108,20 @@
 
     <div id="body-content">
     <div id="loadsymbol" class="loader"></div>
+        <div id="notification-container">
+            <div id="notification-composer-not-installed" class="notification shadow-bottom">
+                <p>Error: Composer is not installed! Install it with
+                    <span>
+                        composer install --no-dev
+                    </span>
+                </p>
+            </div>
+            <div id="notification-data-dir-not-writable" class="notification shadow-bottom">
+                <p>
+                    Error: Data directory is not writable! Please edit the permissions for the data directory.
+                </p>
+            </div>
+        </div>
     <div id="watched" class="page page-list"></div>
     <div id="playlist" class="page page-list">
         <!--

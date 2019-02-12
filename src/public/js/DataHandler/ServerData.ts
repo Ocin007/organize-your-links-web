@@ -10,6 +10,9 @@ class ServerData extends AjaxRequest {
             ServerData.errFunction(http, 'get');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
+            if(ServerData.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if (resObj.error !== undefined) {
                 console.warn('Error "get"');
                 console.warn(resObj.error);
@@ -30,6 +33,9 @@ class ServerData extends AjaxRequest {
             ServerData.errFunction(http, 'put');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
+            if(ServerData.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if (resObj.error !== undefined) {
                 console.warn('Error "put"');
                 console.warn(resObj.error);
@@ -55,6 +61,9 @@ class ServerData extends AjaxRequest {
             ServerData.errFunction(http, 'post');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
+            if(ServerData.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if(resObj.error !== undefined) {
                 onError(resObj.error);
                 return;
@@ -70,6 +79,9 @@ class ServerData extends AjaxRequest {
             ServerData.errFunction(http, 'post');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
+            if(ServerData.checkForErrorNotifications(resObj)) {
+                return;
+            }
             if(resObj.error !== undefined) {
                 console.warn('Error "delete"');
                 console.warn(resObj.error);

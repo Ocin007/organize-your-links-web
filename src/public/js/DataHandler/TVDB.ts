@@ -5,6 +5,9 @@ class TVDB extends AjaxRequest {
             TVDB.errFunction(http, 'search');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
+            if(TVDB.checkForErrorNotifications(resObj)) {
+                return;
+            }
             callback(resObj);
         });
     }
@@ -14,6 +17,9 @@ class TVDB extends AjaxRequest {
             TVDB.errFunction(http, 'getEpisodes');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
+            if(TVDB.checkForErrorNotifications(resObj)) {
+                return;
+            }
             callback(resObj);
         });
     }
@@ -23,6 +29,9 @@ class TVDB extends AjaxRequest {
             TVDB.errFunction(http, 'getImages');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
+            if(TVDB.checkForErrorNotifications(resObj)) {
+                return;
+            }
             callback(resObj);
         });
     }

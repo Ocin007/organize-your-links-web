@@ -1,0 +1,31 @@
+#notification-container {
+    display: none;
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    top: 145px;
+    flex-direction: column-reverse;
+}
+.notification {
+    display: none;
+    background-color: #ffcdd2;
+    text-wrap: normal;
+    border-radius: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 15px;
+    width: 385px;
+    line-height: 1.5;
+}
+#notification-composer-not-installed {
+
+}
+#notification-composer-not-installed p span {
+    background-color: #dc3232;
+    padding: 2px;
+    border-radius: 2px;
+    color: white;
+}
+#notification-data-dir-not-writable {
+
+}
