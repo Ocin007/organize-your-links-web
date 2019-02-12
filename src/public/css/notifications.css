@@ -5,10 +5,10 @@
     right: 15px;
     top: 145px;
     flex-direction: column-reverse;
+    z-index: 5;
 }
 .notification {
     display: none;
-    background-color: #ffcdd2;
     text-wrap: normal;
     border-radius: 5px;
     padding-left: 10px;
@@ -16,6 +16,14 @@
     margin-top: 15px;
     width: 385px;
     line-height: 1.5;
+}
+.notification-error {
+    background-color: #ffcdd2;
+}
+.notification-warning {
+    background-color: #ffecb3;
+    opacity: 1;
+    transition: opacity 3s;
 }
 #notification-composer-not-installed {
 

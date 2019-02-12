@@ -16,7 +16,8 @@ if(!isset($_POST['data'])) {
     echo json_encode([
         'error' => 'no data was sent',
         'composer_missing' => false,
-        'data_dir_not_writable' => false
+        'data_dir_not_writable' => false,
+        'key_file_missing' => false
     ], JSON_PRETTY_PRINT);
     exit;
 }
@@ -33,7 +34,8 @@ try {
             $e->getMessage()
         ],
         'composer_missing' => false,
-        'data_dir_not_writable' => false
+        'data_dir_not_writable' => false,
+        'key_file_missing' => false
     ], JSON_PRETTY_PRINT);
     exit;
 }
@@ -48,7 +50,8 @@ if(count($errors) !== 0) {
     echo json_encode([
         'error' => $errors,
         'composer_missing' => false,
-        'data_dir_not_writable' => false
+        'data_dir_not_writable' => false,
+        'key_file_missing' => false
     ], JSON_PRETTY_PRINT);
     exit;
 }
@@ -64,4 +67,5 @@ if(count($errors) !== 0) {
 }
 $response['composer_missing'] = false;
 $response['data_dir_not_writable'] = false;
+$response['key_file_missing'] = false;
 echo json_encode($response, JSON_PRETTY_PRINT);

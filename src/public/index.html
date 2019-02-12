@@ -109,14 +109,17 @@
     <div id="body-content">
     <div id="loadsymbol" class="loader"></div>
         <div id="notification-container">
-            <div id="notification-composer-not-installed" class="notification shadow-bottom">
+            <div id="notification-keyfile-not-found" class="notification notification-warning shadow-bottom">
+                <p>Warning: Keyfile for TVDB-access not found! Rename "apikey.json.example" to "apikey.json".</p>
+            </div>
+            <div id="notification-composer-not-installed" class="notification notification-error shadow-bottom">
                 <p>Error: Composer is not installed! Install it with
                     <span>
                         composer install --no-dev
                     </span>
                 </p>
             </div>
-            <div id="notification-data-dir-not-writable" class="notification shadow-bottom">
+            <div id="notification-data-dir-not-writable" class="notification notification-error shadow-bottom">
                 <p>
                     Error: Data directory is not writable! Please edit the permissions for the data directory.
                 </p>

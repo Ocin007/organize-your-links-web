@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../includes/checkForCorrectInstallation.php';
+require_once __DIR__ . '/../includes/checkForKeyFile.php';
 
 use OrganizeYourLinks\ExternalApi\TvdbApi;
 
@@ -13,7 +14,8 @@ function returnError($e) {
     echo json_encode([
         'error' => $e,
         'composer_missing' => false,
-        'data_dir_not_writable' => false
+        'data_dir_not_writable' => false,
+        'key_file_missing' => false
     ], JSON_PRETTY_PRINT);
     exit;
 }
@@ -45,7 +47,8 @@ try {
     echo json_encode([
         'response' => $tvdb->getContent(),
         'composer_missing' => false,
-        'data_dir_not_writable' => false
+        'data_dir_not_writable' => false,
+        'key_file_missing' => false
     ], JSON_PRETTY_PRINT);
 
 } catch (Exception $e) {

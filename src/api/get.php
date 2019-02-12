@@ -24,7 +24,8 @@ try {
     echo json_encode([
         'error' => $e->getMessage(),
         'composer_missing' => false,
-        'data_dir_not_writable' => false
+        'data_dir_not_writable' => false,
+        'key_file_missing' => false
     ], JSON_PRETTY_PRINT);
     exit;
 }
@@ -32,7 +33,8 @@ try {
 $response = [
     'response' => $content,
     'composer_missing' => false,
-    'data_dir_not_writable' => false
+    'data_dir_not_writable' => false,
+    'key_file_missing' => false
 ];
 
 echo json_encode($response, JSON_PRETTY_PRINT);

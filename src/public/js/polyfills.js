@@ -65,17 +65,30 @@ var AjaxRequest = /** @class */ (function () {
         errWindow.document.write(http.responseText);
     };
     AjaxRequest.checkForErrorNotifications = function (resObj) {
-        if (resObj.composer_missing === false && resObj.data_dir_not_writable === false) {
-            document.getElementById('notification-container').style.display = 'none';
+        var container = document.getElementById('notification-container');
+        if (resObj.composer_missing === false && resObj.data_dir_not_writable === false && resObj.key_file_missing === false) {
+            container.style.display = 'none';
             return false;
         }
         document.getElementById('loadsymbol').style.display = 'none';
-        document.getElementById('notification-container').style.display = 'flex';
+        container.style.display = 'flex';
         if (resObj.composer_missing) {
             document.getElementById('notification-composer-not-installed').style.display = 'flex';
         }
         if (resObj.data_dir_not_writable) {
             document.getElementById('notification-data-dir-not-writable').style.display = 'flex';
+        }
+        if (resObj.key_file_missing) {
+            var element_1 = document.getElementById('notification-keyfile-not-found');
+            element_1.style.display = 'flex';
+            setTimeout(function () {
+                element_1.style.opacity = '0';
+                setTimeout(function () {
+                    container.style.display = 'none';
+                    element_1.style.display = 'none';
+                    element_1.style.opacity = '1';
+                }, 3000);
+            }, 5000);
         }
         return true;
     };

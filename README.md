@@ -17,6 +17,7 @@ Webanwendung zum Verwalten der Links von Serien mit [TVDB](https://api.thetvdb.c
     - Öffnen der hinterlegten Links
     - Markieren von bestimmten Folgen als "gesehen" / "nicht gesehen"
     - Verschieben von Serien in andere Listen
+    - Markieren von einzelnen Folgen, Seasons oder ganzen Serien als Favorit
 - Zukünftig: Rangliste
 
 ## Requirements
@@ -39,7 +40,7 @@ Webanwendung zum Verwalten der Links von Serien mit [TVDB](https://api.thetvdb.c
 ##### Für TVDB API ()
 - Öffne das Verzeichnis "data"
 - Benenne die Datei "apikey.json.example" in "apikey.json" um und füge deine Daten ein
-- Zur Kommunikation mit er TVDB API wird die Datei "cacert.pem" im data-Verzeichnis benötigt. Sollte
+- Zur Kommunikation mit der TVDB API wird die Datei "cacert.pem" im data-Verzeichnis benötigt. Sollte
 diese mittlerweile veraltet sein, kann sie auf <https://curl.haxx.se/docs/caextract.html> heruntergeladen werden.
 
 Nun kann die Webanwendung unter <http://localhost/organize-your-links-web/src/public/index.html> gestartet werden.

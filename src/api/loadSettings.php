@@ -15,13 +15,15 @@ try {
     $response = [
         'response' => $reader->getContent(),
         'composer_missing' => false,
-        'data_dir_not_writable' => false
+        'data_dir_not_writable' => false,
+        'key_file_missing' => false
     ];
 } catch (Exception $e) {
     $response = [
         'error' => $e->getMessage(),
         'composer_missing' => false,
-        'data_dir_not_writable' => false
+        'data_dir_not_writable' => false,
+        'key_file_missing' => false
     ];
 }
 
