@@ -4,3 +4,4 @@ vendor
 data-backup
 !data-backup/readme.txt
 data
+src/public/js/organize-your-links.js
