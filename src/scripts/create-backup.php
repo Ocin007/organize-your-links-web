@@ -24,6 +24,11 @@ function zipDir(ZipArchive $zip, $dir, $localName) {
 }
 
 $backupDir = __DIR__.'/../../data-backup';
+
+if(!is_dir($backupDir)) {
+    mkdir($backupDir);
+}
+
 $dir = __DIR__.'/../../data';
 $date = date('y-m-d');
 $zipName = $backupDir.'/stand-'.$date.'.zip';

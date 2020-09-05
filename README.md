@@ -44,3 +44,8 @@ Webanwendung zum Verwalten der Links von Serien mit [TVDB](https://api.thetvdb.c
 diese mittlerweile veraltet sein, kann sie auf <https://curl.haxx.se/docs/caextract.html> heruntergeladen werden.
 
 Nun kann die Webanwendung unter <http://localhost/organize-your-links-web/src/public/index.html> gestartet werden.
+
+## Backup erstellen
+
+- Backups von "/data" mit "/src/scripts/create-backup.php" erstellen
+- Landen in "/data-backup" als .zip
