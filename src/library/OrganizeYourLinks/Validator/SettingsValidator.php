@@ -5,16 +5,22 @@ namespace OrganizeYourLinks\OrganizeYourLinks\Validator;
 
 class SettingsValidator implements Validator {
 
+    private $keysTypeMap = [
+        "startPage" => 'integer',
+        "initialDataId" => 'string',
+        "animationSpeedSingle" => 'double',
+        "animationSpeedMulti" => 'double',
+        "minSizeOfPlaylist" => 'integer',
+        "colorBrightness" => 'integer',
+        "titleLanguage" => 'string',
+        "episodeCount" => 'boolean'
+    ];
+
     function validate(array $dataList): array {
         $errors = [];
-        $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'startPage', 'integer'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'initialDataId', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'animationSpeedSingle', 'double'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'animationSpeedMulti', 'double'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'minSizeOfPlaylist', 'integer'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'colorBrightness', 'integer'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'titleLanguage', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($dataList, 'episodeCount', 'boolean'));
+        foreach ($this->keysTypeMap as $key => $type) {
+            $errors = array_merge($errors, $this->checkForKeyAndType($dataList, $key, $type));
+        }
         return $errors;
     }
 
