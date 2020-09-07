@@ -3,6 +3,8 @@
 namespace OrganizeYourLinks;
 
 
+use Exception;
+
 class Settings {
 
     const DEFAULT_START_PAGE = 3;
@@ -14,8 +16,41 @@ class Settings {
     const DEFAULT_TITLE_LANGUAGE = "name_de";
     const DEFAULT_EPISODE_COUNT = false;
 
-    public static function getDefaultSettings() {
+    private $settings;
 
+    private $reader;
+    private $writer;
+    private $settingsFile;
+
+    public function __construct(string $settingsFile, Reader $reader, Writer $writer) {
+        $this->settingsFile = $settingsFile;
+        $this->reader = $reader;
+        $this->writer = $writer;
+    }
+
+    public function loadSettings() {
+        $errorList = [];
+        try {
+            if(!is_file($this->settingsFile)) {
+                $errorList = $this->setDefaultSettings();
+            } else {
+                $this->reader->readFile($this->settingsFile);
+                $this->settings = $this->reader->getContent();
+            }
+        } catch (Exception $e) {
+            $errorList = [$e->getMessage()];
+        }
+        return $errorList;
+    }
+
+    private function setDefaultSettings() {
+        $settings = $this->getDefaultSettings();
+        $this->settings = $settings;
+        $this->writer->updateFile($settings);
+        return $this->writer->getErrorList();
+    }
+
+    public static function getDefaultSettings() {
         return [
             "startPage" => Settings::DEFAULT_START_PAGE,
             "initialDataId" => Settings::DEFAULT_INITIAL_DATA_ID,
