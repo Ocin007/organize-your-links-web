@@ -9,11 +9,13 @@ class TvdbApiTest extends TestCase
     private string $keyFile;
     private string $tokenFile;
     private string $certFile;
+    private string $noTokenFile;
 
     public function setUp(): void
     {
         $this->keyFile = __DIR__.'/../../../../data/apikey.json';
         $this->tokenFile = __DIR__.'/../../../../data/apitoken.json';
+        $this->noTokenFile = __DIR__.'/../../../fixtures/apitoken.json';
         $this->certFile = __DIR__.'/../../../../data/cacert.pem';
     }
 
@@ -22,6 +24,20 @@ class TvdbApiTest extends TestCase
         $subject = new TvdbApi($this->keyFile, $this->tokenFile, $this->certFile);
         $result = $subject->prepare();
         $this->assertEquals(true, $result);
+    }
+
+    public function testGetNewToken()
+    {
+        if(file_exists($this->noTokenFile)) {
+            unlink($this->noTokenFile);
+        }
+        $subject = new TvdbApi($this->keyFile, $this->noTokenFile, $this->certFile);
+        $result = $subject->prepare();
+        $this->assertEquals(true, $result);
+        $this->assertEquals(true, file_exists($this->noTokenFile));
+        if(file_exists($this->noTokenFile)) {
+            unlink($this->noTokenFile);
+        }
     }
 
     public function testSearch()
