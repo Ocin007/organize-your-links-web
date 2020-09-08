@@ -46,4 +46,38 @@ class SorterTest extends TestCase
         $subject->sort($data);
         $this->assertEquals($dataExpected, $data);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testSort3()
+    {
+        $dataExpected = [
+            ['name_de' => '', 'name_en' => '', 'name_jpn' => 'x'],
+            ['name_de' => '', 'name_en' => 'y', 'name_jpn' => 'c'],
+            ['name_de' => 'z', 'name_en' => 'a', 'name_jpn' => 'b']
+        ];
+        $data = [
+            ['name_de' => 'z', 'name_en' => 'a', 'name_jpn' => 'b'],
+            ['name_de' => '', 'name_en' => 'y', 'name_jpn' => 'c'],
+            ['name_de' => '', 'name_en' => '', 'name_jpn' => 'x']
+        ];
+        $subject = new Sorter(["titleLanguage" => "name_de"]);
+        $subject->sort($data);
+        $this->assertEquals($dataExpected, $data);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testSortNoNameFound()
+    {
+        $this->expectExceptionMessage('sorter, no name found');
+        $data = [
+            ['name_de' => '', 'name_en' => 'y', 'name_jpn' => 'c'],
+            ['name_de' => '', 'name_en' => '', 'name_jpn' => '']
+        ];
+        $subject = new Sorter(["titleLanguage" => "name_jpn"]);
+        $subject->sort($data);
+    }
 }
