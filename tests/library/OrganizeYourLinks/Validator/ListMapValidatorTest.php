@@ -9,14 +9,24 @@ class ListMapValidatorTest extends TestCase
     private ListMapValidator $subjectPut;
     private ListMapValidator $subjectUpdate;
     private ListMapValidator $subjectDelete;
+    private ListMapValidator $subjectWrongMode;
 
     public function setUp(): void
     {
         $mapFile = __DIR__.'/../../../fixtures/list-map.json';
         $map = json_decode(file_get_contents($mapFile), true);
+        $this->subjectWrongMode = new ListMapValidator(-1, $map);
         $this->subjectPut = new ListMapValidator(Mode::PUT, $map);
         $this->subjectUpdate = new ListMapValidator(Mode::UPDATE, $map);
         $this->subjectDelete = new ListMapValidator(Mode::DELETE, $map);
+    }
+
+    public function testValidateWrongMode()
+    {
+        $data = [];
+        $expectedErrors = ['mode' => 'invalid'];
+        $errors = $this->subjectWrongMode->validate($data);
+        $this->assertEquals($expectedErrors, $errors);
     }
 
     public function testValidatePutWrong()
@@ -69,11 +79,21 @@ class ListMapValidatorTest extends TestCase
         $this->assertEquals($expectedErrors, $errors);
     }
 
+    public function testValidateUpdateCorrect2()
+    {
+        $data = [
+            'initialDataId' => ''
+        ];
+        $expectedErrors = [];
+        $errors = $this->subjectUpdate->validate($data);
+        $this->assertEquals($expectedErrors, $errors);
+    }
+
     public function testValidateDeleteWrong()
     {
-        $data = ['id40'];
+        $data = ['id40', 'id41'];
         $expectedErrors = [
-            'id' => ['id40']
+            'id' => ['id40', 'id41']
         ];
         $errors = $this->subjectDelete->validate($data);
         $this->assertEquals($expectedErrors, $errors);
