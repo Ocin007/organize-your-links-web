@@ -111,8 +111,7 @@ class NameValidator implements Validator {
 
     private function collectAllNames() {
         $this->allNames = [];
-        $this->reader->readDir($this->listDir);
-        $content = $this->reader->getContent();
+        $content = $this->reader->readDir($this->listDir);
         foreach($content as $index => $data) {
             $this->appendNamesOf($data);
         }

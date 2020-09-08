@@ -8,7 +8,12 @@ use PHPUnit\Framework\TestCase;
 
 class NameValidatorTest extends TestCase
 {
-    private $listDir = __DIR__.'/../../../fixtures/list';
+    private $listDir;
+
+    public function setUp(): void
+    {
+        $this->listDir = __DIR__.'/../../../fixtures/list';
+    }
 
     public function testValidate1()
     {

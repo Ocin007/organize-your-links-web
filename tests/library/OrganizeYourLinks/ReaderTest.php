@@ -6,14 +6,21 @@ use PHPUnit\Framework\TestCase;
 
 class ReaderTest extends TestCase
 {
-    private $listDir = __DIR__.'/../../fixtures/list';
-    private $settingsFile = __DIR__.'/../../fixtures/settings.json';
+    private $listDir;
+    private $settingsFile;
+    private $subject;
+
+    public function setUp() : void
+    {
+        $this->listDir = __DIR__.'/../../fixtures/list';
+        $this->settingsFile = __DIR__.'/../../fixtures/settings.json';
+        $this->subject = new Reader();
+    }
 
     public function testReadDir()
     {
-        $subject = new Reader();
-        $subject->readDir($this->listDir);
-        $result = $subject->getContent();
+
+        $result = $this->subject->readDir($this->listDir);
         $expected = [
             ['id' => 'id1', 'tvdbId' => -1, 'name_de' => 'A File', 'name_en' => 'A File', 'name_jpn' => 'A File'],
             ['id' => 'id2', 'tvdbId' => -1, 'name_de' => 'C File 2', 'name_en' => 'C File 2', 'name_jpn' => 'C File 2'],
@@ -28,9 +35,8 @@ class ReaderTest extends TestCase
      */
     public function testReadFile()
     {
-        $subject = new Reader();
-        $subject->readFile($this->settingsFile);
-        $result = $subject->getContent();
+
+        $result = $this->subject->readFile($this->settingsFile);
         $expected = [
             "startPage" => 4,
             "initialDataId" => "id2",

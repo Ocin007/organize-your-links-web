@@ -7,8 +7,31 @@ use OrganizeYourLinks\OrganizeYourLinks\Validator\Validator;
 
 class DataListValidator implements Validator {
 
-    public function __construct() {
-    }
+    private $keysTypeMapElement = [
+        'id' => 'string',
+        'tvdbId' => 'integer',
+        'list' => 'integer',
+        'rank' => 'integer',
+        'favorite' => 'boolean',
+        'seasons' => 'array',
+    ];
+    private $nameKeys = [
+        'name_de',
+        'name_en',
+        'name_jpn'
+    ];
+    private $keysTypeMapSeason = [
+        'thumbnail' => 'string',
+        'url' => 'string',
+        'favorite' => 'boolean',
+        'episodes' => 'array',
+    ];
+    private $keysTypeMapEpisode = [
+        'name' => 'string',
+        'url' => 'string',
+        'favorite' => 'boolean',
+        'watched' => 'boolean',
+    ];
 
     function validate(array $dataList): array {
         $errors = [];
@@ -23,13 +46,15 @@ class DataListValidator implements Validator {
 
     private function checkElement($data) {
         $errors = [];
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'id', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'tvdbId', 'integer'));
+        $seasonErrors = [];
+        foreach ($this->keysTypeMapElement as $key => $type) {
+            if($key === 'seasons') {
+                $seasonErrors = $this->checkForKeyAndType($data, $key, $type);
+            } else {
+                $errors = array_merge($errors, $this->checkForKeyAndType($data, $key, $type));
+            }
+        }
         $errors = array_merge($errors, $this->checkTitle($data));
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'list', 'integer'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'rank', 'integer'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'favorite', 'boolean'));
-        $seasonErrors = $this->checkForKeyAndType($data, 'seasons', 'array');
         if(count($seasonErrors) === 0) {
             $seasonErrors = $this->validateSeasons($data['seasons']);
             if(count($seasonErrors) !== 0) {
@@ -66,10 +91,14 @@ class DataListValidator implements Validator {
 
     private function validateSeason($season) {
         $errors = [];
-        $errors = array_merge($errors, $this->checkForKeyAndType($season, 'thumbnail', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($season, 'url', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($season, 'favorite', 'boolean'));
-        $episodeErrors = $this->checkForKeyAndType($season, 'episodes', 'array');
+        $episodeErrors = [];
+        foreach ($this->keysTypeMapSeason as $key => $type) {
+            if($key === 'episodes') {
+                $episodeErrors = $this->checkForKeyAndType($season, $key, $type);
+            } else {
+                $errors = array_merge($errors, $this->checkForKeyAndType($season, $key, $type));
+            }
+        }
         if(count($episodeErrors) === 0) {
             $episodeErrors = $this->validateEpisodes($season['episodes']);
             if(count($episodeErrors) !== 0) {
@@ -96,22 +125,20 @@ class DataListValidator implements Validator {
 
     private function validateEpisode($episode) {
         $errors = [];
-        $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'name', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'url', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'favorite', 'boolean'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($episode, 'watched', 'boolean'));
+        foreach ($this->keysTypeMapEpisode as $key => $type) {
+            $errors = array_merge($errors, $this->checkForKeyAndType($episode, $key, $type));
+        }
         return $errors;
     }
 
     private function checkTitle($data) {
         $errors = [];
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_de', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_en', 'string'));
-        $errors = array_merge($errors, $this->checkForKeyAndType($data, 'name_jpn', 'string'));
-        $boolDE = $this->stringHasOnlyWhiteSpace($data['name_de']);
-        $boolEN = $this->stringHasOnlyWhiteSpace($data['name_en']);
-        $boolJPN = $this->stringHasOnlyWhiteSpace($data['name_jpn']);
-        if(count($errors) === 0 && $boolDE && $boolEN && $boolJPN) {
+        $bool = true;
+        foreach ($this->nameKeys as $nameKey) {
+            $errors = array_merge($errors, $this->checkForKeyAndType($data, $nameKey, 'string'));
+            $bool &= $this->stringHasOnlyWhiteSpace($data[$nameKey]);
+        }
+        if(count($errors) === 0 && $bool) {
             $errors = ['name' => 'no name given'];
         }
         return $errors;

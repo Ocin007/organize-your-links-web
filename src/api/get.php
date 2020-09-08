@@ -12,11 +12,9 @@ header('Access-Control-Allow-Origin: *');
 
 try {
     $reader = new Reader();
-    $reader->readDir(LIST_DIR);
-    $content = $reader->getContent();
+    $content = $reader->readDir(LIST_DIR);
 
-    $reader->readFile(SETTINGS_FILE);
-    $settings = $reader->getContent();
+    $settings = $reader->readFile(SETTINGS_FILE);
 
     $sorter = new Sorter($settings);
     $sorter->sort($content);

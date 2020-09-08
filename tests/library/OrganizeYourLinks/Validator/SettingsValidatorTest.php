@@ -7,6 +7,12 @@ use PHPUnit\Framework\TestCase;
 
 class SettingsValidatorTest extends TestCase
 {
+    private $subject;
+
+    public function setUp(): void
+    {
+        $this->subject = new SettingsValidator();
+    }
 
     public function testValidateWrong()
     {
@@ -23,8 +29,7 @@ class SettingsValidatorTest extends TestCase
             "titleLanguage" => 'missing',
             "episodeCount" => 'missing'
         ];
-        $subject = new SettingsValidator();
-        $errors = $subject->validate($data);
+        $errors = $this->subject->validate($data);
         $this->assertEquals($expectedErrors, $errors);
     }
 
@@ -41,8 +46,7 @@ class SettingsValidatorTest extends TestCase
             "episodeCount" => true
         ];
         $expectedErrors = [];
-        $subject = new SettingsValidator();
-        $errors = $subject->validate($data);
+        $errors = $this->subject->validate($data);
         $this->assertEquals($expectedErrors, $errors);
     }
 }

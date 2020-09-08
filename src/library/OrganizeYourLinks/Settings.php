@@ -34,8 +34,7 @@ class Settings {
             if(!is_file($this->settingsFile)) {
                 $errorList = $this->setDefaultSettings();
             } else {
-                $this->reader->readFile($this->settingsFile);
-                $this->settings = $this->reader->getContent();
+                $this->settings = $this->reader->readFile($this->settingsFile);
             }
         } catch (Exception $e) {
             $errorList = [$e->getMessage()];

@@ -11,9 +11,8 @@ header('Access-Control-Allow-Origin: *');
 
 try {
     $reader = new Reader();
-    $reader->readFile(SETTINGS_FILE);
     $response = [
-        'response' => $reader->getContent(),
+        'response' => $reader->readFile(SETTINGS_FILE),
         'composer_missing' => false,
         'data_dir_not_writable' => false,
         'key_file_missing' => false

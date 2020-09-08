@@ -6,9 +6,16 @@ use PHPUnit\Framework\TestCase;
 
 class TvdbApiTest extends TestCase
 {
-    private $keyFile = __DIR__.'/../../../../data/apikey.json';
-    private $tokenFile = __DIR__.'/../../../../data/apitoken.json';
-    private $certFile = __DIR__.'/../../../../data/cacert.pem';
+    private $keyFile;
+    private $tokenFile;
+    private $certFile;
+
+    public function setUp(): void
+    {
+        $this->keyFile = __DIR__.'/../../../../data/apikey.json';
+        $this->tokenFile = __DIR__.'/../../../../data/apitoken.json';
+        $this->certFile = __DIR__.'/../../../../data/cacert.pem';
+    }
 
     public function testPrepare()
     {
