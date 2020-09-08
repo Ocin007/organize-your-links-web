@@ -10,11 +10,13 @@ class ReaderTest extends TestCase
     private string $listDir;
     private string $settingsFile;
     private Reader $subject;
+    private string $noValidJsonFile;
 
     public function setUp() : void
     {
         $this->listDir = __DIR__.'/../../fixtures/list';
         $this->settingsFile = __DIR__.'/../../fixtures/settings.json';
+        $this->noValidJsonFile = __DIR__.'/../../fixtures/noValidJson.json';
         $this->subject = new Reader();
     }
 
@@ -36,7 +38,6 @@ class ReaderTest extends TestCase
      */
     public function testReadFile()
     {
-
         $result = $this->subject->readFile($this->settingsFile);
         $expected = [
             "startPage" => 4,
@@ -49,5 +50,14 @@ class ReaderTest extends TestCase
             "episodeCount" => true
         ];
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testReadFileNotExist()
+    {
+        $this->expectExceptionMessage("could not parse json");
+        $this->subject->readFile($this->noValidJsonFile);
     }
 }
