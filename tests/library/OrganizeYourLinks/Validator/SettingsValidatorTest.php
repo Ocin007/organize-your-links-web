@@ -2,12 +2,11 @@
 
 namespace OrganizeYourLinks\Validator;
 
-use OrganizeYourLinks\OrganizeYourLinks\Validator\SettingsValidator;
 use PHPUnit\Framework\TestCase;
 
 class SettingsValidatorTest extends TestCase
 {
-    private $subject;
+    private SettingsValidator $subject;
 
     public function setUp(): void
     {

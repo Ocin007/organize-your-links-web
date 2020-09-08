@@ -7,7 +7,7 @@ use Exception;
 
 class Reader {
 
-    public function readDir($dir) {
+    public function readDir(string $dir) : array {
         $dataArray = [];
         $fileArray = scandir($dir);
         for($i = 0; $i < count($fileArray); $i++) {
@@ -22,10 +22,10 @@ class Reader {
 
     /**
      * @param $file
-     * @return mixed
+     * @return array
      * @throws Exception
      */
-    public function readFile($file) {
+    public function readFile(string $file) : array {
         $data = file_get_contents($file);
         if($data === false) {
             throw new Exception('could not read file');

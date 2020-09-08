@@ -2,14 +2,14 @@
 
 namespace OrganizeYourLinks;
 
-use OrganizeYourLinks\OrganizeYourLinks\Sorter;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class SorterTest extends TestCase
 {
 
-    private $dataSet1;
-    private $dataSet2;
+    private array $dataSet1;
+    private array $dataSet2;
 
     public function setUp(): void
     {
@@ -23,6 +23,9 @@ class SorterTest extends TestCase
         ];
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSort1()
     {
         $dataExpected = $this->dataSet1;
@@ -32,6 +35,9 @@ class SorterTest extends TestCase
         $this->assertEquals($dataExpected, $data);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSort2()
     {
         $dataExpected = $this->dataSet2;

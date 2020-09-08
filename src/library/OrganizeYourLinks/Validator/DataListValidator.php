@@ -3,11 +3,9 @@
 namespace OrganizeYourLinks\Validator;
 
 
-use OrganizeYourLinks\OrganizeYourLinks\Validator\Validator;
-
 class DataListValidator implements Validator {
 
-    private $keysTypeMapElement = [
+    private array $keysTypeMapElement = [
         'id' => 'string',
         'tvdbId' => 'integer',
         'list' => 'integer',
@@ -15,25 +13,25 @@ class DataListValidator implements Validator {
         'favorite' => 'boolean',
         'seasons' => 'array',
     ];
-    private $nameKeys = [
+    private array $nameKeys = [
         'name_de',
         'name_en',
         'name_jpn'
     ];
-    private $keysTypeMapSeason = [
+    private array $keysTypeMapSeason = [
         'thumbnail' => 'string',
         'url' => 'string',
         'favorite' => 'boolean',
         'episodes' => 'array',
     ];
-    private $keysTypeMapEpisode = [
+    private array $keysTypeMapEpisode = [
         'name' => 'string',
         'url' => 'string',
         'favorite' => 'boolean',
         'watched' => 'boolean',
     ];
 
-    function validate(array $dataList): array {
+    function validate(array $dataList) : array {
         $errors = [];
         foreach ($dataList as $index => $data) {
             $subErrors = $this->checkElement($data);
@@ -44,7 +42,7 @@ class DataListValidator implements Validator {
         return $errors;
     }
 
-    private function checkElement($data) {
+    private function checkElement(array $data) : array {
         $errors = [];
         $seasonErrors = [];
         foreach ($this->keysTypeMapElement as $key => $type) {
@@ -68,7 +66,7 @@ class DataListValidator implements Validator {
         return $errors;
     }
 
-    private function checkForKeyAndType($data, $key, $type) {
+    private function checkForKeyAndType(array $data, string $key, string $type) : array {
         $errors = [];
         if(!isset($data[$key])) {
             $errors[$key] = 'missing';
@@ -78,7 +76,7 @@ class DataListValidator implements Validator {
         return $errors;
     }
 
-    private function validateSeasons(array $seasons) {
+    private function validateSeasons(array $seasons) : array {
         $errors = [];
         foreach($seasons as $index => $season) {
             $subErrors = $this->validateSeason($season);
@@ -89,7 +87,7 @@ class DataListValidator implements Validator {
         return $errors;
     }
 
-    private function validateSeason($season) {
+    private function validateSeason(array $season) : array {
         $errors = [];
         $episodeErrors = [];
         foreach ($this->keysTypeMapSeason as $key => $type) {
@@ -112,7 +110,7 @@ class DataListValidator implements Validator {
         return $errors;
     }
 
-    private function validateEpisodes($episodes) {
+    private function validateEpisodes(array $episodes) : array {
         $errors = [];
         foreach($episodes as $index => $episode) {
             $subErrors = $this->validateEpisode($episode);
@@ -123,7 +121,7 @@ class DataListValidator implements Validator {
         return $errors;
     }
 
-    private function validateEpisode($episode) {
+    private function validateEpisode(array $episode) : array {
         $errors = [];
         foreach ($this->keysTypeMapEpisode as $key => $type) {
             $errors = array_merge($errors, $this->checkForKeyAndType($episode, $key, $type));
@@ -131,7 +129,7 @@ class DataListValidator implements Validator {
         return $errors;
     }
 
-    private function checkTitle($data) {
+    private function checkTitle(array $data) : array {
         $errors = [];
         $bool = true;
         foreach ($this->nameKeys as $nameKey) {
@@ -144,7 +142,7 @@ class DataListValidator implements Validator {
         return $errors;
     }
 
-    private function stringHasOnlyWhiteSpace($str) {
+    private function stringHasOnlyWhiteSpace(?string $str) : bool {
         $strArray = str_split($str, 1);
         foreach($strArray as $char) {
             if($char !== ' ' && $char !== '') {

@@ -3,21 +3,23 @@
 namespace OrganizeYourLinks;
 
 
+use Exception;
+
 class Writer {
 
-    private $directory;
-    private $map;
-    private $idList;
-    private $errorList;
+    private string $directory;
+    private array $map;
+    private array $idList;
+    private array $errorList;
 
-    public function __construct($directory, $map) {
+    public function __construct(string $directory, array $map) {
         $this->directory = $directory;
         $this->map = $map;
         $this->idList = [];
         $this->errorList = [];
     }
 
-    public function updateFiles($dataList) {
+    public function updateFiles(array $dataList) : void {
         foreach ($dataList as $data) {
             try {
                 $filename = $this->directory.'/'.$this->map[$data['id']];
@@ -27,24 +29,24 @@ class Writer {
                 } else {
                     $this->idList[] = $data['id'];
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->appendIdToErrorList($data['id']);
             }
         }
     }
 
-    public function updateFile($dataList) {
+    public function updateFile(array $dataList) : void {
         try {
             $dataStr = json_encode($dataList, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
             if(file_put_contents($this->directory, $dataStr) === false) {
                 $this->errorList[] = 'cannot write settings';
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->errorList[] = $e->getMessage();
         }
     }
 
-    public function createNewFiles($dataListMap, $fileListMap) {
+    public function createNewFiles(array $dataListMap, string $fileListMap) : void {
         foreach ($dataListMap as $file => $data) {
             $id = uniqid('', true);
             $data['id'] = $id;
@@ -56,15 +58,15 @@ class Writer {
         file_put_contents($fileListMap, $mapStr);
     }
 
-    public function getIdListOfUpdatedFiles() {
+    public function getIdListOfUpdatedFiles() : array {
         return $this->idList;
     }
 
-    public function getErrorList() {
+    public function getErrorList() : array {
         return $this->errorList;
     }
 
-    private function appendIdToErrorList($id) {
+    private function appendIdToErrorList(string $id) : void {
         if($this->errorList === []) {
             $this->errorList['id'] = [$id];
         } else {
@@ -72,7 +74,7 @@ class Writer {
         }
     }
 
-    public function deleteFiles($idList, $fileListMap) {
+    public function deleteFiles(array $idList, string $fileListMap) : void {
         foreach ($idList as $id) {
             unlink($this->directory.'/'.$this->map[$id]);
             unset($this->map[$id]);

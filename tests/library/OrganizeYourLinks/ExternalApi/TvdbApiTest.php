@@ -6,9 +6,9 @@ use PHPUnit\Framework\TestCase;
 
 class TvdbApiTest extends TestCase
 {
-    private $keyFile;
-    private $tokenFile;
-    private $certFile;
+    private string $keyFile;
+    private string $tokenFile;
+    private string $certFile;
 
     public function setUp(): void
     {

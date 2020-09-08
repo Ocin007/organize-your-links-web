@@ -5,7 +5,7 @@ namespace OrganizeYourLinks\Generator;
 
 class FileNameGenerator {
 
-    function generateFileName($string) {
+    function generateFileName(string $string) : string {
         $fileName = strtolower($string);
         $fileName = preg_replace('/[\s]+/', '-', $fileName);
         $fileNameArray = str_split($fileName, 1);

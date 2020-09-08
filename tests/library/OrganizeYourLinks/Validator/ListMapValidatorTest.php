@@ -6,20 +6,17 @@ use PHPUnit\Framework\TestCase;
 
 class ListMapValidatorTest extends TestCase
 {
-    private $mapFile;
-    private $map;
-
-    private $subjectPut;
-    private $subjectUpdate;
-    private $subjectDelete;
+    private ListMapValidator $subjectPut;
+    private ListMapValidator $subjectUpdate;
+    private ListMapValidator $subjectDelete;
 
     public function setUp(): void
     {
-        $this->mapFile = __DIR__.'/../../../fixtures/list-map.json';
-        $this->map = json_decode(file_get_contents($this->mapFile), true);
-        $this->subjectPut = new ListMapValidator(Mode::PUT, $this->map);
-        $this->subjectUpdate = new ListMapValidator(Mode::UPDATE, $this->map);
-        $this->subjectDelete = new ListMapValidator(Mode::DELETE, $this->map);
+        $mapFile = __DIR__.'/../../../fixtures/list-map.json';
+        $map = json_decode(file_get_contents($mapFile), true);
+        $this->subjectPut = new ListMapValidator(Mode::PUT, $map);
+        $this->subjectUpdate = new ListMapValidator(Mode::UPDATE, $map);
+        $this->subjectDelete = new ListMapValidator(Mode::DELETE, $map);
     }
 
     public function testValidatePutWrong()

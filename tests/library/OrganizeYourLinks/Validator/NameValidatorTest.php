@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class NameValidatorTest extends TestCase
 {
-    private $listDir;
+    private string $listDir;
 
     public function setUp(): void
     {

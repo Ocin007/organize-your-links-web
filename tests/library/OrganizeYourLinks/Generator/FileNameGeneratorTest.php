@@ -5,7 +5,7 @@ use PHPUnit\Framework\TestCase;
 
 class FileNameGeneratorTest extends TestCase
 {
-    private $subject;
+    private FileNameGenerator $subject;
 
     public function setUp(): void
     {

@@ -16,11 +16,11 @@ class Settings {
     const DEFAULT_TITLE_LANGUAGE = "name_de";
     const DEFAULT_EPISODE_COUNT = false;
 
-    private $settings;
+    private array $settings;
 
-    private $reader;
-    private $writer;
-    private $settingsFile;
+    private Reader $reader;
+    private Writer $writer;
+    private string $settingsFile;
 
     public function __construct(string $settingsFile, Reader $reader, Writer $writer) {
         $this->settingsFile = $settingsFile;
@@ -28,7 +28,7 @@ class Settings {
         $this->writer = $writer;
     }
 
-    public function loadSettings() {
+    public function loadSettings() : array {
         $errorList = [];
         try {
             if(!is_file($this->settingsFile)) {
@@ -42,14 +42,14 @@ class Settings {
         return $errorList;
     }
 
-    private function setDefaultSettings() {
+    private function setDefaultSettings() : array {
         $settings = $this->getDefaultSettings();
         $this->settings = $settings;
         $this->writer->updateFile($settings);
         return $this->writer->getErrorList();
     }
 
-    public static function getDefaultSettings() {
+    public static function getDefaultSettings() : array {
         return [
             "startPage" => Settings::DEFAULT_START_PAGE,
             "initialDataId" => Settings::DEFAULT_INITIAL_DATA_ID,

@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/includes/checkForCorrectInstallation.php';
 
-use OrganizeYourLinks\OrganizeYourLinks\Sorter;
+use OrganizeYourLinks\Sorter;
 use OrganizeYourLinks\Reader;
 
 error_reporting(E_ALL);

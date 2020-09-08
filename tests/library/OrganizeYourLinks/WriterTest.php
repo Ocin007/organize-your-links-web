@@ -6,9 +6,9 @@ use PHPUnit\Framework\TestCase;
 
 class WriterTest extends TestCase
 {
-    private $listDir;
-    private $settings;
-    private $mapFile;
+    private string $listDir;
+    private string $settings;
+    private string $mapFile;
     private $map;
 
     public function setUp(): void

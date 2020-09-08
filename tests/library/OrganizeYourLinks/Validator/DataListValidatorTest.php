@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 class DataListValidatorTest extends TestCase
 {
-    private $subject;
+    private DataListValidator $subject;
 
     public function setUp(): void
     {

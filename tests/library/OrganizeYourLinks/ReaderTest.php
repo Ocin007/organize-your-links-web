@@ -2,13 +2,14 @@
 
 namespace OrganizeYourLinks;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class ReaderTest extends TestCase
 {
-    private $listDir;
-    private $settingsFile;
-    private $subject;
+    private string $listDir;
+    private string $settingsFile;
+    private Reader $subject;
 
     public function setUp() : void
     {
@@ -31,7 +32,7 @@ class ReaderTest extends TestCase
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function testReadFile()
     {

@@ -4,30 +4,27 @@ namespace OrganizeYourLinks\Validator;
 
 
 use OrganizeYourLinks\Generator\FileNameGenerator;
-use OrganizeYourLinks\OrganizeYourLinks\Validator\Validator;
 use OrganizeYourLinks\Reader;
 
 class NameValidator implements Validator {
 
-    private $reader;
-    private $fileNameGenerator;
-    private $listDir;
-    private $dataList;
-    private $dataListMap = [];
-    private $allNames = [];
+    private Reader $reader;
+    private FileNameGenerator $fileNameGenerator;
+    private string $listDir;
+    private array $dataListMap = [];
+    private array $allNames = [];
 
-    public function __construct(Reader $reader, FileNameGenerator $fileNameGenerator, $listDir) {
+    public function __construct(Reader $reader, FileNameGenerator $fileNameGenerator, string $listDir) {
         $this->reader = $reader;
         $this->fileNameGenerator = $fileNameGenerator;
         $this->listDir = $listDir;
     }
 
-    function getDataListMap() {
+    function getDataListMap() : array {
         return $this->dataListMap;
     }
 
-    function validate(array $dataList): array {
-        $this->dataList = $dataList;
+    function validate(array $dataList) : array {
         $this->collectAllNames();
         $errors = [];
         foreach ($dataList as $index => $data) {
@@ -39,7 +36,7 @@ class NameValidator implements Validator {
         return $errors;
     }
 
-    private function checkElement($data) {
+    private function checkElement(array $data) : array {
         $errors = [];
         $errors = array_merge($errors, $this->checkForDublicateName($data));
         $errors = array_merge($errors, $this->checkForAlreadyExistingFiles($data));
@@ -49,7 +46,7 @@ class NameValidator implements Validator {
         return $errors;
     }
 
-    private function checkForDublicateName($data) {
+    private function checkForDublicateName(array $data) : array {
         $errors = [];
         $localNames = [];
         $bool1 = $data['name_de'] === '' || !in_array($data['name_de'], $this->allNames);
@@ -88,7 +85,7 @@ class NameValidator implements Validator {
         return $errors;
     }
 
-    private function checkForAlreadyExistingFiles($data) {
+    private function checkForAlreadyExistingFiles(array $data) : array {
         $errors = [];
         $generatedFile = $this->generateFileName($data);
         if($generatedFile === '' || file_exists($this->listDir.'/'.$generatedFile)) {
@@ -97,7 +94,7 @@ class NameValidator implements Validator {
         return $errors;
     }
 
-    private function generateFileName($data) {
+    private function generateFileName(array $data) : string {
         $generatedFile = '';
         if($data['name_de'] !== '') {
             $generatedFile = $this->fileNameGenerator->generateFileName($data['name_de']);
@@ -109,7 +106,7 @@ class NameValidator implements Validator {
         return $generatedFile;
     }
 
-    private function collectAllNames() {
+    private function collectAllNames() : void {
         $this->allNames = [];
         $content = $this->reader->readDir($this->listDir);
         foreach($content as $index => $data) {
@@ -117,7 +114,7 @@ class NameValidator implements Validator {
         }
     }
 
-    private function appendNamesOf($data) {
+    private function appendNamesOf(array $data) : void {
         if($data['name_de'] !== '' && !in_array($data['name_de'], $this->allNames)) {
             $this->allNames[] = $data['name_de'];
         }
@@ -129,7 +126,7 @@ class NameValidator implements Validator {
         }
     }
 
-    private function appendToDataListMap($data) {
+    private function appendToDataListMap(array $data) : array {
         $fileName = $this->generateFileName($data);
         if(isset($this->dataListMap[$fileName])) {
             return ['name-file' => 'file '.$fileName.' already exists'];
