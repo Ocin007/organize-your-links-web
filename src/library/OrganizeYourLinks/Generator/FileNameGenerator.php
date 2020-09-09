@@ -5,13 +5,9 @@ namespace OrganizeYourLinks\Generator;
 
 class FileNameGenerator {
 
-    public function __construct() {
-
-    }
-
-    function generateFileName($string) {
+    function generateFileName(string $string) : string {
         $fileName = strtolower($string);
-        $fileName = preg_replace('/[\s]{1,}/', '-', $fileName);
+        $fileName = preg_replace('/[\s]+/', '-', $fileName);
         $fileNameArray = str_split($fileName, 1);
         foreach ($fileNameArray as $char) {
             if(!preg_match('/[a-z0-9-]/', $char)) {
@@ -20,6 +16,4 @@ class FileNameGenerator {
         }
         return $fileName.'.json';
     }
-
-
 }

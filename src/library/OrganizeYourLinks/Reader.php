@@ -3,42 +3,37 @@
 namespace OrganizeYourLinks;
 
 
+use Exception;
+
 class Reader {
 
-    private $dataArray = [];
-
-    public function __construct() {}
-
-    public function readDir($dir) {
-        $this->dataArray = [];
+    public function readDir(string $dir) : array {
+        $dataArray = [];
         $fileArray = scandir($dir);
         for($i = 0; $i < count($fileArray); $i++) {
             $file = $fileArray[$i];
             if($file !== '.' && $file !== '..') {
                 $data = file_get_contents($dir.'/'.$file);
-                $this->dataArray[] = json_decode($data, true);
+                $dataArray[] = json_decode($data, true);
             }
         }
+        return $dataArray;
     }
 
     /**
      * @param $file
-     * @throws \Exception
+     * @return array
+     * @throws Exception
      */
-    public function readFile($file) {
+    public function readFile(string $file) : array {
         $data = file_get_contents($file);
         if($data === false) {
-            throw new \Exception('could not read file');
+            throw new Exception('could not read file');
         }
         $content = json_decode($data, true);
         if($content === null) {
-            throw new \Exception('could not parse json');
+            throw new Exception('could not parse json');
         }
-        $this->dataArray = $content;
+        return $content;
     }
-
-    public function getContent() {
-        return $this->dataArray;
-    }
-
 }

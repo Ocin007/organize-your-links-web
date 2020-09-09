@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/includes/checkForCorrectInstallation.php';
 
-use OrganizeYourLinks\OrganizeYourLinks\Sorter;
+use OrganizeYourLinks\Sorter;
 use OrganizeYourLinks\Reader;
 
 error_reporting(E_ALL);
@@ -12,11 +12,9 @@ header('Access-Control-Allow-Origin: *');
 
 try {
     $reader = new Reader();
-    $reader->readDir(LIST_DIR);
-    $content = $reader->getContent();
+    $content = $reader->readDir(LIST_DIR);
 
-    $reader->readFile(SETTINGS_FILE);
-    $settings = $reader->getContent();
+    $settings = $reader->readFile(SETTINGS_FILE);
 
     $sorter = new Sorter($settings);
     $sorter->sort($content);

@@ -3,19 +3,17 @@
 namespace OrganizeYourLinks\Validator;
 
 
-use OrganizeYourLinks\OrganizeYourLinks\Validator\Validator;
-
 class ListMapValidator implements Validator {
 
-    private $mode;
-    private $map;
+    private int $mode;
+    private array $map;
 
     public function __construct(int $mode, array $map) {
         $this->mode = $mode;
         $this->map = $map;
     }
 
-    function validate(array $dataList): array {
+    function validate(array $dataList) : array {
         switch ($this->mode) {
             case Mode::PUT: return $this->validatePut($dataList);
             case Mode::UPDATE: return $this->validateUpdate($dataList);
@@ -24,7 +22,7 @@ class ListMapValidator implements Validator {
         }
     }
 
-    private function validatePut($dataList) {
+    private function validatePut(array $dataList) : array {
         $errors = [];
         foreach($dataList as $data) {
             if(!isset($this->map[$data['id']])) {
@@ -38,7 +36,7 @@ class ListMapValidator implements Validator {
         return $errors;
     }
 
-    private function validateDelete($dataList) {
+    private function validateDelete(array $dataList) : array {
         $errors = [];
         foreach($dataList as $data) {
             if(!isset($this->map[$data])) {
@@ -52,7 +50,7 @@ class ListMapValidator implements Validator {
         return $errors;
     }
 
-    private function validateUpdate($dataList) {
+    private function validateUpdate(array $dataList) : array {
         $errors = [];
         if($dataList['initialDataId'] === '') {
             return [];

@@ -30,9 +30,7 @@ Webanwendung zum Verwalten der Links von Serien mit [TVDB](https://api.thetvdb.c
 
 - Lege dieses Repo in das Root-Verzeichnis des Webservers ab
     - per Konsole: `git clone https://github.com/Ocin007/organize-your-links-web.git`
-- Öffne im Repository die Konsole und führe folgenden Befehl aus:
-    - ohne PHPUnit: `composer install --no-dev`
-    - mit PHPUnit: `composer install`
+- Führe die Datei `src/scripts/install.cmd` aus.
 - Statte das Verzeichnis "data" mit Schreibrechten aus:
     - Rechtsklick => Eigenschaften => Sicherheit => Bearbeiten...
     - "Users" und "IIS_IUSRS" Berechtigung für "Ändern" und "Schreiben" geben

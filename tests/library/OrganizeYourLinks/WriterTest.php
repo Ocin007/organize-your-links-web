@@ -6,14 +6,16 @@ use PHPUnit\Framework\TestCase;
 
 class WriterTest extends TestCase
 {
-    private $listDir = __DIR__.'/../../fixtures/list';
-    private $settings = __DIR__.'/../../fixtures/settings.json';
-    private $mapFile = __DIR__.'/../../fixtures/list-map.json';
+    private string $listDir;
+    private string $settings;
+    private string $mapFile;
     private $map;
 
-    function __construct(string $name = null, array $data = [], string $dataName = '')
+    public function setUp(): void
     {
-        parent::__construct($name, $data, $dataName);
+        $this->listDir = __DIR__.'/../../fixtures/list';
+        $this->settings = __DIR__.'/../../fixtures/settings.json';
+        $this->mapFile = __DIR__.'/../../fixtures/list-map.json';
         $this->map = json_decode(file_get_contents($this->mapFile), true);
     }
 

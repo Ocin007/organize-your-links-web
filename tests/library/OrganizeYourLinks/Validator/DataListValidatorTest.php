@@ -6,12 +6,18 @@ use PHPUnit\Framework\TestCase;
 
 class DataListValidatorTest extends TestCase
 {
+    private DataListValidator $subject;
+
+    public function setUp(): void
+    {
+        $this->subject = new DataListValidator();
+    }
+
     public function testValidateEmpty()
     {
         $testData = [];
         $expectedErrors = [];
-        $subject = new DataListValidator();
-        $errors = $subject->validate($testData);
+        $errors = $this->subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
 
@@ -42,8 +48,7 @@ class DataListValidatorTest extends TestCase
                 'seasons' => 'missing'
             ]
         ];
-        $subject = new DataListValidator();
-        $errors = $subject->validate($testData);
+        $errors = $this->subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
 
@@ -75,8 +80,7 @@ class DataListValidatorTest extends TestCase
                 'seasons' => 'wrong type'
             ]
         ];
-        $subject = new DataListValidator();
-        $errors = $subject->validate($testData);
+        $errors = $this->subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
 
@@ -96,8 +100,7 @@ class DataListValidatorTest extends TestCase
             ]
         ];
         $expectedErrors = [];
-        $subject = new DataListValidator();
-        $errors = $subject->validate($testData);
+        $errors = $this->subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
 
@@ -129,8 +132,7 @@ class DataListValidatorTest extends TestCase
                 ]
             ]
         ];
-        $subject = new DataListValidator();
-        $errors = $subject->validate($testData);
+        $errors = $this->subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
 
@@ -172,8 +174,7 @@ class DataListValidatorTest extends TestCase
                 ]
             ]
         ];
-        $subject = new DataListValidator();
-        $errors = $subject->validate($testData);
+        $errors = $this->subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
 
@@ -268,8 +269,7 @@ class DataListValidatorTest extends TestCase
                 ]
             ]
         ];
-        $subject = new DataListValidator();
-        $errors = $subject->validate($testData);
+        $errors = $this->subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
 
@@ -378,8 +378,7 @@ class DataListValidatorTest extends TestCase
             ]
         ];
         $expectedErrors = [];
-        $subject = new DataListValidator();
-        $errors = $subject->validate($testData);
+        $errors = $this->subject->validate($testData);
         $this->assertEquals($expectedErrors, $errors);
     }
 }

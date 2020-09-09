@@ -1,11 +1,11 @@
 <?php
 
-namespace OrganizeYourLinks\OrganizeYourLinks\Validator;
+namespace OrganizeYourLinks\Validator;
 
 
 class SettingsValidator implements Validator {
 
-    private $keysTypeMap = [
+    private array $keysTypeMap = [
         "startPage" => 'integer',
         "initialDataId" => 'string',
         "animationSpeedSingle" => 'double',
@@ -16,7 +16,7 @@ class SettingsValidator implements Validator {
         "episodeCount" => 'boolean'
     ];
 
-    function validate(array $dataList): array {
+    function validate(array $dataList) : array {
         $errors = [];
         foreach ($this->keysTypeMap as $key => $type) {
             $errors = array_merge($errors, $this->checkForKeyAndType($dataList, $key, $type));
@@ -24,7 +24,7 @@ class SettingsValidator implements Validator {
         return $errors;
     }
 
-    private function checkForKeyAndType($data, $key, $type) {
+    private function checkForKeyAndType(array $data, string $key, string $type) : array {
         $errors = [];
         if(!isset($data[$key])) {
             $errors[$key] = 'missing';

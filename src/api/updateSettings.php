@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/includes/checkForCorrectInstallation.php';
 
-use OrganizeYourLinks\OrganizeYourLinks\Validator\SettingsValidator;
+use OrganizeYourLinks\Validator\SettingsValidator;
 use OrganizeYourLinks\Validator\ListMapValidator;
 use OrganizeYourLinks\Validator\Mode;
 use OrganizeYourLinks\Writer;

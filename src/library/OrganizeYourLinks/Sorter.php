@@ -1,18 +1,24 @@
 <?php
 
-namespace OrganizeYourLinks\OrganizeYourLinks;
+namespace OrganizeYourLinks;
 
+
+use Exception;
 
 class Sorter {
 
-    private $settings;
-    private $keys = ['name_de', 'name_en', 'name_jpn'];
+    private array $settings;
+    private array $keys = ['name_de', 'name_en', 'name_jpn'];
 
-    function __construct($settings) {
+    function __construct(array $settings) {
         $this->settings = $settings;
     }
 
-    public function sort(&$content) {
+    /**
+     * @param array $content
+     * @throws Exception
+     */
+    public function sort(array &$content) {
         usort($content, function ($a, $b) {
             $nameA = strtolower($this->getName($a));
             $nameB = strtolower($this->getName($b));
@@ -22,10 +28,10 @@ class Sorter {
 
     /**
      * @param $a
-     * @return mixed
-     * @throws \Exception
+     * @return string
+     * @throws Exception
      */
-    private function getName($a) {
+    private function getName(array $a) : string {
         if($a[$this->settings['titleLanguage']] !== '') {
             return $a[$this->settings['titleLanguage']];
         }
@@ -34,6 +40,6 @@ class Sorter {
                 return $a[$key];
             }
         }
-        throw new \Exception('sorter, no name found');
+        throw new Exception('sorter, no name found');
     }
 }

@@ -1,9 +1,9 @@
 <?php
 
-namespace OrganizeYourLinks\OrganizeYourLinks\Validator;
+namespace OrganizeYourLinks\Validator;
 
 
 interface Validator
 {
-    function validate(array $dataList): array;
+    function validate(array $dataList) : array;
 }

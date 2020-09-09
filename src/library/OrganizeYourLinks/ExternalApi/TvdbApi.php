@@ -5,34 +5,34 @@ namespace OrganizeYourLinks\ExternalApi;
 
 class TvdbApi {
 
-    private static $timeDiff = 82800;
-    private static $languages = ['de', 'en', 'ja'];
-    private static $languagesEp = ['en', 'de'];
-    private static $apiUrl = 'https://api.thetvdb.com';
-    private static $tvdbImgagesUrl = 'https://www.thetvdb.com/banners/';
-    private static $rootLogin = '/login';
-    private static $rootSearch = '/search/series';
-    private static $rootEpImg1 = '/series/';
-    private static $rootEp2 = '/episodes';
-    private static $rootImg2 = '/images/query';
+    private static int $timeDiff = 82800;
+    private static array $languages = ['de', 'en', 'ja'];
+    private static array $languagesEp = ['en', 'de'];
+    private static string $apiUrl = 'https://api.thetvdb.com';
+    private static string $tvdbImgagesUrl = 'https://www.thetvdb.com/banners/';
+    private static string $rootLogin = '/login';
+    private static string $rootSearch = '/search/series';
+    private static string $rootEpImg1 = '/series/';
+    private static string $rootEp2 = '/episodes';
+    private static string $rootImg2 = '/images/query';
 
     private $key;
-    private $token;
-    private $tokenFile;
-    private $certFile;
-    private $content = [];
+    private string $token;
+    private string $tokenFile;
+    private string $certFile;
+    private array $content = [];
 
-    public function __construct($keyFile, $tokenFile, $certFile) {
+    public function __construct(string $keyFile, string $tokenFile, string $certFile) {
         $this->key = file_get_contents($keyFile);
         $this->tokenFile = $tokenFile;
         $this->certFile = $certFile;
     }
 
-    public function getContent() {
+    public function getContent() : array {
         return $this->content;
     }
 
-    public function prepare() {
+    public function prepare() : bool {
         if(!file_exists($this->tokenFile)) {
             return $this->getNewToken();
         }
@@ -46,7 +46,7 @@ class TvdbApi {
         return true;
     }
 
-    public function search($string) {
+    public function search($string) : bool {
         $foundSomething = false;
         $urlAndQuerry = TvdbApi::$apiUrl . TvdbApi::$rootSearch . '?' . http_build_query([
                 'name' => $string
@@ -63,7 +63,7 @@ class TvdbApi {
         return $foundSomething;
     }
 
-    public function getEpisodes($id) {
+    public function getEpisodes(string $id) : void {
         foreach (TvdbApi::$languagesEp as $lang) {
             $next = 1;
             while($next !== null) {
@@ -72,7 +72,7 @@ class TvdbApi {
         }
     }
 
-    private function getPage($page, $id, $lang) {
+    private function getPage(int $page, string $id, string $lang) : ?int {
         $urlAndQuerry = TvdbApi::$apiUrl . TvdbApi::$rootEpImg1 . $id . TvdbApi::$rootEp2 . '?' . http_build_query([
                 'page' => $page
             ]);
@@ -85,7 +85,7 @@ class TvdbApi {
         return null;
     }
 
-    private function getNewToken() {
+    private function getNewToken() : bool {
         $context = stream_context_create([
             'http' => [
                 'header'  => "Content-type: application/json",
@@ -111,7 +111,7 @@ class TvdbApi {
         return true;
     }
 
-    private function createStandardStreamContext($lang) {
+    private function createStandardStreamContext(string $lang) {
         return stream_context_create([
             'http' => [
                 'header'  => [
@@ -129,7 +129,7 @@ class TvdbApi {
         ]);
     }
 
-    private function checkResponse($result) {
+    private function checkResponse($result) : bool {
         if($result === false) {
             return false;
         }
@@ -140,7 +140,7 @@ class TvdbApi {
         return true;
     }
 
-    private function appendPageToContent($dataArray) {
+    private function appendPageToContent(array $dataArray) : void {
         foreach ($dataArray as $data) {
             if($data['episodeName'] !== null) {
                 $s = $data['airedSeason'];
@@ -154,7 +154,7 @@ class TvdbApi {
         }
     }
 
-    public function getImages($id) {
+    public function getImages(string $id) : bool {
         $urlAndQuerry = TvdbApi::$apiUrl . TvdbApi::$rootEpImg1 . $id . TvdbApi::$rootImg2 . '?' . http_build_query([
                 'keyType' => 'season'
             ]);
