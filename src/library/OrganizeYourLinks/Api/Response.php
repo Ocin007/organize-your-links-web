@@ -18,6 +18,11 @@ class Response
         $this->response = $response;
     }
 
+    public function appendResponse(array $response): void
+    {
+        $this->response = array_merge($this->response, $response);
+    }
+
     public function getJSON()
     {
         return json_encode($this->response, JSON_PRETTY_PRINT);
