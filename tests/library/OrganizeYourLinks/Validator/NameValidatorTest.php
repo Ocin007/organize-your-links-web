@@ -52,7 +52,7 @@ class NameValidatorTest extends TestCase
                 ]
             ]);
         $this->fileNameGeneratorMock
-            ->shouldReceive('generateFileName')
+            ->shouldReceive('generate')
             ->twice()
             ->with('test')
             ->andReturn('test.json');
@@ -61,7 +61,7 @@ class NameValidatorTest extends TestCase
     public function testValidate1()
     {
         $this->fileNameGeneratorMock
-            ->shouldReceive('generateFileName')
+            ->shouldReceive('generate')
             ->twice()
             ->with('D File')
             ->andReturn('d-file.json');
@@ -88,7 +88,7 @@ class NameValidatorTest extends TestCase
     public function testValidate2()
     {
         $this->fileNameGeneratorMock
-            ->shouldReceive('generateFileName')
+            ->shouldReceive('generate')
             ->twice()
             ->with('test1')
             ->andReturn('test1.json');
@@ -117,7 +117,7 @@ class NameValidatorTest extends TestCase
     public function testValidate3()
     {
         $this->fileNameGeneratorMock
-            ->shouldReceive('generateFileName')
+            ->shouldReceive('generate')
             ->twice()
             ->with('teäst')
             ->andReturn('test.json');
@@ -144,7 +144,7 @@ class NameValidatorTest extends TestCase
     public function testGetDataListMap()
     {
         $this->fileNameGeneratorMock
-            ->shouldReceive('generateFileName')
+            ->shouldReceive('generate')
             ->twice()
             ->with('test2')
             ->andReturn('test2.json');

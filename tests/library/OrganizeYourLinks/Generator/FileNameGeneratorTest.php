@@ -15,7 +15,7 @@ class FileNameGeneratorTest extends TestCase
     public function testGenerateFileName1()
     {
         $string = 'Attack on Titan';
-        $result = $this->subject->generateFileName($string);
+        $result = $this->subject->generate($string);
         $expected = 'attack-on-titan.json';
         $this->assertEquals($expected, $result);
     }
@@ -23,7 +23,7 @@ class FileNameGeneratorTest extends TestCase
     public function testGenerateFileName2()
     {
         $string = 'Attack    on   Titan';
-        $result = $this->subject->generateFileName($string);
+        $result = $this->subject->generate($string);
         $expected = 'attack-on-titan.json';
         $this->assertEquals($expected, $result);
     }
@@ -31,7 +31,7 @@ class FileNameGeneratorTest extends TestCase
     public function testGenerateFileName3()
     {
         $string = 'A.tt<ac!k       o^°n   Tit&%a\n 3';
-        $result = $this->subject->generateFileName($string);
+        $result = $this->subject->generate($string);
         $expected = 'attack-on-titan-3.json';
         $this->assertEquals($expected, $result);
     }
@@ -39,7 +39,7 @@ class FileNameGeneratorTest extends TestCase
     public function testGenerateFileName4()
     {
         $string = 'Attück ön Titänß';
-        $result = $this->subject->generateFileName($string);
+        $result = $this->subject->generate($string);
         $expected = 'attck-n-titn.json';
         $this->assertEquals($expected, $result);
     }

@@ -3,9 +3,9 @@
 namespace OrganizeYourLinks\Generator;
 
 
-class FileNameGenerator {
+class FileNameGenerator implements GeneratorInterface {
 
-    function generateFileName(string $string) : string {
+    public function generate(string $string) : string {
         $fileName = strtolower($string);
         $fileName = preg_replace('/[\s]+/', '-', $fileName);
         $fileNameArray = str_split($fileName, 1);

@@ -3,18 +3,18 @@
 namespace OrganizeYourLinks\Validator;
 
 
-use OrganizeYourLinks\Generator\FileNameGenerator;
+use OrganizeYourLinks\Generator\GeneratorInterface ;
 use OrganizeYourLinks\Reader;
 
 class NameValidator implements Validator {
 
     private Reader $reader;
-    private FileNameGenerator $fileNameGenerator;
+    private GeneratorInterface $fileNameGenerator;
     private string $listDir;
     private array $dataListMap = [];
     private array $allNames = [];
 
-    public function __construct(Reader $reader, FileNameGenerator $fileNameGenerator, string $listDir) {
+    public function __construct(Reader $reader, GeneratorInterface $fileNameGenerator, string $listDir) {
         $this->reader = $reader;
         $this->fileNameGenerator = $fileNameGenerator;
         $this->listDir = $listDir;
@@ -97,11 +97,11 @@ class NameValidator implements Validator {
     private function generateFileName(array $data) : string {
         $generatedFile = '';
         if($data['name_de'] !== '') {
-            $generatedFile = $this->fileNameGenerator->generateFileName($data['name_de']);
+            $generatedFile = $this->fileNameGenerator->generate($data['name_de']);
         } else if($data['name_en'] !== '') {
-            $generatedFile = $this->fileNameGenerator->generateFileName($data['name_en']);
+            $generatedFile = $this->fileNameGenerator->generate($data['name_en']);
         } else if($data['name_jpn'] !== '') {
-            $generatedFile = $this->fileNameGenerator->generateFileName($data['name_jpn']);
+            $generatedFile = $this->fileNameGenerator->generate($data['name_jpn']);
         }
         return $generatedFile;
     }
