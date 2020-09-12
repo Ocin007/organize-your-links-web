@@ -5,17 +5,16 @@ namespace OrganizeYourLinks\Api;
 
 
 use OrganizeYourLinks\ErrorListContainerInterface;
-use OrganizeYourLinks\Exceptions\ErrorList;
-use OrganizeYourLinks\Exceptions\ErrorListInterface;
+use OrganizeYourLinks\Types\ErrorListInterface;
 
 class Response implements ErrorListContainerInterface
 {
     private array $response = [];
     private ErrorListInterface $errorList;
 
-    public function __construct()
+    public function __construct(ErrorListInterface $errorList)
     {
-        $this->errorList = new ErrorList();
+        $this->errorList = $errorList;
     }
 
     public function noErrors(): bool

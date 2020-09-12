@@ -6,7 +6,7 @@ namespace OrganizeYourLinks\Api\Middleware\App;
 
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
 use OrganizeYourLinks\Api\Response;
-use OrganizeYourLinks\Exceptions\ErrorList;
+use OrganizeYourLinks\Types\ErrorList;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response as PsrResponse;

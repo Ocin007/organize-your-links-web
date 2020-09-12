@@ -1,7 +1,7 @@
 <?php
 
 
-namespace OrganizeYourLinks\Exceptions;
+namespace OrganizeYourLinks\Types;
 
 
 class ErrorList implements ErrorListInterface

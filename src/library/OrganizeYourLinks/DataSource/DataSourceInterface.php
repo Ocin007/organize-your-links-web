@@ -4,7 +4,7 @@
 namespace OrganizeYourLinks\DataSource;
 
 
-use OrganizeYourLinks\Exceptions\ErrorListInterface;
+use OrganizeYourLinks\Types\ErrorListInterface;
 
 interface DataSourceInterface
 {

@@ -4,7 +4,7 @@
 namespace OrganizeYourLinks;
 
 
-use OrganizeYourLinks\Exceptions\ErrorListInterface;
+use OrganizeYourLinks\Types\ErrorListInterface;
 
 interface ErrorListContainerInterface
 {

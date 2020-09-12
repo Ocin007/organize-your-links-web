@@ -6,7 +6,7 @@ namespace OrganizeYourLinks\Manager;
 
 use OrganizeYourLinks\DataSource\DataSourceInterface;
 use OrganizeYourLinks\ErrorListContainerInterface;
-use OrganizeYourLinks\Exceptions\ErrorListInterface;
+use OrganizeYourLinks\Types\ErrorListInterface;
 
 class SettingsManager implements ErrorListContainerInterface
 {
