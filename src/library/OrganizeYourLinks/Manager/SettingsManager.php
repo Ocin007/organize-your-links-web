@@ -6,7 +6,6 @@ namespace OrganizeYourLinks\Manager;
 
 use OrganizeYourLinks\DataSource\DataSourceInterface;
 use OrganizeYourLinks\ErrorListContainerInterface;
-use OrganizeYourLinks\Exceptions\ErrorList;
 use OrganizeYourLinks\Exceptions\ErrorListInterface;
 
 class SettingsManager implements ErrorListContainerInterface
@@ -33,9 +32,9 @@ class SettingsManager implements ErrorListContainerInterface
     private ErrorListInterface $errorList;
     private DataSourceInterface $source;
 
-    public function __construct(DataSourceInterface $source) {
+    public function __construct(DataSourceInterface $source, ErrorListInterface $errorList) {
         $this->source = $source;
-        $this->errorList = new ErrorList();
+        $this->errorList = $errorList;
     }
 
     public function noErrors(): bool
