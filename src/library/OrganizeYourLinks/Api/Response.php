@@ -4,9 +4,29 @@
 namespace OrganizeYourLinks\Api;
 
 
-class Response
+use OrganizeYourLinks\ErrorListContainerInterface;
+use OrganizeYourLinks\Exceptions\ErrorList;
+use OrganizeYourLinks\Exceptions\ErrorListInterface;
+
+class Response implements ErrorListContainerInterface
 {
     private array $response = [];
+    private ErrorListInterface $errorList;
+
+    public function __construct()
+    {
+        $this->errorList = new ErrorList();
+    }
+
+    public function noErrors(): bool
+    {
+        return $this->errorList->isEmpty();
+    }
+
+    public function getErrorList(): ErrorListInterface
+    {
+        return $this->errorList;
+    }
 
     public function getResponse(): array
     {
@@ -23,8 +43,19 @@ class Response
         $this->response = array_merge($this->response, $response);
     }
 
+    public function appendErrors(ErrorListInterface $errorList): void
+    {
+        $this->errorList->add($errorList);
+    }
+
     public function getJSON()
     {
-        return json_encode($this->response, JSON_PRETTY_PRINT);
+        $response = [
+            'response' => $this->response
+        ];
+        if(!$this->errorList->isEmpty()) {
+            $response['error'] = $this->errorList->getErrorList();
+        }
+        return json_encode($response, JSON_PRETTY_PRINT);
     }
 }

@@ -16,10 +16,10 @@ class EndpointHandlerWrapper
             $request = new Request($psrRequest->getParsedBody()['data']);
             $handler = new $className($request, new HelperFactory());
             $errorList = $handler->validateRequest();
-            if (count($errorList) === 0) {
+            if ($errorList->isEmpty()) {
                 $handler->execute($response);
             } else {
-                $response->writeErrors($errorList);
+                $response->appendErrors($errorList);
             }
             return $psrResponse;
         };
