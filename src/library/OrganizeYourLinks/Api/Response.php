@@ -27,6 +27,15 @@ class Response implements ErrorListContainerInterface
         return $this->errorList;
     }
 
+    public function addToErrorList($list): bool
+    {
+        if($list instanceof ErrorListInterface) {
+            $this->errorList->add($list);
+            return true;
+        }
+        return false;
+    }
+
     public function getResponse(): array
     {
         return $this->response;

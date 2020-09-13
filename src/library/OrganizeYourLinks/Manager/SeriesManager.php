@@ -36,6 +36,15 @@ class SeriesManager implements ErrorListContainerInterface
         return $this->errorList;
     }
 
+    public function addToErrorList($list): bool
+    {
+        if($list instanceof ErrorListInterface) {
+            $this->errorList->add($list);
+            return true;
+        }
+        return false;
+    }
+
     /**
      * @param FilterInterface|null $filter
      * @param SorterInterface|null $sorter
@@ -44,8 +53,7 @@ class SeriesManager implements ErrorListContainerInterface
     public function getAll(?FilterInterface $filter, ?SorterInterface $sorter): ?array
     {
         $dataList = $this->source->loadAllSeries($filter, $sorter);
-        if($dataList instanceof ErrorListInterface) {
-            $this->errorList->add($dataList);
+        if($this->addToErrorList($dataList)) {
             return null;
         }
         $result = [];
