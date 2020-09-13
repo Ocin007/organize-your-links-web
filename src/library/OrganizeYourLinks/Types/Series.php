@@ -22,7 +22,7 @@ class Series extends AbstractObject implements SeriesInterface
 
     public function getKeys(): array
     {
-        return Series::KEYS;
+        return self::KEYS;
     }
 
     public function addSeason(SeasonInterface $season): self

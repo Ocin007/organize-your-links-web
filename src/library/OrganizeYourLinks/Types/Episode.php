@@ -13,6 +13,6 @@ class Episode extends AbstractObject implements EpisodeInterface
 
     public function getKeys(): array
     {
-        return Episode::KEYS;
+        return self::KEYS;
     }
 }

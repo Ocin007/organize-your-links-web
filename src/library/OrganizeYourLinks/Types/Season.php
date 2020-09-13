@@ -17,7 +17,7 @@ class Season extends AbstractObject implements SeasonInterface
 
     public function getKeys(): array
     {
-        return Season::KEYS;
+        return self::KEYS;
     }
 
     public function addEpisode(EpisodeInterface $episode): self
