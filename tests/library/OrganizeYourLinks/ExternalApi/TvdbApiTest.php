@@ -2,64 +2,138 @@
 
 namespace OrganizeYourLinks\ExternalApi;
 
+use Mockery;
+use OrganizeYourLinks\DataSource\DataSourceInterface;
+use OrganizeYourLinks\Types\ErrorListInterface;
 use PHPUnit\Framework\TestCase;
 
 class TvdbApiTest extends TestCase
 {
     private string $keyFile;
-    private string $tokenFile;
     private string $certFile;
-    private string $noTokenFile;
+    private $sourceMock;
+    private $errorListMock;
+    private $subjectMock;
 
     public function setUp(): void
     {
         $this->keyFile = __DIR__.'/../../../../data/apikey.json';
-        $this->tokenFile = __DIR__.'/../../../../data/apitoken.json';
-        $this->noTokenFile = __DIR__.'/../../../fixtures/apitoken.json';
         $this->certFile = __DIR__.'/../../../../data/cacert.pem';
+        $this->sourceMock = Mockery::mock(DataSourceInterface::class);
+        $this->errorListMock = Mockery::mock(ErrorListInterface::class);
+        $this->sourceMock
+            ->shouldReceive('loadTvdbApiToken')
+            ->andReturn('');
+        $this->sourceMock
+            ->shouldReceive('getCaFilePath')
+            ->andReturn($this->certFile);
+        $this->subjectMock = Mockery::mock(TvdbApi::class);
+        $this->subjectMock->makePartial();
+        $this->subjectMock->setDataSource($this->sourceMock);
+        $this->subjectMock->setErrorList($this->errorListMock);
     }
 
     public function testPrepare()
     {
-        $subject = new TvdbApi($this->keyFile, $this->tokenFile, $this->certFile);
+        $this->sourceMock
+            ->shouldReceive('isTvdbApiTokenValid')
+            ->andReturn(true);
+        $subject = new TvdbApi($this->sourceMock, $this->errorListMock);
         $result = $subject->prepare();
         $this->assertEquals(true, $result);
     }
 
     public function testGetNewToken()
     {
-        if(file_exists($this->noTokenFile)) {
-            unlink($this->noTokenFile);
-        }
-        $subject = new TvdbApi($this->keyFile, $this->noTokenFile, $this->certFile);
+        $this->sourceMock
+            ->shouldReceive('isTvdbApiTokenValid')
+            ->andReturn(false);
+        $this->sourceMock
+            ->shouldReceive('loadTvdbApiKeyAsJSON')
+            ->andReturn(file_get_contents($this->keyFile));
+        $this->sourceMock
+            ->shouldReceive('getCaFilePath')
+            ->andReturn($this->certFile);
+        $newErrorListMock = Mockery::mock(ErrorListInterface::class);
+        $newErrorListMock
+            ->shouldReceive('isEmpty')
+            ->andReturn(true);
+        $this->sourceMock
+            ->shouldReceive('saveTvdbApiToken')
+            ->andReturn($newErrorListMock);
+        $this->errorListMock
+            ->shouldReceive('add')
+            ->with($newErrorListMock)
+            ->andReturn($this->errorListMock);
+        $this->errorListMock
+            ->shouldReceive('isEmpty')
+            ->andReturn(true);
+        $subject = new TvdbApi($this->sourceMock, $this->errorListMock);
         $result = $subject->prepare();
         $this->assertEquals(true, $result);
-        $this->assertEquals(true, file_exists($this->noTokenFile));
-        if(file_exists($this->noTokenFile)) {
-            unlink($this->noTokenFile);
-        }
+        $this->assertEquals(true, $subject->noErrors());
+        $this->assertEquals(true, $subject->addToErrorList($newErrorListMock));
     }
 
     public function testSearch()
     {
-        $subject = new TvdbApi($this->keyFile, $this->tokenFile, $this->certFile);
-        $subject->prepare();
-        $result = $subject->search('one piece');
+        $this->sourceMock
+            ->shouldReceive('isTvdbApiTokenValid')
+            ->andReturn(true);
+        $this->subjectMock
+            ->shouldReceive('file_get_contents')
+            ->withSomeOfArgs('https://api.thetvdb.com/search/series?name=one+piece')
+            ->times(3)
+            ->andReturn('{}');
+        $this->subjectMock->prepare();
+        $result = $this->subjectMock->search('one piece');
         $this->assertEquals(true, $result);
     }
 
     public function testGetEpisodes()
     {
-        $subject = new TvdbApi($this->keyFile, $this->tokenFile, $this->certFile);
-        $subject->prepare();
-        $subject->getEpisodes(74796);
-        $this->assertEquals(true, isset($subject->getContent()['1']));
+        $this->sourceMock
+            ->shouldReceive('isTvdbApiTokenValid')
+            ->andReturn(true);
+        $this->subjectMock
+            ->shouldReceive('file_get_contents')
+            ->withSomeOfArgs('https://api.thetvdb.com/series/74796/episodes?page=1')
+            ->times(3)
+            ->andReturn(json_encode([
+                "data" => [
+                    [
+                        "episodeName" => "test",
+                        "airedSeason" => 1,
+                        "airedEpisodeNumber" => 1,
+                    ]
+                ],
+                "links" => [
+                    "next" => null
+                ]
+            ], JSON_PRETTY_PRINT));
+        $this->subjectMock->prepare();
+        $this->subjectMock->getEpisodes(74796);
+        $this->assertEquals(true, isset($this->subjectMock->getContent()['1']));
     }
 
     public function testGetImages()
     {
-        $subject = new TvdbApi($this->keyFile, $this->tokenFile, $this->certFile);
-        $subject->prepare();
-        $this->assertEquals(true, $subject->getImages(74796));
+        $this->sourceMock
+            ->shouldReceive('isTvdbApiTokenValid')
+            ->andReturn(true);
+        $this->subjectMock
+            ->shouldReceive('file_get_contents')
+            ->withSomeOfArgs('https://api.thetvdb.com/series/74796/images/query?keyType=season')
+            ->once()
+            ->andReturn(json_encode([
+                "data" => [
+                    [
+                        "subKey" => "key",
+                        "fileName" => "test"
+                    ]
+                ]
+            ]));
+        $this->subjectMock->prepare();
+        $this->assertEquals(true, $this->subjectMock->getImages(74796));
     }
 }

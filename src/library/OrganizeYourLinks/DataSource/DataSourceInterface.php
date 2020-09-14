@@ -11,6 +11,7 @@ use OrganizeYourLinks\Types\ErrorListInterface;
 interface DataSourceInterface
 {
     public function loadSettings(): ?array;
+
     public function saveSettings(array $settings): ErrorListInterface;
 
     /**
@@ -27,4 +28,20 @@ interface DataSourceInterface
     public function createSeries(string $id, array $series): ErrorListInterface;
 
     public function deleteSeries(string $id): ErrorListInterface;
+
+    /**
+     * @return ErrorListInterface|string
+     */
+    public function loadTvdbApiKeyAsJSON(): string;
+
+    public function isTvdbApiTokenValid(): bool;
+
+    /**
+     * @return ErrorListInterface|string
+     */
+    public function loadTvdbApiToken(): string;
+
+    public function getCaFilePath(): string;
+
+    public function saveTvdbApiToken(string $token): ErrorListInterface;
 }
