@@ -22,6 +22,7 @@ class ResponseMiddleware extends AbstractMiddleware
 
     protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): void
     {
+        /** @var Response $response */
         $response = $psrRequest->getAttribute(Response::class);
         $psrResponse->getBody()->write($response->getJSON());
     }

@@ -20,6 +20,7 @@ class CheckForKeyFileMiddleware extends AbstractMiddleware
     {
         $fileManager = new FileManager(new Reader(), new Writer(), new FileNameGenerator());
         if(!$fileManager->keyFileExist()) {
+            /** @var Response $response */
             $response = $psrRequest->getAttribute(Response::class);
             $response->appendResponse([
                 'key_file_missing' => true

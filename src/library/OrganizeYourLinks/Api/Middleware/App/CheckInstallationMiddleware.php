@@ -31,6 +31,7 @@ class CheckInstallationMiddleware extends AbstractMiddleware
             $installation['data_dir_not_writable'] = true;
             $this->allowExecOfNextHandler(false);
         }
+        /** @var Response $response */
         $response = $psrRequest->getAttribute(Response::class);
         $response->appendResponse($installation);
         $response->appendErrors($errorList);
