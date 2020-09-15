@@ -6,9 +6,6 @@ namespace OrganizeYourLinks\Types;
 
 class ErrorList implements ErrorListInterface
 {
-    const CANNOT_SAVE_SETTINGS = 'cannot save settings';
-    const DATA_DIR_NOT_WRITABLE = 'data directory not writable';
-
     private array $errorList = [];
     private bool $isEmpty = true;
 
