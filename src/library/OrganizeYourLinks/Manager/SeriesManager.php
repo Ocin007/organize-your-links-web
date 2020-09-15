@@ -98,7 +98,7 @@ class SeriesManager implements ErrorListContainerInterface
         }
     }
 
-    private function createSeriesObj(array $data): SeriesInterface
+    public function createSeriesObj(array $data): SeriesInterface
     {
         $series = new Series();
         $series->setAll($data);

@@ -29,7 +29,7 @@ class ServerData extends AjaxRequest {
     put(list: DataListElement[], callback?: Function) {
         const instance = this;
         ServerData.encodeAllElements(list);
-        ServerData.sendAjaxRequest('../api/put.php', list, function (http) {
+        ServerData.sendAjaxRequest('../api/put.php', {seriesList: list}, function (http) {
             ServerData.errFunction(http, 'put');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
@@ -57,7 +57,7 @@ class ServerData extends AjaxRequest {
 
     post(list: DataListElement[], onError?: Function, onSuccess?: Function) {
         ServerData.encodeAllElements(list);
-        ServerData.sendAjaxRequest('../api/post.php', list, function (http) {
+        ServerData.sendAjaxRequest('../api/post.php', {seriesList: list}, function (http) {
             ServerData.errFunction(http, 'post');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);

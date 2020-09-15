@@ -4,21 +4,60 @@
 namespace OrganizeYourLinks\Api;
 
 
+use OrganizeYourLinks\Manager\SeriesManager;
+
 class Request
 {
+    private const KEY_SERIES_LIST = 'seriesList';
 
-    public function __construct(string $json)
+    private array $args = [];
+    private array $bodyRaw;
+    private array $bodyConverted;
+
+    public function getRawParam(string $key)
     {
-        //enthält vorerst nur das rohe geparste json als array
-
-        //evtl kann man hier komplett mitgeschickte serien in eine klasse umwandeln
-        //klasse 'serienliste' als abstraktion von verzeichnis data/list
-        //  reader, writer abändern
+        return $this->bodyRaw[$key];
     }
 
-    public function getParam(string $key)
+    public function getConvertedParam(string $key)
     {
+        return $this->bodyConverted[$key];
+    }
 
+    public function getRawBody(): array
+    {
+        return $this->bodyRaw;
+    }
+
+    public function setRawBody(string $json): void
+    {
+        $this->bodyRaw = json_decode($json, true);
+    }
+
+    public function getConvertedBody(): array
+    {
+        return $this->bodyConverted;
+    }
+
+    public function setConvertedBody(string $json): self
+    {
+        $this->bodyConverted = json_decode($json, true);
+        return $this;
+    }
+
+    public function convert(SeriesManager $manager): void
+    {
+        $this->findKeyRecursive($this->bodyConverted, self::KEY_SERIES_LIST, $manager);
+    }
+
+    public function getRouteParam(string $key)
+    {
+        return $this->args[$key];
+    }
+
+    public function setRouteParams(array $args): void
+    {
+        $this->args = $args;
     }
 
     public function getTypeOf(string $key)
@@ -26,4 +65,25 @@ class Request
 
     }
 
+    private function findKeyRecursive(array &$data, string $searchKey, SeriesManager $manager)
+    {
+        foreach ($data as $key => $value) {
+            if($key === $searchKey && gettype($value) === 'array') {
+                $data[$key] = $this->convertSeriesList($value, $manager);
+            }
+            if($key !== $searchKey && gettype($value) === 'array') {
+                $this->findKeyRecursive($value, $searchKey, $manager);
+                $data[$key] = $value;
+            }
+        }
+    }
+
+    private function convertSeriesList(array $seriesDataList, SeriesManager $manager): array
+    {
+        $seriesList = [];
+        foreach ($seriesDataList as $seriesData) {
+            $seriesList[] = $manager->createSeriesObj($seriesData);
+        }
+        return $seriesList;
+    }
 }

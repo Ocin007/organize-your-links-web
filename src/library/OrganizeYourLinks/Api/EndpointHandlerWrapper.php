@@ -11,9 +11,16 @@ class EndpointHandlerWrapper
 {
     public static function getHandler(string $className): Closure
     {
-        return function (PsrRequest $psrRequest, PsrResponse $psrResponse, $args) use ($className) {
+        return function (PsrRequest $psrRequest, PsrResponse $psrResponse, $args) use ($className)
+        {
+            /** @var Response $response */
             $response = $psrRequest->getAttribute(Response::class);
-            $request = new Request($psrRequest->getParsedBody()['data']);
+
+            /** @var Request $request */
+            $request = $psrRequest->getAttribute(Request::class, new Request());
+
+            $request->setRawBody($psrRequest->getParsedBody()['data']);
+            $request->setRouteParams($args);
             $handler = new $className($request, new HelperFactory());
             $errorList = $handler->validateRequest();
             if ($errorList->isEmpty()) {
