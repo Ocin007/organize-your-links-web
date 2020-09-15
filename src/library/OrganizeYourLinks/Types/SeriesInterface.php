@@ -18,6 +18,8 @@ interface SeriesInterface extends ObjectInterface
 
     const KEYS = ['id', 'tvdbId', 'name_de', 'name_en', 'name_jpn', 'list', 'rank', 'favorite'];
 
+    const NAME_PRIO_LIST = ['name_de', 'name_en', 'name_jpn'];
+
     public function addSeason(SeasonInterface $season): self;
 
     /**
