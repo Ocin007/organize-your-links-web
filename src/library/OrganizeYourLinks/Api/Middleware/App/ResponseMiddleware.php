@@ -4,6 +4,7 @@
 namespace OrganizeYourLinks\Api\Middleware\App;
 
 
+use OrganizeYourLinks\Api\HelperFactory;
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
 use OrganizeYourLinks\Api\Response;
 use OrganizeYourLinks\Types\ErrorList;
@@ -24,6 +25,7 @@ class ResponseMiddleware extends AbstractMiddleware
     {
         /** @var Response $response */
         $response = $psrRequest->getAttribute(Response::class);
-        $psrResponse->getBody()->write($response->getJSON());
+        $factory = new HelperFactory();
+        $psrResponse->getBody()->write($response->getJSON($factory->getSeriesConverter()));
     }
 }

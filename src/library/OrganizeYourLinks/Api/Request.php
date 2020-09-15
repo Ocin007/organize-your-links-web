@@ -4,7 +4,8 @@
 namespace OrganizeYourLinks\Api;
 
 
-use OrganizeYourLinks\Manager\SeriesManager;
+use OrganizeYourLinks\Types\Converter\ConverterInterface;
+use OrganizeYourLinks\Types\SeriesInterface;
 
 class Request
 {
@@ -45,9 +46,9 @@ class Request
         return $this;
     }
 
-    public function convert(SeriesManager $manager): void
+    public function convert(ConverterInterface $converter): void
     {
-        $this->findKeyRecursive($this->bodyConverted, self::KEY_SERIES_LIST, $manager);
+        $this->findKeyRecursive($this->bodyConverted, self::KEY_SERIES_LIST, $converter);
     }
 
     public function getRouteParam(string $key)
@@ -65,24 +66,29 @@ class Request
 
     }
 
-    private function findKeyRecursive(array &$data, string $searchKey, SeriesManager $manager)
+    private function findKeyRecursive(array &$data, string $searchKey, ConverterInterface $converter)
     {
         foreach ($data as $key => $value) {
             if($key === $searchKey && gettype($value) === 'array') {
-                $data[$key] = $this->convertSeriesList($value, $manager);
+                $data[$key] = $this->convertSeriesList($value, $converter);
             }
             if($key !== $searchKey && gettype($value) === 'array') {
-                $this->findKeyRecursive($value, $searchKey, $manager);
+                $this->findKeyRecursive($value, $searchKey, $converter);
                 $data[$key] = $value;
             }
         }
     }
 
-    private function convertSeriesList(array $seriesDataList, SeriesManager $manager): array
+    /**
+     * @param array $seriesDataList
+     * @param ConverterInterface $converter
+     * @return SeriesInterface[]
+     */
+    private function convertSeriesList(array $seriesDataList, ConverterInterface $converter): array
     {
         $seriesList = [];
         foreach ($seriesDataList as $seriesData) {
-            $seriesList[] = $manager->createSeriesObj($seriesData);
+            $seriesList[] = $converter->convertToObject($seriesData);
         }
         return $seriesList;
     }

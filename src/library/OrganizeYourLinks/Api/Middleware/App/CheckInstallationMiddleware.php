@@ -4,12 +4,9 @@
 namespace OrganizeYourLinks\Api\Middleware\App;
 
 
+use OrganizeYourLinks\Api\HelperFactory;
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
 use OrganizeYourLinks\Api\Response;
-use OrganizeYourLinks\DataSource\Filesystem\FileManager;
-use OrganizeYourLinks\DataSource\Filesystem\Reader;
-use OrganizeYourLinks\DataSource\Filesystem\Writer;
-use OrganizeYourLinks\Generator\FileNameGenerator;
 use OrganizeYourLinks\Types\ErrorList;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -20,7 +17,8 @@ class CheckInstallationMiddleware extends AbstractMiddleware
     protected function before(PsrRequest $psrRequest, RequestHandler $handler): PsrRequest
     {
         $errorList = new ErrorList();
-        $fileManager = new FileManager(new Reader(), new Writer(), new FileNameGenerator());
+        $factory = new HelperFactory();
+        $fileManager = $factory->getFileManager();
         $installation = [
             'composer_missing' => false,
             'data_dir_not_writable' => false,
@@ -33,7 +31,7 @@ class CheckInstallationMiddleware extends AbstractMiddleware
         }
         /** @var Response $response */
         $response = $psrRequest->getAttribute(Response::class);
-        $response->appendResponse($installation);
+        $response->appendParameters($installation);
         $response->appendErrors($errorList);
         return $psrRequest;
     }
