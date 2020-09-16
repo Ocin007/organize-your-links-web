@@ -26,6 +26,7 @@ interface ErrorListInterface
     const INVALID_REQUEST_NO_BODY = 'invalid request, no request body';
     const LIST_ELEMENT_NO_VALID_SERIES = 'list element no valid series';
     const NO_SERIES_IN_REQUEST = 'no series in request';
+    const SERIES_DOES_NOT_EXIST = 'series does not exist';
     const SERIES_NAMES_INVALID = 'series names invalid';
 
     public function getErrorList(): array;
