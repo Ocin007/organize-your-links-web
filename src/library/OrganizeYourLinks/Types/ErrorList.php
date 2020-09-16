@@ -9,6 +9,16 @@ class ErrorList implements ErrorListInterface
     private array $errorList = [];
     private bool $isEmpty = true;
 
+    /**
+     * @param null|string|string[]|ErrorList $errorMsg
+     */
+    public function __construct($errorMsg = null)
+    {
+        if($errorMsg !== null) {
+            $this->add($errorMsg);
+        }
+    }
+
     public function getErrorList(): array
     {
         return $this->errorList;

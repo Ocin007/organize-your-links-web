@@ -24,8 +24,7 @@ class CheckIsValidSeriesMiddleware extends AbstractMiddleware
         if(isset($parsedData[Request::KEY_SERIES_LIST])) {
             $errorList = $validator->validate($parsedData[Request::KEY_SERIES_LIST]);
         } else {
-            $errorList = new ErrorList();
-            $errorList->add(ErrorList::NO_SERIES_IN_REQUEST);
+            $errorList = new ErrorList(ErrorList::NO_SERIES_IN_REQUEST);
         }
         if(!$errorList->isEmpty()) {
             $this->allowExecOfNextHandler(false);

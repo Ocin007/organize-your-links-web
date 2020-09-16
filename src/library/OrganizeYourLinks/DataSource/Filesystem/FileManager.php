@@ -104,8 +104,7 @@ class FileManager implements DataSourceInterface
                 $sorter->sort($seriesList);
             }
         } catch (Exception $e) {
-            $errorList = new ErrorList();
-            return $errorList->add(ErrorList::CANNOT_LOAD_ALL_SERIES);
+            return new ErrorList(ErrorList::CANNOT_LOAD_ALL_SERIES);
         }
         return $seriesList;
     }
@@ -119,8 +118,7 @@ class FileManager implements DataSourceInterface
     {
         $seriesStr = $this->reader->readFile(self::SERIES_DIR . '/' . $file);
         if($seriesStr === null) {
-            $errorList = new ErrorList();
-            return $errorList->add(ErrorList::CANNOT_LOAD_SERIES . ' ' . $id);
+            return new ErrorList(ErrorList::CANNOT_LOAD_SERIES . ' ' . $id);
         }
         return json_decode($seriesStr, true);
     }
@@ -139,8 +137,7 @@ class FileManager implements DataSourceInterface
         }
         $file = $this->idFileMap[$series[SeriesInterface::KEY_ID]];
         if($file === null) {
-            $errorList = new ErrorList();
-            return $errorList->add(
+            return new ErrorList(
                 ErrorList::CANNOT_SAVE_SERIES_NOT_EXIST . ': '
                 . $series[SeriesInterface::KEY_NAME_DE] . ', '
                 . $series[SeriesInterface::KEY_NAME_EN] . ', '
@@ -173,8 +170,7 @@ class FileManager implements DataSourceInterface
         $content = json_encode($series, JSON_PRETTY_PRINT);
         $success = $this->writer->writeFile(self::SERIES_DIR . '/' . $newFile, $content);
         if(!$success) {
-            $errorList = new ErrorList();
-            return $errorList->add(ErrorList::CANNOT_CREATE_NEW_SERIES);
+            return new ErrorList(ErrorList::CANNOT_CREATE_NEW_SERIES);
         }
         $this->idFileMap[$id] = $newFile;
         return $this->saveIdFileMap();
@@ -189,8 +185,7 @@ class FileManager implements DataSourceInterface
         $file = $this->idFileMap[$id];
         $success = $this->writer->deleteFile(self::SERIES_DIR . '/' . $file);
         if(!$success) {
-            $errorList = new ErrorList();
-            return $errorList->add(ErrorList::CANNOT_DELETE_SERIES);
+            return new ErrorList(ErrorList::CANNOT_DELETE_SERIES);
         }
         unset($this->idFileMap[$id]);
         return $this->saveIdFileMap();
@@ -304,8 +299,7 @@ class FileManager implements DataSourceInterface
     {
         $content = $this->reader->readFile($filePath);
         if($content === null) {
-            $errorList = new ErrorList();
-            return $errorList->add($message);
+            return new ErrorList($message);
         }
         return $content;
     }
