@@ -107,25 +107,25 @@ class PageCreate implements Slideable, ForeachElement {
             instance.inputEN.classList.remove('name-input-error');
             instance.inputJPN.classList.remove('name-input-error');
             instance.msgContainer.innerHTML = JSON.stringify(error[0]);
-            if(error[0].name !== undefined) {
+            if(error.includes('list element no valid series: 0')) {
                 instance.msgContainer.innerHTML = 'Es muss mindestens 1 Name angegeben werden. ';
                 instance.inputDE.classList.remove('name-input-error');
                 instance.inputEN.classList.remove('name-input-error');
                 instance.inputJPN.classList.remove('name-input-error');
             }
-            if(error[0]['name-dublicate'] !== undefined) {
+            if(error.includes('duplicate series name: name_de')) {
+                instance.inputDE.classList.add('name-input-error');
                 instance.msgContainer.innerHTML = 'Name existiert bereits. ';
-                if(error[0]['name-dublicate']['name_de'] !== undefined) {
-                    instance.inputDE.classList.add('name-input-error');
-                }
-                if(error[0]['name-dublicate']['name_en'] !== undefined) {
-                    instance.inputEN.classList.add('name-input-error');
-                }
-                if(error[0]['name-dublicate']['name_jpn'] !== undefined) {
-                    instance.inputJPN.classList.add('name-input-error');
-                }
             }
-            if(error[0]['name-file'] !== undefined) {
+            if(error.includes('duplicate series name: name_en')) {
+                instance.inputEN.classList.add('name-input-error');
+                instance.msgContainer.innerHTML = 'Name existiert bereits. ';
+            }
+            if(error.includes('duplicate series name: name_jpn')) {
+                instance.inputJPN.classList.add('name-input-error');
+                instance.msgContainer.innerHTML = 'Name existiert bereits. ';
+            }
+            if(error.includes('series names invalid')) {
                 instance.msgContainer.innerHTML = 'Serie konnte nicht hinzugefügt werden. Bitte andere Namen wählen.';
             }
         }, function () {

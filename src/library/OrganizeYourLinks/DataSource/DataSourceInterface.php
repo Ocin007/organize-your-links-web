@@ -44,4 +44,6 @@ interface DataSourceInterface
     public function getCaFilePath(): string;
 
     public function saveTvdbApiToken(string $token): ErrorListInterface;
+
+    public function checkSeriesNames(array $series): ErrorListInterface;
 }

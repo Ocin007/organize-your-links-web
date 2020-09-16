@@ -9,7 +9,7 @@ use OrganizeYourLinks\Types\SeriesInterface;
 
 class Request
 {
-    private const KEY_SERIES_LIST = 'seriesList';
+    const KEY_SERIES_LIST = 'seriesList';
 
     private array $args = [];
     private array $bodyRaw;
@@ -48,7 +48,8 @@ class Request
 
     public function convert(ConverterInterface $converter): void
     {
-        $this->findKeyRecursive($this->bodyConverted, self::KEY_SERIES_LIST, $converter);
+        $seriesList = $this->convertSeriesList($this->bodyConverted[self::KEY_SERIES_LIST], $converter);
+        $this->bodyConverted[self::KEY_SERIES_LIST] = $seriesList;
     }
 
     public function getRouteParam(string $key)
@@ -64,19 +65,6 @@ class Request
     public function getTypeOf(string $key)
     {
 
-    }
-
-    private function findKeyRecursive(array &$data, string $searchKey, ConverterInterface $converter)
-    {
-        foreach ($data as $key => $value) {
-            if($key === $searchKey && gettype($value) === 'array') {
-                $data[$key] = $this->convertSeriesList($value, $converter);
-            }
-            if($key !== $searchKey && gettype($value) === 'array') {
-                $this->findKeyRecursive($value, $searchKey, $converter);
-                $data[$key] = $value;
-            }
-        }
     }
 
     /**

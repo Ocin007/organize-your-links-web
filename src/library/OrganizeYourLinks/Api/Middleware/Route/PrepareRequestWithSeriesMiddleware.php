@@ -1,7 +1,7 @@
 <?php
 
 
-namespace OrganizeYourLinks\Api\Middleware\Group;
+namespace OrganizeYourLinks\Api\Middleware\Route;
 
 
 use OrganizeYourLinks\Api\HelperFactory;

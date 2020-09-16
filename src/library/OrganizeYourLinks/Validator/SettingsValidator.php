@@ -3,7 +3,7 @@
 namespace OrganizeYourLinks\Validator;
 
 
-class SettingsValidator implements Validator {
+class SettingsValidator implements ValidatorInterface {
 
     private array $keysTypeMap = [
         "startPage" => 'integer',

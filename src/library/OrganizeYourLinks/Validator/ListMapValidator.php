@@ -3,7 +3,7 @@
 namespace OrganizeYourLinks\Validator;
 
 
-class ListMapValidator implements Validator {
+class ListMapValidator implements ValidatorInterface {
 
     private int $mode;
     private array $map;

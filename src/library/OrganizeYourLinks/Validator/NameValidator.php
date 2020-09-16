@@ -6,7 +6,7 @@ namespace OrganizeYourLinks\Validator;
 use OrganizeYourLinks\Generator\GeneratorInterface ;
 use OrganizeYourLinks\Reader;
 
-class NameValidator implements Validator {
+class NameValidator implements ValidatorInterface {
 
     private Reader $reader;
     private GeneratorInterface $fileNameGenerator;

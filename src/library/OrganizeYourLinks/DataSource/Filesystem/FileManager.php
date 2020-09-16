@@ -91,12 +91,10 @@ class FileManager implements DataSourceInterface
             }
             $seriesList = [];
             foreach ($this->idFileMap as $id => $file) {
-                $seriesStr = $this->reader->readFile(self::SERIES_DIR . '/' . $file);
-                if($seriesStr === null) {
-                    $errorList = new ErrorList();
-                    return $errorList->add(ErrorList::CANNOT_LOAD_SERIES . ' ' . $id);
+                $series = $this->loadSeries($id, $file);
+                if($series instanceof ErrorListInterface) {
+                    return $series;
                 }
-                $series = json_decode($seriesStr, true);
                 $seriesList[] = $series;
             }
             if(isset($filter)) {
@@ -110,6 +108,21 @@ class FileManager implements DataSourceInterface
             return $errorList->add(ErrorList::CANNOT_LOAD_ALL_SERIES);
         }
         return $seriesList;
+    }
+
+    /**
+     * @param string $id
+     * @param string $file
+     * @return array|ErrorListInterface
+     */
+    private function loadSeries(string $id, string $file)
+    {
+        $seriesStr = $this->reader->readFile(self::SERIES_DIR . '/' . $file);
+        if($seriesStr === null) {
+            $errorList = new ErrorList();
+            return $errorList->add(ErrorList::CANNOT_LOAD_SERIES . ' ' . $id);
+        }
+        return json_decode($seriesStr, true);
     }
 
     public function seriesExist(string $id): bool
@@ -230,6 +243,23 @@ class FileManager implements DataSourceInterface
         return $errorList;
     }
 
+    public function checkSeriesNames(array $series): ErrorListInterface
+    {
+        $errorList = $this->loadIdFileMap();
+        if(!$errorList->isEmpty()) {
+            return $errorList;
+        }
+        $allNames = $this->getAllNames();
+        if($allNames instanceof ErrorListInterface) {
+            return $allNames;
+        }
+        foreach (SeriesInterface::NAME_PRIO_LIST as $nameKey) {
+            $errorList->add($this->checkForDuplicateName($nameKey, $series[$nameKey], $allNames));
+        }
+        $errorList->add($this->checkForAlreadyExistingFiles($series));
+        return $errorList;
+    }
+
     private function loadIdFileMap(): ErrorListInterface
     {
         $errorList = new ErrorList();
@@ -278,5 +308,42 @@ class FileManager implements DataSourceInterface
             return $errorList->add($message);
         }
         return $content;
+    }
+
+    /**
+     * @return array|ErrorListInterface
+     */
+    private function getAllNames()
+    {
+        $allNames = [];
+        foreach ($this->idFileMap as $id => $file) {
+            $series = $this->loadSeries($id, $file);
+            if($series instanceof ErrorListInterface) {
+                return $series;
+            }
+            $allNames[$series[SeriesInterface::KEY_NAME_DE]] = $id;
+            $allNames[$series[SeriesInterface::KEY_NAME_EN]] = $id;
+            $allNames[$series[SeriesInterface::KEY_NAME_JPN]] = $id;
+        }
+        return $allNames;
+    }
+
+    private function checkForDuplicateName(string $nameKey, string $name, array $allNames): ErrorListInterface
+    {
+        $errorList = new ErrorList();
+        if($name !== '' && isset($allNames[$name])) {
+            $errorList->add(ErrorList::DUPLICATE_SERIES_NAME . ': ' . $nameKey);
+        }
+        return $errorList;
+    }
+
+    private function checkForAlreadyExistingFiles(array $series): ErrorListInterface
+    {
+        $errorList = new ErrorList();
+        $generatedFile = $this->generateFileName($series);
+        if($generatedFile === '' || file_exists(self::SERIES_DIR . '/' . $generatedFile)) {
+            $errorList->add(ErrorList::SERIES_NAMES_INVALID);
+        }
+        return $errorList;
     }
 }

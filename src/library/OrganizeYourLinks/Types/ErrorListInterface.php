@@ -19,10 +19,14 @@ interface ErrorListInterface
     const CANNOT_SAVE_SETTINGS = 'cannot save settings';
     const CANNOT_SAVE_TVDB_API_TOKEN = 'cannot save tvdb api token';
     const DATA_DIR_NOT_WRITABLE = 'data directory not writable';
+    const DUPLICATE_SERIES_NAME = 'duplicate series name';
     const INVALID_REQUEST_BODY_NOT_CORRECT_JSON = 'invalid request, body is not correct json';
     const INVALID_REQUEST_CANNOT_DECODE_JSON = 'invalid request, cannot decode json';
     const INVALID_REQUEST_MALFORMED_BODY = 'invalid request, malformed body';
     const INVALID_REQUEST_NO_BODY = 'invalid request, no request body';
+    const LIST_ELEMENT_NO_VALID_SERIES = 'list element no valid series';
+    const NO_SERIES_IN_REQUEST = 'no series in request';
+    const SERIES_NAMES_INVALID = 'series names invalid';
 
     public function getErrorList(): array;
     public function isEmpty(): bool;

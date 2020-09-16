@@ -4,13 +4,13 @@ namespace OrganizeYourLinks\Validator;
 
 use PHPUnit\Framework\TestCase;
 
-class DataListValidatorTest extends TestCase
+class DataIsSeriesValidatorTest extends TestCase
 {
-    private DataListValidator $subject;
+    private DataIsSeriesValidator $subject;
 
     public function setUp(): void
     {
-        $this->subject = new DataListValidator();
+        $this->subject = new DataIsSeriesValidator();
     }
 
     public function testValidateEmpty()
