@@ -10,6 +10,7 @@ use OrganizeYourLinks\Types\SeriesInterface;
 class Request
 {
     const KEY_SERIES_LIST = 'seriesList';
+    const KEY_ROUTE_TVDB_ID = 'tvdbId';
 
     private array $args = [];
     private array $bodyRaw;

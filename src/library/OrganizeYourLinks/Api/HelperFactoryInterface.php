@@ -6,6 +6,7 @@ namespace OrganizeYourLinks\Api;
 
 use OrganizeYourLinks\DataSource\DataSourceInterface;
 use OrganizeYourLinks\DataSource\Filesystem\FileManager;
+use OrganizeYourLinks\ExternalApi\TvdbApi;
 use OrganizeYourLinks\Manager\SeriesManager;
 use OrganizeYourLinks\Manager\SettingsManager;
 use OrganizeYourLinks\Sorter\SorterInterface;
@@ -30,4 +31,6 @@ interface HelperFactoryInterface
     public function getSettingsManager(): SettingsManager;
 
     public function getSettingsValidator(): ValidatorInterface;
+
+    public function getTvdbApiManager(): TvdbApi;
 }

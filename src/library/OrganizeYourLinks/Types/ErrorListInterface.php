@@ -29,6 +29,8 @@ interface ErrorListInterface
     const SERIES_DOES_NOT_EXIST = 'series does not exist';
     const SERIES_NAMES_INVALID = 'series names invalid';
     const SETTINGS_INVALID = 'settings invalid';
+    const TVDB_API_PREPARING_FAILED = 'preparing failed';
+    const TVDB_API_SERIES_ID_NOT_VALID = 'tvdb api series id not valid';
 
     public function getErrorList(): array;
     public function isEmpty(): bool;
