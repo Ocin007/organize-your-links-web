@@ -1,12 +1,12 @@
 <?php
 
-namespace OrganizeYourLinks;
+namespace OrganizeYourLinks\Sorter;
 
 
 use Exception;
 
-class Sorter {
-
+class Sorter implements SorterInterface
+{
     private array $settings;
     private array $keys = ['name_de', 'name_en', 'name_jpn'];
 
@@ -18,7 +18,8 @@ class Sorter {
      * @param array $content
      * @throws Exception
      */
-    public function sort(array &$content) {
+    public function sort(array &$content): void
+    {
         usort($content, function ($a, $b) {
             $nameA = strtolower($this->getName($a));
             $nameB = strtolower($this->getName($b));
@@ -41,5 +42,11 @@ class Sorter {
             }
         }
         throw new Exception('sorter, no name found');
+    }
+
+    //not used atm
+    public function getCondition(): string
+    {
+        return '';
     }
 }
