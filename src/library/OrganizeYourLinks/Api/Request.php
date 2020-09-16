@@ -11,6 +11,7 @@ class Request
 {
     const KEY_SERIES_LIST = 'seriesList';
     const KEY_ROUTE_TVDB_ID = 'tvdbId';
+    const KEY_SEARCH_STRING = 'searchStr';
 
     private array $args = [];
     private array $bodyRaw;

@@ -30,6 +30,7 @@ interface ErrorListInterface
     const SERIES_NAMES_INVALID = 'series names invalid';
     const SETTINGS_INVALID = 'settings invalid';
     const TVDV_API_NO_THUMBNAILS_FOUND = 'no thumbnails found';
+    const TVDV_API_NOTHING_FOUND = 'nothing found';
     const TVDB_API_PREPARING_FAILED = 'preparing failed';
     const TVDB_API_SERIES_ID_NOT_VALID = 'tvdb api series id not valid';
 
