@@ -7,6 +7,7 @@ namespace OrganizeYourLinks\Api;
 use OrganizeYourLinks\DataSource\DataSourceInterface;
 use OrganizeYourLinks\DataSource\Filesystem\FileManager;
 use OrganizeYourLinks\Manager\SeriesManager;
+use OrganizeYourLinks\Manager\SettingsManager;
 use OrganizeYourLinks\Sorter\SorterInterface;
 use OrganizeYourLinks\Types\Converter\ConverterInterface;
 use OrganizeYourLinks\Validator\ValidatorInterface;
@@ -25,4 +26,6 @@ interface HelperFactoryInterface
     public function getDataIsSeriesValidator(): ValidatorInterface;
 
     public function getDataSource(): DataSourceInterface;
+
+    public function getSettingsManager(): SettingsManager;
 }
