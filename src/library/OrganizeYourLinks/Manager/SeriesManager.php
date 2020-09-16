@@ -68,13 +68,21 @@ class SeriesManager implements ErrorListContainerInterface
 
     /**
      * @param SeriesInterface[] $seriesList
+     * @return array
      */
-    public function updateSeriesMulti(array $seriesList): void
+    public function updateSeriesMulti(array $seriesList): array
     {
+        $idList = [];
         foreach ($seriesList as $series) {
             $seriesData = $this->converter->convertToNative($series);
-            $this->errorList->add($this->source->saveSeries($seriesData));
+            $errorList = $this->source->saveSeries($seriesData);
+            if($errorList->isEmpty()) {
+                $idList[] = $series->get(SeriesInterface::KEY_ID);
+            } else {
+                $this->errorList->add($errorList);
+            }
         }
+        return $idList;
     }
 
     /**
