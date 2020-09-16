@@ -28,6 +28,7 @@ interface ErrorListInterface
     const NO_SERIES_IN_REQUEST = 'no series in request';
     const SERIES_DOES_NOT_EXIST = 'series does not exist';
     const SERIES_NAMES_INVALID = 'series names invalid';
+    const SETTINGS_INVALID = 'settings invalid';
 
     public function getErrorList(): array;
     public function isEmpty(): bool;

@@ -28,4 +28,6 @@ interface HelperFactoryInterface
     public function getDataSource(): DataSourceInterface;
 
     public function getSettingsManager(): SettingsManager;
+
+    public function getSettingsValidator(): ValidatorInterface;
 }
