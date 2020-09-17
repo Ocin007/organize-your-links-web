@@ -1,13 +1,12 @@
 <?php
 
-namespace OrganizeYourLinks;
+namespace OrganizeYourLinks\Sorter;
 
 use Exception;
 use PHPUnit\Framework\TestCase;
 
 class SorterTest extends TestCase
 {
-
     private array $dataSet1;
     private array $dataSet2;
 
