@@ -7,8 +7,8 @@ use OrganizeYourLinks\Manager\SettingsManager;
 use OrganizeYourLinks\Types\ErrorList;
 use OrganizeYourLinks\Types\ErrorListInterface;
 
-class SettingsValidator implements ValidatorInterface {
-
+class SettingsValidator implements ValidatorInterface
+{
     private array $keysTypeMap = [
         SettingsManager::KEY_START_PAGE => 'integer',
         SettingsManager::KEY_INITIAL_DATA_ID => 'string',
@@ -27,7 +27,7 @@ class SettingsValidator implements ValidatorInterface {
         foreach ($this->keysTypeMap as $key => $type) {
             $noError &= $this->checkForKeyAndType($dataList, $key, $type);
         }
-        if(!$noError) {
+        if (!$noError) {
             $errorList->add(ErrorList::SETTINGS_INVALID);
         }
         return $errorList;

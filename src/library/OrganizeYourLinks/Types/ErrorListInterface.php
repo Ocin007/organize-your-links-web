@@ -34,6 +34,8 @@ interface ErrorListInterface
     const TVDB_API_SERIES_ID_NOT_VALID = 'tvdb api series id not valid';
 
     public function getErrorList(): array;
+
     public function isEmpty(): bool;
+
     public function add($errorMsg): self;
 }

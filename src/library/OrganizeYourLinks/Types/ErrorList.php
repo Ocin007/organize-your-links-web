@@ -14,7 +14,7 @@ class ErrorList implements ErrorListInterface
      */
     public function __construct($errorMsg = null)
     {
-        if($errorMsg !== null) {
+        if ($errorMsg !== null) {
             $this->add($errorMsg);
         }
     }
@@ -35,13 +35,13 @@ class ErrorList implements ErrorListInterface
      */
     public function add($errorMsg): self
     {
-        if($errorMsg instanceof ErrorList) {
+        if ($errorMsg instanceof ErrorList) {
             $this->errorList = array_merge($this->errorList, $errorMsg->getErrorList());
             $this->isEmpty &= $errorMsg->isEmpty();
-        } elseif(gettype($errorMsg) === 'string' && $errorMsg !== '') {
+        } elseif (gettype($errorMsg) === 'string' && $errorMsg !== '') {
             $this->errorList[] = $errorMsg;
             $this->isEmpty = false;
-        } elseif(gettype($errorMsg) === 'array') {
+        } elseif (gettype($errorMsg) === 'array') {
             $this->errorList = array_merge($this->errorList, $errorMsg);
             $this->isEmpty &= count($errorMsg) === 0;
         }

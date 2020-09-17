@@ -26,12 +26,12 @@ abstract class AbstractTvdbRouteIdEndpoint implements EndpointHandlerInterface
     {
         $idStr = $this->request->getRouteParam(Request::KEY_ROUTE_TVDB_ID);
         $tvdbId = intval($idStr);
-        if($tvdbId <= 1) {
+        if ($tvdbId <= 1) {
             return new ErrorList(ErrorList::TVDB_API_SERIES_ID_NOT_VALID);
         }
         $success = $this->tvdb->prepare();
         $errorList = $this->tvdb->getErrorList();
-        if(!$success) {
+        if (!$success) {
             $errorList->add(ErrorList::TVDB_API_PREPARING_FAILED);
         }
         return $errorList;

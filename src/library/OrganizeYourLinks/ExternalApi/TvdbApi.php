@@ -7,8 +7,8 @@ use OrganizeYourLinks\DataSource\DataSourceInterface;
 use OrganizeYourLinks\ErrorListContainerInterface;
 use OrganizeYourLinks\Types\ErrorListInterface;
 
-class TvdbApi implements ErrorListContainerInterface {
-
+class TvdbApi implements ErrorListContainerInterface
+{
     private static array $languages = ['de', 'en', 'ja'];
     private static array $languagesEp = ['en', 'de'];
     private static string $apiUrl = 'https://api.thetvdb.com';
@@ -24,7 +24,8 @@ class TvdbApi implements ErrorListContainerInterface {
     private DataSourceInterface $source;
     private ErrorListInterface $errorList;
 
-    public function __construct(DataSourceInterface $source, ErrorListInterface $errorList) {
+    public function __construct(DataSourceInterface $source, ErrorListInterface $errorList)
+    {
         $this->source = $source;
         $this->errorList = $errorList;
     }
@@ -41,7 +42,7 @@ class TvdbApi implements ErrorListContainerInterface {
 
     public function addToErrorList($list): bool
     {
-        if($list instanceof ErrorListInterface) {
+        if ($list instanceof ErrorListInterface) {
             $this->errorList->add($list);
             return true;
         }
@@ -58,23 +59,26 @@ class TvdbApi implements ErrorListContainerInterface {
         $this->errorList = $errorList;
     }
 
-    public function getContent() : array {
+    public function getContent(): array
+    {
         return $this->content;
     }
 
-    public function prepare() : bool {
-        if(!$this->source->isTvdbApiTokenValid()) {
+    public function prepare(): bool
+    {
+        if (!$this->source->isTvdbApiTokenValid()) {
             return $this->getNewToken();
         }
         $token = $this->source->loadTvdbApiToken();
-        if($this->addToErrorList($token)) {
+        if ($this->addToErrorList($token)) {
             return false;
         }
         $this->token = $token;
         return true;
     }
 
-    public function search($string) : bool {
+    public function search($string): bool
+    {
         $foundSomething = false;
         $urlAndQuery = TvdbApi::$apiUrl . TvdbApi::$rootSearch . '?' . http_build_query([
                 'name' => $string
@@ -91,16 +95,18 @@ class TvdbApi implements ErrorListContainerInterface {
         return $foundSomething;
     }
 
-    public function getEpisodes(string $id) : void {
+    public function getEpisodes(string $id): void
+    {
         foreach (TvdbApi::$languagesEp as $lang) {
             $next = 1;
-            while($next !== null) {
+            while ($next !== null) {
                 $next = $this->getPage($next, $id, $lang);
             }
         }
     }
 
-    private function getPage(int $page, string $id, string $lang) : ?int {
+    private function getPage(int $page, string $id, string $lang): ?int
+    {
         $urlAndQuery = TvdbApi::$apiUrl . TvdbApi::$rootEpImg1 . $id . TvdbApi::$rootEp2 . '?' . http_build_query([
                 'page' => $page
             ]);
@@ -113,29 +119,30 @@ class TvdbApi implements ErrorListContainerInterface {
         return null;
     }
 
-    private function getNewToken() : bool {
+    private function getNewToken(): bool
+    {
         $key = $this->source->loadTvdbApiKeyAsJSON();
-        if($this->addToErrorList($key)) {
+        if ($this->addToErrorList($key)) {
             return false;
         }
         $context = stream_context_create([
             'http' => [
-                'header'  => "Content-type: application/json",
-                'method'  => 'POST',
+                'header' => "Content-type: application/json",
+                'method' => 'POST',
                 'content' => $key,
             ],
-            "ssl"=> [
+            "ssl" => [
                 "cafile" => $this->source->getCaFilePath(),
                 "verify_peer" => true,
                 "verify_peer_name" => true,
             ],
         ]);
-        $result = $this->file_get_contents(TvdbApi::$apiUrl.TvdbApi::$rootLogin, $context);
-        if(!$this->checkResponse($result)) {
+        $result = $this->file_get_contents(TvdbApi::$apiUrl . TvdbApi::$rootLogin, $context);
+        if (!$this->checkResponse($result)) {
             return false;
         }
         $parsed = json_decode($result, true);
-        if(!isset($parsed['token'])) {
+        if (!isset($parsed['token'])) {
             return false;
         }
         $this->token = $parsed['token'];
@@ -144,42 +151,45 @@ class TvdbApi implements ErrorListContainerInterface {
         return $errorList->isEmpty();
     }
 
-    private function createStandardStreamContext(string $lang) {
+    private function createStandardStreamContext(string $lang)
+    {
         return stream_context_create([
             'http' => [
-                'header'  => [
+                'header' => [
                     "Content-type: application/json",
-                    "Accept-Language: ".$lang,
-                    "Authorization: Bearer ".$this->token
+                    "Accept-Language: " . $lang,
+                    "Authorization: Bearer " . $this->token
                 ],
                 'method' => 'GET'
             ],
-            "ssl"=> [
+            "ssl" => [
                 "cafile" => $this->source->getCaFilePath(),
-                "verify_peer"=> true,
-                "verify_peer_name"=> true,
+                "verify_peer" => true,
+                "verify_peer_name" => true,
             ],
         ]);
     }
 
-    private function checkResponse($result) : bool {
-        if($result === false) {
+    private function checkResponse($result): bool
+    {
+        if ($result === false) {
             return false;
         }
         $parsed = json_decode($result, true);
-        if(isset($parsed['Error'])) {
+        if (isset($parsed['Error'])) {
             return false;
         }
         return true;
     }
 
-    private function appendPageToContent(array $dataArray) : void {
+    private function appendPageToContent(array $dataArray): void
+    {
         foreach ($dataArray as $data) {
-            if($data['episodeName'] !== null) {
+            if ($data['episodeName'] !== null) {
                 $s = $data['airedSeason'];
                 $ep = $data['airedEpisodeNumber'];
                 $name = $data['episodeName'];
-                if(!isset($this->content[$s])) {
+                if (!isset($this->content[$s])) {
                     $this->content[$s] = [];
                 }
                 $this->content[$s][$ep] = $name;
@@ -187,16 +197,17 @@ class TvdbApi implements ErrorListContainerInterface {
         }
     }
 
-    public function getImages(string $id) : bool {
+    public function getImages(string $id): bool
+    {
         $urlAndQuery = TvdbApi::$apiUrl . TvdbApi::$rootEpImg1 . $id . TvdbApi::$rootImg2 . '?' . http_build_query([
                 'keyType' => 'season'
             ]);
         $result = $this->file_get_contents($urlAndQuery, $this->createStandardStreamContext('en'));
         if ($this->checkResponse($result)) {
             $parsed = json_decode($result, true);
-            foreach($parsed['data'] as $data) {
-                if(!isset($this->content[$data['subKey']])) {
-                    $this->content[$data['subKey']] = TvdbApi::$tvdbImagesUrl.$data['fileName'];
+            foreach ($parsed['data'] as $data) {
+                if (!isset($this->content[$data['subKey']])) {
+                    $this->content[$data['subKey']] = TvdbApi::$tvdbImagesUrl . $data['fileName'];
                 }
             }
             return true;

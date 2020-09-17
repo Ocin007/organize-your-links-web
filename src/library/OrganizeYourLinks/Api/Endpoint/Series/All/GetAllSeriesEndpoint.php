@@ -34,7 +34,7 @@ class GetAllSeriesEndpoint implements EndpointHandlerInterface
     public function execute(Response $response): void
     {
         $allSeries = $this->seriesManager->getAll(null, $this->sorter);
-        if($allSeries === null) {
+        if ($allSeries === null) {
             $errorList = $this->seriesManager->getErrorList();
             $response->appendErrors($errorList);
         } else {

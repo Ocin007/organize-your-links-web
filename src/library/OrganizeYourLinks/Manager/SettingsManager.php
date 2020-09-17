@@ -32,7 +32,8 @@ class SettingsManager implements ErrorListContainerInterface
     private ErrorListInterface $errorList;
     private DataSourceInterface $source;
 
-    public function __construct(DataSourceInterface $source, ErrorListInterface $errorList) {
+    public function __construct(DataSourceInterface $source, ErrorListInterface $errorList)
+    {
         $this->source = $source;
         $this->errorList = $errorList;
     }
@@ -49,16 +50,17 @@ class SettingsManager implements ErrorListContainerInterface
 
     public function addToErrorList($list): bool
     {
-        if($list instanceof ErrorListInterface) {
+        if ($list instanceof ErrorListInterface) {
             $this->errorList->add($list);
             return true;
         }
         return false;
     }
 
-    public function loadSettings(): void {
+    public function loadSettings(): void
+    {
         $settings = $this->source->loadSettings();
-        if($settings === null) {
+        if ($settings === null) {
             $this->errorList->add($this->setDefaultSettings());
         } else {
             $this->settings = $settings;
@@ -91,16 +93,18 @@ class SettingsManager implements ErrorListContainerInterface
         $this->errorList->add($errorList);
     }
 
-    private function setDefaultSettings(): ErrorListInterface {
+    private function setDefaultSettings(): ErrorListInterface
+    {
         $settings = $this->getDefaultSettings();
         $errorList = $this->source->saveSettings($settings);
-        if($errorList->isEmpty()) {
+        if ($errorList->isEmpty()) {
             $this->settings = $settings;
         }
         return $errorList;
     }
 
-    public static function getDefaultSettings(): array {
+    public static function getDefaultSettings(): array
+    {
         return [
             self::KEY_START_PAGE => self::DEFAULT_START_PAGE,
             self::KEY_INITIAL_DATA_ID => self::DEFAULT_INITIAL_DATA_ID,

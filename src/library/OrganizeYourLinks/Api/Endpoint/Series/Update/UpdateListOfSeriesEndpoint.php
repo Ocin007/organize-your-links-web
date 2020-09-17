@@ -34,7 +34,7 @@ class UpdateListOfSeriesEndpoint implements EndpointHandlerInterface
         $errorList = new ErrorList();
         foreach ($seriesList as $series) {
             $id = $series->get(SeriesInterface::KEY_ID);
-            if(!$this->source->seriesExist($id)) {
+            if (!$this->source->seriesExist($id)) {
                 $errorList->add(ErrorList::SERIES_DOES_NOT_EXIST . ': ' . $id);
             }
         }

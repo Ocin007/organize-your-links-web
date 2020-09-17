@@ -27,7 +27,7 @@ class SearchForSeriesInTvdbEndpoint implements EndpointHandlerInterface
     {
         $success = $this->tvdb->prepare();
         $errorList = $this->tvdb->getErrorList();
-        if(!$success) {
+        if (!$success) {
             $errorList->add(ErrorList::TVDB_API_PREPARING_FAILED);
         }
         return $errorList;
@@ -38,7 +38,7 @@ class SearchForSeriesInTvdbEndpoint implements EndpointHandlerInterface
         $searchStr = $this->request->getRawParam(Request::KEY_SEARCH_STRING);
         $success = $this->tvdb->search($searchStr);
         $errorList = new ErrorList();
-        if(!$success) {
+        if (!$success) {
             $errorList->add(ErrorList::TVDV_API_NOTHING_FOUND);
         }
         $response->appendErrors($errorList);

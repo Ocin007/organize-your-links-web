@@ -25,7 +25,7 @@ class CheckInstallationMiddleware extends AbstractMiddleware
             'data_dir_not_writable' => false,
             'key_file_missing' => false
         ];
-        if(!$fileManager->isDataDirectoryWritable()) {
+        if (!$fileManager->isDataDirectoryWritable()) {
             $errorList->add(ErrorList::DATA_DIR_NOT_WRITABLE);
             $installation['data_dir_not_writable'] = true;
             $this->allowExecOfNextHandler(false);

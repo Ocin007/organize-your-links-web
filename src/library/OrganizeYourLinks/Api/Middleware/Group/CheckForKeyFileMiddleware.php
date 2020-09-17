@@ -18,7 +18,7 @@ class CheckForKeyFileMiddleware extends AbstractMiddleware
     {
         $factory = new HelperFactory();
         $fileManager = $factory->getFileManager();
-        if(!$fileManager->keyFileExist()) {
+        if (!$fileManager->keyFileExist()) {
             /** @var Response $response */
             $response = $psrRequest->getAttribute(Response::class);
             $response->setParameter('key_file_missing', true);

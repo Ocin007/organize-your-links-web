@@ -32,7 +32,7 @@ class Response implements ErrorListContainerInterface
 
     public function addToErrorList($list): bool
     {
-        if($list instanceof ErrorListInterface) {
+        if ($list instanceof ErrorListInterface) {
             $this->errorList->add($list);
             return true;
         }
@@ -79,7 +79,7 @@ class Response implements ErrorListContainerInterface
         $response = $this->parameters;
         $response['response'] = $this->response;
         $this->scanAndReplaceSeriesObj($response, $converter);
-        if(!$this->errorList->isEmpty()) {
+        if (!$this->errorList->isEmpty()) {
             $response['error'] = $this->errorList->getErrorList();
         }
         return json_encode($response, JSON_PRETTY_PRINT);
@@ -88,9 +88,9 @@ class Response implements ErrorListContainerInterface
     private function scanAndReplaceSeriesObj(array &$response, ConverterInterface $converter)
     {
         foreach ($response as $key => $value) {
-            if($value instanceof SeriesInterface) {
+            if ($value instanceof SeriesInterface) {
                 $response[$key] = $converter->convertToNative($value);
-            } elseif(gettype($value) === 'array') {
+            } elseif (gettype($value) === 'array') {
                 $this->scanAndReplaceSeriesObj($value, $converter);
                 $response[$key] = $value;
             }

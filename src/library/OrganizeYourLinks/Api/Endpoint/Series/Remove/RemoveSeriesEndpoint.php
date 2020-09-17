@@ -30,7 +30,7 @@ class RemoveSeriesEndpoint implements EndpointHandlerInterface
     {
         $errorList = new ErrorList();
         $id = $this->request->getRouteParam('id');
-        if(!$this->source->seriesExist($id)) {
+        if (!$this->source->seriesExist($id)) {
             $errorList->add(ErrorList::SERIES_DOES_NOT_EXIST . ': ' . $id);
         }
         return $errorList;

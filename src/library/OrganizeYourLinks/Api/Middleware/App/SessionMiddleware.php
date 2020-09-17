@@ -14,7 +14,6 @@ class SessionMiddleware extends AbstractMiddleware
 {
     protected function before(PsrRequest $psrRequest, RequestHandler $handler): PsrRequest
     {
-
         return $psrRequest;
     }
 

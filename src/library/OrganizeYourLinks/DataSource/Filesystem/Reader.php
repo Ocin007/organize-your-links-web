@@ -8,15 +8,14 @@ use Exception;
 
 class Reader implements FileReaderInterface
 {
-
     public function readFile(string $filePath): ?string
     {
         try {
-            if(!is_readable($filePath)) {
+            if (!is_readable($filePath)) {
                 return null;
             }
             $content = file_get_contents($filePath);
-            if($content === false) {
+            if ($content === false) {
                 return null;
             }
         } catch (Exception $e) {

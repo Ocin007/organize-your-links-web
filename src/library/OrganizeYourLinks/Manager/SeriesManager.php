@@ -41,7 +41,7 @@ class SeriesManager implements ErrorListContainerInterface
 
     public function addToErrorList($list): bool
     {
-        if($list instanceof ErrorListInterface) {
+        if ($list instanceof ErrorListInterface) {
             $this->errorList->add($list);
             return true;
         }
@@ -56,7 +56,7 @@ class SeriesManager implements ErrorListContainerInterface
     public function getAll(?FilterInterface $filter, ?SorterInterface $sorter): ?array
     {
         $dataList = $this->source->loadAllSeries($filter, $sorter);
-        if($this->addToErrorList($dataList)) {
+        if ($this->addToErrorList($dataList)) {
             return null;
         }
         $result = [];
@@ -76,7 +76,7 @@ class SeriesManager implements ErrorListContainerInterface
         foreach ($seriesList as $series) {
             $seriesData = $this->converter->convertToNative($series);
             $errorList = $this->source->saveSeries($seriesData);
-            if($errorList->isEmpty()) {
+            if ($errorList->isEmpty()) {
                 $idList[] = $series->get(SeriesInterface::KEY_ID);
             } else {
                 $this->errorList->add($errorList);
@@ -93,7 +93,7 @@ class SeriesManager implements ErrorListContainerInterface
         foreach ($seriesList as $series) {
             do {
                 $id = uniqid('', true);
-            } while($this->source->seriesExist($id));
+            } while ($this->source->seriesExist($id));
             $series->set(SeriesInterface::KEY_ID, $id);
             $seriesData = $series->getAll();
             $seriesData[SeriesInterface::KEY_SEASONS] = [];

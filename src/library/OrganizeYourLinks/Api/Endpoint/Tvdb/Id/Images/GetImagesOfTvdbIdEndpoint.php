@@ -16,7 +16,7 @@ class GetImagesOfTvdbIdEndpoint extends AbstractTvdbRouteIdEndpoint
         $id = $this->request->getRouteParam(Request::KEY_ROUTE_TVDB_ID);
         $success = $this->tvdb->getImages($id);
         $errorList = new ErrorList();
-        if(!$success) {
+        if (!$success) {
             $errorList->add(ErrorList::TVDV_API_NO_THUMBNAILS_FOUND);
         }
         $response->appendErrors($errorList);

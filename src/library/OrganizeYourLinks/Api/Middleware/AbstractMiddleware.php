@@ -16,7 +16,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
     public final function __invoke(PsrRequest $psrRequest, RequestHandler $handler): PsrResponse
     {
         $psrRequest = $this->before($psrRequest, $handler);
-        if($this->gotoNextHandler) {
+        if ($this->gotoNextHandler) {
             $psrResponse = $handler->handle($psrRequest);
         } else {
             $psrResponse = new PsrResponse();

@@ -11,7 +11,8 @@ class Sorter implements SorterInterface
     private array $settings;
     private array $keys = ['name_de', 'name_en', 'name_jpn'];
 
-    function __construct(array $settings) {
+    function __construct(array $settings)
+    {
         $this->settings = $settings;
     }
 
@@ -33,12 +34,13 @@ class Sorter implements SorterInterface
      * @return string
      * @throws Exception
      */
-    private function getName(array $a) : string {
-        if($a[$this->settings[SettingsManager::KEY_TITLE_LANGUAGE]] !== '') {
+    private function getName(array $a): string
+    {
+        if ($a[$this->settings[SettingsManager::KEY_TITLE_LANGUAGE]] !== '') {
             return $a[$this->settings[SettingsManager::KEY_TITLE_LANGUAGE]];
         }
         foreach ($this->keys as $index => $key) {
-            if($a[$key] !== '') {
+            if ($a[$key] !== '') {
                 return $a[$key];
             }
         }

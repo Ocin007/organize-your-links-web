@@ -33,8 +33,8 @@ class UpdateSettingsEndpoint implements EndpointHandlerInterface
         $newSettings = $this->request->getRawBody();
         $errorList = $this->settingsValidator->validate($newSettings);
         $initialDataId = $newSettings[SettingsManager::KEY_INITIAL_DATA_ID];
-        if($initialDataId !== null && $initialDataId !== '') {
-            if(!$this->source->seriesExist($initialDataId)) {
+        if ($initialDataId !== null && $initialDataId !== '') {
+            if (!$this->source->seriesExist($initialDataId)) {
                 $errorList->add(ErrorListInterface::SERIES_DOES_NOT_EXIST);
             }
         }

@@ -15,7 +15,6 @@ use OrganizeYourLinks\Validator\ValidatorInterface;
 
 interface HelperFactoryInterface
 {
-
     public function getSeriesManager(): SeriesManager;
 
     public function getSorter(): SorterInterface;

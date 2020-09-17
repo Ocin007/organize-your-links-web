@@ -22,12 +22,12 @@ class CheckIsValidSeriesMiddleware extends AbstractMiddleware
         $validator = $factory->getDataIsSeriesValidator();
         $json = $psrRequest->getBody()->getContents();
         $parsedData = json_decode($json, true);
-        if(isset($parsedData[Request::KEY_SERIES_LIST])) {
+        if (isset($parsedData[Request::KEY_SERIES_LIST])) {
             $errorList = $validator->validate($parsedData[Request::KEY_SERIES_LIST]);
         } else {
             $errorList = new ErrorList(ErrorList::NO_SERIES_IN_REQUEST);
         }
-        if(!$errorList->isEmpty()) {
+        if (!$errorList->isEmpty()) {
             $this->allowExecOfNextHandler(false);
             /** @var Response $response */
             $response = $psrRequest->getAttribute(Response::class);

@@ -8,7 +8,7 @@ abstract class AbstractObject implements ObjectInterface
 {
     public function get(string $key)
     {
-        if(in_array($key, $this->getKeys())) {
+        if (in_array($key, $this->getKeys())) {
             return $this->$key;
         }
         return null;
@@ -16,7 +16,7 @@ abstract class AbstractObject implements ObjectInterface
 
     public function set(string $key, $value): void
     {
-        if(in_array($key, $this->getKeys())) {
+        if (in_array($key, $this->getKeys())) {
             $this->$key = $value;
         }
     }
@@ -35,7 +35,7 @@ abstract class AbstractObject implements ObjectInterface
     {
         $keyList = $this->getKeys();
         foreach ($keyList as $key) {
-            if(isset($data[$key])) {
+            if (isset($data[$key])) {
                 $this->$key = $data[$key];
             } else {
                 $this->$key = null;

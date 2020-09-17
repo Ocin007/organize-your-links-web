@@ -20,14 +20,14 @@ class CheckRequestMiddleware extends AbstractMiddleware
         $errorList = new ErrorList();
         $correctRequest = true;
         $body = $psrRequest->getBody()->getContents();
-        if($psrRequest->getMethod() !== 'GET') {
-            if($body === "") {
+        if ($psrRequest->getMethod() !== 'GET') {
+            if ($body === "") {
                 $correctRequest = false;
                 $errorList->add(ErrorList::INVALID_REQUEST_NO_BODY);
             }
             try {
                 $parsedBody = json_decode($body, true);
-                if(gettype($parsedBody) !== 'array') {
+                if (gettype($parsedBody) !== 'array') {
                     $correctRequest = false;
                     $errorList->add(ErrorList::INVALID_REQUEST_BODY_NOT_CORRECT_JSON);
                 }
