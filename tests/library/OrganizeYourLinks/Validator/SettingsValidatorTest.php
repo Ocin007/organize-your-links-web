@@ -19,17 +19,10 @@ class SettingsValidatorTest extends TestCase
             "animationSpeedMulti" => "0.1"
         ];
         $expectedErrors = [
-            "startPage" => 'missing',
-            "initialDataId" => 'missing',
-            "animationSpeedSingle" => 'missing',
-            "animationSpeedMulti" => 'wrong type',
-            "minSizeOfPlaylist" => 'missing',
-            "colorBrightness" => 'missing',
-            "titleLanguage" => 'missing',
-            "episodeCount" => 'missing'
+            'settings invalid'
         ];
-        $errors = $this->subject->validate($data);
-        $this->assertEquals($expectedErrors, $errors);
+        $errorList = $this->subject->validate($data);
+        $this->assertEquals($expectedErrors, $errorList->getErrorList());
     }
 
     public function testValidateCorrect()
@@ -45,7 +38,7 @@ class SettingsValidatorTest extends TestCase
             "episodeCount" => true
         ];
         $expectedErrors = [];
-        $errors = $this->subject->validate($data);
-        $this->assertEquals($expectedErrors, $errors);
+        $errorList = $this->subject->validate($data);
+        $this->assertEquals($expectedErrors, $errorList->getErrorList());
     }
 }
