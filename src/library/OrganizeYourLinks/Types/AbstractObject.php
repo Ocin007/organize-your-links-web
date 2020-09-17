@@ -37,8 +37,6 @@ abstract class AbstractObject implements ObjectInterface
         foreach ($keyList as $key) {
             if (isset($data[$key])) {
                 $this->$key = $data[$key];
-            } else {
-                $this->$key = null;
             }
         }
         return $this;
