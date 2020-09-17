@@ -6,6 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 class DataIsSeriesValidatorTest extends TestCase
 {
+    const TEST_DIR = __DIR__ . '/../../../fixtures/DataIsSeriesValidatorTest';
+
     private DataIsSeriesValidator $subject;
 
     public function setUp(): void
@@ -17,368 +19,74 @@ class DataIsSeriesValidatorTest extends TestCase
     {
         $testData = [];
         $expectedErrors = [];
-        $errors = $this->subject->validate($testData);
-        $this->assertEquals($expectedErrors, $errors);
+        $errorList = $this->subject->validate($testData);
+        $this->assertEquals($expectedErrors, $errorList->getErrorList());
     }
 
     public function testValidateTwoEmptyMembers()
     {
         $testData = [[], []];
         $expectedErrors = [
-            0 => [
-                'id' => 'missing',
-                'tvdbId' => 'missing',
-                'name_de' => 'missing',
-                'name_en' => 'missing',
-                'name_jpn' => 'missing',
-                'list' => 'missing',
-                'rank' => 'missing',
-                'favorite' => 'missing',
-                'seasons' => 'missing'
-            ],
-            1 => [
-                'id' => 'missing',
-                'tvdbId' => 'missing',
-                'name_de' => 'missing',
-                'name_en' => 'missing',
-                'name_jpn' => 'missing',
-                'list' => 'missing',
-                'rank' => 'missing',
-                'favorite' => 'missing',
-                'seasons' => 'missing'
-            ]
+            'list element no valid series: 0',
+            'list element no valid series: 1'
         ];
-        $errors = $this->subject->validate($testData);
-        $this->assertEquals($expectedErrors, $errors);
+        $errorList = $this->subject->validate($testData);
+        $this->assertEquals($expectedErrors, $errorList->getErrorList());
     }
 
     public function testValidateWrongTypes()
     {
-        $testData = [
-            [
-                'id' => false,
-                'tvdbId' => false,
-                'name_de' => false,
-                'name_en' => false,
-                'name_jpn' => false,
-                'list' => false,
-                'rank' => false,
-                'favorite' => 'string',
-                'seasons' => false
-            ]
-        ];
+        $testData = json_decode(file_get_contents(self::TEST_DIR . '/test1.json'), true);
         $expectedErrors = [
-            0 => [
-                'id' => 'wrong type',
-                'tvdbId' => 'wrong type',
-                'name_de' => 'wrong type',
-                'name_en' => 'wrong type',
-                'name_jpn' => 'wrong type',
-                'list' => 'wrong type',
-                'rank' => 'wrong type',
-                'favorite' => 'wrong type',
-                'seasons' => 'wrong type'
-            ]
+            'list element no valid series: 0'
         ];
-        $errors = $this->subject->validate($testData);
-        $this->assertEquals($expectedErrors, $errors);
+        $errorList = $this->subject->validate($testData);
+        $this->assertEquals($expectedErrors, $errorList->getErrorList());
     }
 
     public function testValidateEmptySeason()
     {
-        $testData = [
-            [
-                'id' => '',
-                'tvdbId' => -1,
-                'name_de' => '',
-                'name_en' => '',
-                'name_jpn' => 'japan',
-                'list' => 1,
-                'rank' => 0,
-                'favorite' => false,
-                'seasons' => []
-            ]
-        ];
+        $testData = json_decode(file_get_contents(self::TEST_DIR . '/test2.json'), true);
         $expectedErrors = [];
-        $errors = $this->subject->validate($testData);
-        $this->assertEquals($expectedErrors, $errors);
+        $errorList = $this->subject->validate($testData);
+        $this->assertEquals($expectedErrors, $errorList->getErrorList());
     }
 
     public function testValidateWrongSeason()
     {
-        $testData = [
-            [
-                'id' => '',
-                'tvdbId' => -1,
-                'name_de' => '     ',
-                'name_en' => '',
-                'name_jpn' => '   ',
-                'list' => 1,
-                'rank' => 0,
-                'favorite' => false,
-                'seasons' => [[]]
-            ]
-        ];
+        $testData = json_decode(file_get_contents(self::TEST_DIR . '/test3.json'), true);
         $expectedErrors = [
-            0 => [
-                'name' => 'no name given',
-                'seasons' => [
-                    0 => [
-                        'thumbnail' => 'missing',
-                        'url' => 'missing',
-                        'favorite' => 'missing',
-                        'episodes' => 'missing'
-                    ]
-                ]
-            ]
+            'list element no valid series: 0'
         ];
-        $errors = $this->subject->validate($testData);
-        $this->assertEquals($expectedErrors, $errors);
+        $errorList = $this->subject->validate($testData);
+        $this->assertEquals($expectedErrors, $errorList->getErrorList());
     }
 
     public function testValidateWrongEpisode()
     {
-        $testData = [
-            [
-                'id' => '',
-                'tvdbId' => -1,
-                'name_de' => 'germany',
-                'name_en' => 'uk',
-                'name_jpn' => '',
-                'list' => 1,
-                'rank' => 0,
-                'favorite' => false,
-                'seasons' => [
-                    [
-                        'thumbnail' => '',
-                        'url' => '',
-                        'favorite' => false,
-                        'episodes' => [[]]
-                    ]
-                ]
-            ]
-        ];
+        $testData = json_decode(file_get_contents(self::TEST_DIR . '/test4.json'), true);
         $expectedErrors = [
-            0 => [
-                'seasons' => [
-                    0 => [
-                        'episodes' => [
-                            0 => [
-                                'name' => 'missing',
-                                'url' => 'missing',
-                                'favorite' => 'missing',
-                                'watched' => 'missing'
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+            'list element no valid series: 0'
         ];
-        $errors = $this->subject->validate($testData);
-        $this->assertEquals($expectedErrors, $errors);
+        $errorList = $this->subject->validate($testData);
+        $this->assertEquals($expectedErrors, $errorList->getErrorList());
     }
 
     public function testValidateOneCorrectOneWrong()
     {
-        $testData = [
-            [
-                'id' => '',
-                'tvdbId' => -1,
-                'name_de' => '',
-                'name_en' => 'uk',
-                'name_jpn' => '',
-                'list' => 1,
-                'rank' => 0,
-                'favorite' => false,
-                'seasons' => [
-                    [
-                        'thumbnail' => '',
-                        'url' => '',
-                        'favorite' => false,
-                        'episodes' => [
-                            [
-                                'name' => '',
-                                'url' => '',
-                                'favorite' => false,
-                                'watched' => true,
-                            ]
-                        ]
-                    ]
-                ]
-            ],
-            [
-                'id' => false,
-                'tvdbId' => false,
-                'list' => false,
-                'seasons' => [
-                    [
-                        'thumbnail' => '',
-                        'url' => '',
-                        'favorite' => false,
-                        'episodes' => [
-                            [
-                                'name' => '',
-                                'url' => '',
-                                'favorite' => false,
-                                'watched' => true,
-                            ]
-                        ]
-                    ],
-                    [
-                        'thumbnail' => false,
-                        'episodes' => [
-                            [
-                                'name' => '',
-                                'url' => '',
-                                'favorite' => false,
-                                'watched' => true,
-                            ],
-                            [
-                                'favorite' => 'false',
-                                'watched' => 'false'
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ];
+        $testData = json_decode(file_get_contents(self::TEST_DIR . '/test5.json'), true);
         $expectedErrors = [
-            1 => [
-                'id' => 'wrong type',
-                'tvdbId' => 'wrong type',
-                'name_de' => 'missing',
-                'name_en' => 'missing',
-                'name_jpn' => 'missing',
-                'list' => 'wrong type',
-                'rank' => 'missing',
-                'favorite' => 'missing',
-                'seasons' => [
-                    1 => [
-                        'thumbnail' => 'wrong type',
-                        'url' => 'missing',
-                        'favorite' => 'missing',
-                        'episodes' => [
-                            1 => [
-                                'name' => 'missing',
-                                'url' => 'missing',
-                                'favorite' => 'wrong type',
-                                'watched' => 'wrong type',
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+            'list element no valid series: 1'
         ];
-        $errors = $this->subject->validate($testData);
-        $this->assertEquals($expectedErrors, $errors);
+        $errorList = $this->subject->validate($testData);
+        $this->assertEquals($expectedErrors, $errorList->getErrorList());
     }
 
     public function testValidateTwoCorrectElements()
     {
-        $testData = [
-            [
-                'id' => '',
-                'tvdbId' => -1,
-                'name_de' => '',
-                'name_en' => 'uk',
-                'name_jpn' => '',
-                'list' => 1,
-                'rank' => 0,
-                'favorite' => false,
-                'seasons' => [
-                    [
-                        'thumbnail' => '',
-                        'url' => '',
-                        'favorite' => false,
-                        'episodes' => [
-                            [
-                                'name' => '',
-                                'url' => '',
-                                'favorite' => false,
-                                'watched' => true,
-                            ],
-                            [
-                                'name' => '',
-                                'url' => '',
-                                'favorite' => false,
-                                'watched' => true,
-                            ]
-                        ]
-                    ],
-                    [
-                        'thumbnail' => '',
-                        'url' => '',
-                        'favorite' => false,
-                        'episodes' => [
-                            [
-                                'name' => '',
-                                'url' => '',
-                                'favorite' => false,
-                                'watched' => true,
-                            ],
-                            [
-                                'name' => '',
-                                'url' => '',
-                                'favorite' => false,
-                                'watched' => true,
-                            ]
-                        ]
-                    ]
-                ]
-            ],
-            [
-                'id' => '',
-                'tvdbId' => -1,
-                'name_de' => 'de',
-                'name_en' => '',
-                'name_jpn' => 'japan',
-                'list' => 1,
-                'rank' => 0,
-                'favorite' => false,
-                'seasons' => [
-                    [
-                        'thumbnail' => '',
-                        'url' => '',
-                        'favorite' => false,
-                        'episodes' => [
-                            [
-                                'name' => '',
-                                'url' => '',
-                                'favorite' => false,
-                                'watched' => true,
-                            ],
-                            [
-                                'name' => '',
-                                'url' => '',
-                                'favorite' => false,
-                                'watched' => true,
-                            ]
-                        ]
-                    ],
-                    [
-                        'thumbnail' => '',
-                        'url' => '',
-                        'favorite' => false,
-                        'episodes' => [
-                            [
-                                'name' => '',
-                                'url' => '',
-                                'favorite' => false,
-                                'watched' => true,
-                            ],
-                            [
-                                'name' => '',
-                                'url' => '',
-                                'favorite' => false,
-                                'watched' => true,
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ];
+        $testData = json_decode(file_get_contents(self::TEST_DIR . '/test6.json'), true);
         $expectedErrors = [];
-        $errors = $this->subject->validate($testData);
-        $this->assertEquals($expectedErrors, $errors);
+        $errorList = $this->subject->validate($testData);
+        $this->assertEquals($expectedErrors, $errorList->getErrorList());
     }
 }

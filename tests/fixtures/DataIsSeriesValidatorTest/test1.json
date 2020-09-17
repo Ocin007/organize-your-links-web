@@ -1,0 +1,13 @@
+[
+  {
+    "id": false,
+    "tvdbId": false,
+    "name_de": false,
+    "name_en": false,
+    "name_jpn": false,
+    "list": false,
+    "rank": false,
+    "favorite": "string",
+    "seasons": false
+  }
+]

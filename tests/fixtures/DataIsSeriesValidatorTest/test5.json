@@ -1,0 +1,62 @@
+[
+  {
+    "id": "",
+    "tvdbId": -1,
+    "name_de": "",
+    "name_en": "uk",
+    "name_jpn": "",
+    "list": 1,
+    "rank": 0,
+    "favorite": false,
+    "seasons": [
+      {
+        "thumbnail": "",
+        "url": "",
+        "favorite": false,
+        "episodes": [
+          {
+            "name": "",
+            "url": "",
+            "favorite": false,
+            "watched": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": false,
+    "tvdbId": false,
+    "list": false,
+    "seasons": [
+      {
+        "thumbnail": "",
+        "url": "",
+        "favorite": false,
+        "episodes": [
+          {
+            "name": "",
+            "url": "",
+            "favorite": false,
+            "watched": true
+          }
+        ]
+      },
+      {
+        "thumbnail": false,
+        "episodes": [
+          {
+            "name": "",
+            "url": "",
+            "favorite": false,
+            "watched": true
+          },
+          {
+            "favorite": "false",
+            "watched": "false"
+          }
+        ]
+      }
+    ]
+  }
+]
