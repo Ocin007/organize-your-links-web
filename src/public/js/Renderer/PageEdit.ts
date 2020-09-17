@@ -197,10 +197,8 @@ class PageEdit implements Slideable, ForeachElement {
                 episodes: []
             });
             for (let ep = 0; ep < this.inputElementList[s].episodes.length; ep++) {
-                let name = this.inputElementList[s].episodes[ep].name.value.replace(/"/g, '\'');
-                name = name.replace(/\\/g, '');
                 this.newData.seasons[s].episodes.push({
-                    name: name,
+                    name: this.inputElementList[s].episodes[ep].name.value,
                     url: this.inputElementList[s].episodes[ep].url.value,
                     favorite: this.inputElementList[s].episodes[ep].favorite,
                     watched: this.inputElementList[s].episodes[ep].watched

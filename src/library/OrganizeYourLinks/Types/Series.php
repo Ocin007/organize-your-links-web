@@ -6,19 +6,19 @@ namespace OrganizeYourLinks\Types;
 
 class Series extends AbstractObject implements SeriesInterface
 {
-    private string $id;
-    private int $tvdbId;
-    private string $name_de;
-    private string $name_en;
-    private string $name_jpn;
-    private int $list;
-    private int $rank;
-    private bool $favorite;
+    protected string $id = '';
+    protected int $tvdbId = -1;
+    protected string $name_de = '';
+    protected string $name_en = '';
+    protected string $name_jpn = '';
+    protected int $list = 3;
+    protected int $rank = 0;
+    protected bool $favorite = false;
 
     /**
      * @var SeasonInterface[]
      */
-    private array $seasons;
+    protected array $seasons = [];
 
     public function getKeys(): array
     {

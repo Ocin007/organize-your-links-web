@@ -6,7 +6,7 @@ class ServerData extends AjaxRequest {
 
     get(callback?: Function) {
         const instance = this;
-        ServerData.sendAjaxRequest('../api/get.php', {}, function (http) {
+        ServerData.sendAjaxRequest('GET', '../api/series/all', {}, function (http) {
             ServerData.errFunction(http, 'get');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
@@ -28,8 +28,7 @@ class ServerData extends AjaxRequest {
 
     put(list: DataListElement[], callback?: Function) {
         const instance = this;
-        ServerData.encodeAllElements(list);
-        ServerData.sendAjaxRequest('../api/put.php', {seriesList: list}, function (http) {
+        ServerData.sendAjaxRequest('PUT', '../api/series/update', {seriesList: list}, function (http) {
             ServerData.errFunction(http, 'put');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
@@ -43,7 +42,6 @@ class ServerData extends AjaxRequest {
             if (resObj.response === undefined) {
                 return;
             }
-            ServerData.decodeAllElements(list);
             for (let i = 0; i < list.length; i++) {
                 if (resObj.response.indexOf(list[i].id) !== -1) {
                     instance.updateList(list[i]);
@@ -56,8 +54,7 @@ class ServerData extends AjaxRequest {
     }
 
     post(list: DataListElement[], onError?: Function, onSuccess?: Function) {
-        ServerData.encodeAllElements(list);
-        ServerData.sendAjaxRequest('../api/post.php', {seriesList: list}, function (http) {
+        ServerData.sendAjaxRequest('POST', '../api/series/create', {seriesList: list}, function (http) {
             ServerData.errFunction(http, 'post');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
@@ -74,9 +71,9 @@ class ServerData extends AjaxRequest {
         });
     }
 
-    delete(idArray: string[], callback?: Function) {
-        ServerData.sendAjaxRequest('../api/delete.php', idArray, function (http) {
-            ServerData.errFunction(http, 'post');
+    delete(id: string, callback?: Function) {
+        ServerData.sendAjaxRequest('DELETE', '../api/series/remove/'+id, {}, function (http) {
+            ServerData.errFunction(http, 'delete');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
             if(ServerData.checkForErrorNotifications(resObj)) {
@@ -175,46 +172,6 @@ class ServerData extends AjaxRequest {
                 case ListID.NOT_WATCHED:
                     this.notWatched.push(i);
                     break;
-            }
-        }
-    }
-
-    private static decodeAllElements(list: DataListElement[]) {
-        for (let i = 0; i < list.length; i++) {
-            ServerData.decodeElement(list[i]);
-        }
-    }
-
-    private static decodeElement(element: DataListElement) {
-        element.name_de = decodeURIComponent(element.name_de);
-        element.name_en = decodeURIComponent(element.name_en);
-        element.name_jpn = decodeURIComponent(element.name_jpn);
-        for (let s = 0; s < element.seasons.length; s++) {
-            element.seasons[s].url = decodeURIComponent(element.seasons[s].url);
-            element.seasons[s].thumbnail = decodeURIComponent(element.seasons[s].thumbnail);
-            for (let ep = 0; ep < element.seasons[s].episodes.length; ep++) {
-                element.seasons[s].episodes[ep].url = decodeURIComponent(element.seasons[s].episodes[ep].url);
-                element.seasons[s].episodes[ep].name = decodeURIComponent(element.seasons[s].episodes[ep].name);
-            }
-        }
-    }
-
-    private static encodeAllElements(elementList: DataListElement[]) {
-        for (let i = 0; i < elementList.length; i++) {
-            ServerData.encodeElement(elementList[i]);
-        }
-    }
-
-    private static encodeElement(element: DataListElement) {
-        element.name_de = encodeURIComponent(element.name_de);
-        element.name_en = encodeURIComponent(element.name_en);
-        element.name_jpn = encodeURIComponent(element.name_jpn);
-        for (let s = 0; s < element.seasons.length; s++) {
-            element.seasons[s].url = encodeURIComponent(element.seasons[s].url);
-            element.seasons[s].thumbnail = encodeURIComponent(element.seasons[s].thumbnail);
-            for (let ep = 0; ep < element.seasons[s].episodes.length; ep++) {
-                element.seasons[s].episodes[ep].url = encodeURIComponent(element.seasons[s].episodes[ep].url);
-                element.seasons[s].episodes[ep].name = encodeURIComponent(element.seasons[s].episodes[ep].name);
             }
         }
     }

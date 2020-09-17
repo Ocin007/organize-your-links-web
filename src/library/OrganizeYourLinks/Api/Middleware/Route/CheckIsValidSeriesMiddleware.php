@@ -12,6 +12,7 @@ use OrganizeYourLinks\Types\ErrorList;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response as PsrResponse;
+use Slim\Psr7\Message as PsrMessage;
 
 class CheckIsValidSeriesMiddleware extends AbstractMiddleware
 {
@@ -19,7 +20,7 @@ class CheckIsValidSeriesMiddleware extends AbstractMiddleware
     {
         $factory = new HelperFactory();
         $validator = $factory->getDataIsSeriesValidator();
-        $json = $psrRequest->getParsedBody()['data'];
+        $json = $psrRequest->getBody()->getContents();
         $parsedData = json_decode($json, true);
         if(isset($parsedData[Request::KEY_SERIES_LIST])) {
             $errorList = $validator->validate($parsedData[Request::KEY_SERIES_LIST]);
@@ -35,8 +36,8 @@ class CheckIsValidSeriesMiddleware extends AbstractMiddleware
         return $psrRequest;
     }
 
-    protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): void
+    protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): PsrMessage
     {
-
+        return $psrResponse;
     }
 }

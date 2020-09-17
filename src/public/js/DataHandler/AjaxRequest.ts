@@ -1,9 +1,9 @@
 class AjaxRequest {
 
-    static sendAjaxRequest(url: string, data: any, onError: Function, onSuccess: Function) {
+    static sendAjaxRequest(method: string, url: string, data: any, onError: Function, onSuccess: Function) {
         let http = new XMLHttpRequest();
-        http.open("POST", url);
-        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        http.open(method, url);
+        http.setRequestHeader('Content-type', 'application/json');
         http.addEventListener('load', function () {
             if (http.status >= 200 && http.status < 300) {
                 try {
@@ -17,7 +17,7 @@ class AjaxRequest {
                 onError(http);
             }
         });
-        http.send('data=' + JSON.stringify(data));
+        http.send(JSON.stringify(data));
     }
 
     static errFunction(http: XMLHttpRequest, title: string) {

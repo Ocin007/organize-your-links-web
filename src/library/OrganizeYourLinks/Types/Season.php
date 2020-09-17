@@ -6,14 +6,14 @@ namespace OrganizeYourLinks\Types;
 
 class Season extends AbstractObject implements SeasonInterface
 {
-    private string $url;
-    private string $thumbnail;
-    private bool $favorite;
+    protected string $url = '';
+    protected string $thumbnail = '';
+    protected bool $favorite = false;
 
     /**
      * @var EpisodeInterface[]
      */
-    private array $episodes;
+    protected array $episodes = [];
 
     public function getKeys(): array
     {

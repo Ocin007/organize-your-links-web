@@ -10,6 +10,7 @@ use OrganizeYourLinks\Api\Response;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response as PsrResponse;
+use Slim\Psr7\Message as PsrMessage;
 
 class CheckForKeyFileMiddleware extends AbstractMiddleware
 {
@@ -26,8 +27,8 @@ class CheckForKeyFileMiddleware extends AbstractMiddleware
         return $psrRequest;
     }
 
-    protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): void
+    protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): PsrMessage
     {
-
+        return $psrResponse;
     }
 }

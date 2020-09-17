@@ -7,6 +7,7 @@ namespace OrganizeYourLinks\Api\Middleware;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response as PsrResponse;
+use Slim\Psr7\Message as PsrMessage;
 
 abstract class AbstractMiddleware implements MiddlewareInterface
 {
@@ -20,7 +21,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
         } else {
             $psrResponse = new PsrResponse();
         }
-        $this->after($psrRequest, $psrResponse, $handler);
+        $psrResponse = $this->after($psrRequest, $psrResponse, $handler);
         return $psrResponse;
     }
 
@@ -59,6 +60,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
      * @param PsrRequest $psrRequest
      * @param PsrResponse $psrResponse
      * @param RequestHandler $handler
+     * @return PsrResponse
      */
-    abstract protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): void;
+    abstract protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): PsrMessage;
 }

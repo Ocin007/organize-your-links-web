@@ -19,14 +19,14 @@ class SettingsManager implements ErrorListContainerInterface
     private const DEFAULT_TITLE_LANGUAGE = "name_de";
     private const DEFAULT_EPISODE_COUNT = false;
 
-    const START_PAGE = 'startPage';
-    const INITIAL_DATA_ID = 'initialDataId';
-    const ANIMATION_SPEED_SINGLE = 'animationSpeedSingle';
-    const ANIMATION_SPEED_MULTI = 'animationSpeedMulti';
-    const MIN_SIZE_OF_PLAYLIST = 'minSizeOfPlaylist';
-    const COLOR_BRIGHTNESS = 'colorBrightness';
-    const TITLE_LANGUAGE = 'titleLanguage';
-    const EPISODE_COUNT = 'episodeCount';
+    const KEY_START_PAGE = 'startPage';
+    const KEY_INITIAL_DATA_ID = 'initialDataId';
+    const KEY_ANIMATION_SPEED_SINGLE = 'animationSpeedSingle';
+    const KEY_ANIMATION_SPEED_MULTI = 'animationSpeedMulti';
+    const KEY_MIN_SIZE_OF_PLAYLIST = 'minSizeOfPlaylist';
+    const KEY_COLOR_BRIGHTNESS = 'colorBrightness';
+    const KEY_TITLE_LANGUAGE = 'titleLanguage';
+    const KEY_EPISODE_COUNT = 'episodeCount';
 
     private array $settings;
     private ErrorListInterface $errorList;
@@ -102,14 +102,14 @@ class SettingsManager implements ErrorListContainerInterface
 
     public static function getDefaultSettings(): array {
         return [
-            "startPage" => SettingsManager::DEFAULT_START_PAGE,
-            "initialDataId" => SettingsManager::DEFAULT_INITIAL_DATA_ID,
-            "animationSpeedSingle" => SettingsManager::DEFAULT_ANIMATION_SPEED_SINGLE,
-            "animationSpeedMulti" => SettingsManager::DEFAULT_ANIMATION_SPEED_MULTI,
-            "minSizeOfPlaylist" => SettingsManager::DEFAULT_MIN_SIZE_OF_PLAYLIST,
-            "colorBrightness" => SettingsManager::DEFAULT_COLOR_BRIGHTNESS,
-            "titleLanguage" => SettingsManager::DEFAULT_TITLE_LANGUAGE,
-            "episodeCount" => SettingsManager::DEFAULT_EPISODE_COUNT
+            self::KEY_START_PAGE => self::DEFAULT_START_PAGE,
+            self::KEY_INITIAL_DATA_ID => self::DEFAULT_INITIAL_DATA_ID,
+            self::KEY_ANIMATION_SPEED_SINGLE => self::DEFAULT_ANIMATION_SPEED_SINGLE,
+            self::KEY_ANIMATION_SPEED_MULTI => self::DEFAULT_ANIMATION_SPEED_MULTI,
+            self::KEY_MIN_SIZE_OF_PLAYLIST => self::DEFAULT_MIN_SIZE_OF_PLAYLIST,
+            self::KEY_COLOR_BRIGHTNESS => self::DEFAULT_COLOR_BRIGHTNESS,
+            self::KEY_TITLE_LANGUAGE => self::DEFAULT_TITLE_LANGUAGE,
+            self::KEY_EPISODE_COUNT => self::DEFAULT_EPISODE_COUNT
         ];
     }
 }

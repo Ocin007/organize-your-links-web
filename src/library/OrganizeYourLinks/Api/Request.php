@@ -37,11 +37,6 @@ class Request
         $this->bodyRaw = json_decode($json, true);
     }
 
-    public function getConvertedBody(): array
-    {
-        return $this->bodyConverted;
-    }
-
     public function setConvertedBody(string $json): self
     {
         $this->bodyConverted = json_decode($json, true);
@@ -62,11 +57,6 @@ class Request
     public function setRouteParams(array $args): void
     {
         $this->args = $args;
-    }
-
-    public function getTypeOf(string $key)
-    {
-
     }
 
     /**

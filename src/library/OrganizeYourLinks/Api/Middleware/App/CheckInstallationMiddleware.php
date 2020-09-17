@@ -11,6 +11,7 @@ use OrganizeYourLinks\Types\ErrorList;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response as PsrResponse;
+use Slim\Psr7\Message as PsrMessage;
 
 class CheckInstallationMiddleware extends AbstractMiddleware
 {
@@ -36,8 +37,8 @@ class CheckInstallationMiddleware extends AbstractMiddleware
         return $psrRequest;
     }
 
-    protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): void
+    protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): PsrMessage
     {
-
+        return $psrResponse;
     }
 }

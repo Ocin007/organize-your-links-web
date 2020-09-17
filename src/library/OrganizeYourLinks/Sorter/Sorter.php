@@ -4,6 +4,7 @@ namespace OrganizeYourLinks\Sorter;
 
 
 use Exception;
+use OrganizeYourLinks\Manager\SettingsManager;
 
 class Sorter implements SorterInterface
 {
@@ -33,8 +34,8 @@ class Sorter implements SorterInterface
      * @throws Exception
      */
     private function getName(array $a) : string {
-        if($a[$this->settings['titleLanguage']] !== '') {
-            return $a[$this->settings['titleLanguage']];
+        if($a[$this->settings[SettingsManager::KEY_TITLE_LANGUAGE]] !== '') {
+            return $a[$this->settings[SettingsManager::KEY_TITLE_LANGUAGE]];
         }
         foreach ($this->keys as $index => $key) {
             if($a[$key] !== '') {

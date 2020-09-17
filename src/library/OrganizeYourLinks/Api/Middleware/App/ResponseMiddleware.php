@@ -8,7 +8,8 @@ use OrganizeYourLinks\Api\HelperFactory;
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
 use OrganizeYourLinks\Api\Response;
 use OrganizeYourLinks\Types\ErrorList;
-use Psr\Http\Message\ResponseInterface as PsrResponse;
+use Slim\Psr7\Response as PsrResponse;
+use Slim\Psr7\Message as PsrMessage;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
@@ -21,11 +22,13 @@ class ResponseMiddleware extends AbstractMiddleware
         return $psrRequest;
     }
 
-    protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): void
+    protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): PsrMessage
     {
         /** @var Response $response */
         $response = $psrRequest->getAttribute(Response::class);
         $factory = new HelperFactory();
+        $psrResponse = $psrResponse->withHeader('Content-type', 'application/json');
         $psrResponse->getBody()->write($response->getJSON($factory->getSeriesConverter()));
+        return $psrResponse;
     }
 }

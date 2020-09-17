@@ -19,7 +19,9 @@ class EndpointHandlerWrapper
             /** @var Request $request */
             $request = $psrRequest->getAttribute(Request::class, new Request());
 
-            $request->setRawBody($psrRequest->getParsedBody()['data']);
+            if($psrRequest->getMethod() !== 'GET') {
+                $request->setRawBody($psrRequest->getBody()->getContents());
+            }
             $request->setRouteParams($args);
             $handler = new $className($request, new HelperFactory());
             $errorList = $handler->validateRequest();

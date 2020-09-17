@@ -3,35 +3,38 @@
 namespace OrganizeYourLinks\Validator;
 
 
+use OrganizeYourLinks\Types\EpisodeInterface;
 use OrganizeYourLinks\Types\ErrorList;
 use OrganizeYourLinks\Types\ErrorListInterface;
+use OrganizeYourLinks\Types\SeasonInterface;
+use OrganizeYourLinks\Types\SeriesInterface;
 
 class DataIsSeriesValidator implements ValidatorInterface {
 
     private array $keysTypeMapElement = [
-        'id' => 'string',
-        'tvdbId' => 'integer',
-        'list' => 'integer',
-        'rank' => 'integer',
-        'favorite' => 'boolean',
-        'seasons' => 'array',
+        SeriesInterface::KEY_ID => 'string',
+        SeriesInterface::KEY_TVDB_ID => 'integer',
+        SeriesInterface::KEY_LIST => 'integer',
+        SeriesInterface::KEY_RANK => 'integer',
+        SeriesInterface::KEY_FAVORITE => 'boolean',
+        SeriesInterface::KEY_SEASONS => 'array',
     ];
     private array $nameKeys = [
-        'name_de',
-        'name_en',
-        'name_jpn'
+        SeriesInterface::KEY_NAME_DE,
+        SeriesInterface::KEY_NAME_EN,
+        SeriesInterface::KEY_NAME_JPN
     ];
     private array $keysTypeMapSeason = [
-        'thumbnail' => 'string',
-        'url' => 'string',
-        'favorite' => 'boolean',
-        'episodes' => 'array',
+        SeasonInterface::KEY_THUMBNAIL => 'string',
+        SeasonInterface::KEY_URL => 'string',
+        SeasonInterface::KEY_FAVORITE => 'boolean',
+        SeasonInterface::KEY_EPISODES => 'array',
     ];
     private array $keysTypeMapEpisode = [
-        'name' => 'string',
-        'url' => 'string',
-        'favorite' => 'boolean',
-        'watched' => 'boolean',
+        EpisodeInterface::KEY_NAME => 'string',
+        EpisodeInterface::KEY_URL => 'string',
+        EpisodeInterface::KEY_FAVORITE => 'boolean',
+        EpisodeInterface::KEY_WATCHED => 'boolean',
     ];
 
     function validate(array $dataList): ErrorListInterface {
@@ -52,7 +55,7 @@ class DataIsSeriesValidator implements ValidatorInterface {
         }
         $noError &= $this->checkTitle($data);
         if($noError) {
-            $noError &= $this->validateSeasons($data['seasons']);
+            $noError &= $this->validateSeasons($data[SeriesInterface::KEY_SEASONS]);
         }
         return $noError;
     }
@@ -75,7 +78,7 @@ class DataIsSeriesValidator implements ValidatorInterface {
             $noError &= $this->checkForKeyAndType($season, $key, $type);
         }
         if($noError) {
-            $noError &= $this->validateEpisodes($season['episodes']);
+            $noError &= $this->validateEpisodes($season[SeasonInterface::KEY_EPISODES]);
         }
         return $noError;
     }
