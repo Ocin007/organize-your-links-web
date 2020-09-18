@@ -53,7 +53,7 @@ class SeriesManager implements ErrorListContainerInterface
      * @param SorterInterface|null $sorter
      * @return SeriesInterface[]|null
      */
-    public function getAll(?FilterInterface $filter, ?SorterInterface $sorter): ?array
+    public function getAll(?FilterInterface $filter = null, ?SorterInterface $sorter = null): ?array
     {
         $dataList = $this->source->loadAllSeries($filter, $sorter);
         if ($this->addToErrorList($dataList)) {
