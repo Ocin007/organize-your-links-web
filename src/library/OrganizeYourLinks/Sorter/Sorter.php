@@ -18,15 +18,17 @@ class Sorter implements SorterInterface
 
     /**
      * @param array $content
+     * @return array
      * @throws Exception
      */
-    public function sort(array &$content): void
+    public function sort(array $content): array
     {
         usort($content, function ($a, $b) {
             $nameA = strtolower($this->getName($a));
             $nameB = strtolower($this->getName($b));
             return strcmp($nameA, $nameB);
         });
+        return $content;
     }
 
     /**

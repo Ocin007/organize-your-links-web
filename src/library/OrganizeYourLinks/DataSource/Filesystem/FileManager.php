@@ -82,7 +82,7 @@ class FileManager implements DataSourceInterface
      * @param SorterInterface|null $sorter
      * @return ErrorListInterface|array
      */
-    public function loadAllSeries(?FilterInterface $filter, ?SorterInterface $sorter)
+    public function loadAllSeries(?FilterInterface $filter = null, ?SorterInterface $sorter = null)
     {
         try {
             $errorList = $this->loadIdFileMap();
@@ -98,10 +98,10 @@ class FileManager implements DataSourceInterface
                 $seriesList[] = $series;
             }
             if (isset($filter)) {
-                $filter->filter($seriesList);
+                $seriesList = $filter->filter($seriesList);
             }
             if (isset($sorter)) {
-                $sorter->sort($seriesList);
+                $seriesList = $sorter->sort($seriesList);
             }
         } catch (Exception $e) {
             return new ErrorList(ErrorList::CANNOT_LOAD_ALL_SERIES);
@@ -194,7 +194,7 @@ class FileManager implements DataSourceInterface
     /**
      * @return ErrorListInterface|string
      */
-    public function loadTvdbApiKeyAsJSON(): string
+    public function loadTvdbApiKeyAsJSON()
     {
         return $this->readFileWithErrMsg(
             self::TVDB_API_KEY_FILE,
@@ -215,7 +215,7 @@ class FileManager implements DataSourceInterface
     /**
      * @return ErrorListInterface|string
      */
-    public function loadTvdbApiToken(): string
+    public function loadTvdbApiToken()
     {
         return $this->readFileWithErrMsg(
             self::TVDB_API_TOKEN_FILE,
@@ -335,7 +335,7 @@ class FileManager implements DataSourceInterface
     {
         $errorList = new ErrorList();
         $generatedFile = $this->generateFileName($series);
-        if ($generatedFile === '' || file_exists(self::SERIES_DIR . '/' . $generatedFile)) {
+        if ($generatedFile === '' || in_array($generatedFile, array_values($this->idFileMap))) {
             $errorList->add(ErrorList::SERIES_NAMES_INVALID);
         }
         return $errorList;

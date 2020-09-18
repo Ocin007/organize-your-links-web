@@ -32,14 +32,14 @@ interface DataSourceInterface
     /**
      * @return ErrorListInterface|string
      */
-    public function loadTvdbApiKeyAsJSON(): string;
+    public function loadTvdbApiKeyAsJSON();
 
     public function isTvdbApiTokenValid(): bool;
 
     /**
      * @return ErrorListInterface|string
      */
-    public function loadTvdbApiToken(): string;
+    public function loadTvdbApiToken();
 
     public function getCaFilePath(): string;
 

@@ -30,7 +30,7 @@ class SorterTest extends TestCase
         $dataExpected = $this->dataSet1;
         $data = $this->dataSet2;
         $subject = new Sorter(["titleLanguage" => "name_de"]);
-        $subject->sort($data);
+        $data = $subject->sort($data);
         $this->assertEquals($dataExpected, $data);
     }
 
@@ -42,7 +42,7 @@ class SorterTest extends TestCase
         $dataExpected = $this->dataSet2;
         $data = $this->dataSet1;
         $subject = new Sorter(["titleLanguage" => "name_jpn"]);
-        $subject->sort($data);
+        $data = $subject->sort($data);
         $this->assertEquals($dataExpected, $data);
     }
 
@@ -62,7 +62,7 @@ class SorterTest extends TestCase
             ['name_de' => '', 'name_en' => '', 'name_jpn' => 'x']
         ];
         $subject = new Sorter(["titleLanguage" => "name_de"]);
-        $subject->sort($data);
+        $data = $subject->sort($data);
         $this->assertEquals($dataExpected, $data);
     }
 
