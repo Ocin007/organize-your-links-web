@@ -10,7 +10,6 @@ use PHPUnit\Framework\TestCase;
 class TvdbApiTest extends TestCase
 {
     private string $keyFile;
-    private string $certFile;
     private $sourceMock;
     private $errorListMock;
     private $subjectMock;
@@ -18,7 +17,7 @@ class TvdbApiTest extends TestCase
     public function setUp(): void
     {
         $this->keyFile = __DIR__.'/../../../../data/apikey.json';
-        $this->certFile = __DIR__.'/../../../../data/cacert.pem';
+        $certFile = __DIR__.'/../../../../data/cacert.pem';
         $this->sourceMock = Mockery::mock(DataSourceInterface::class);
         $this->errorListMock = Mockery::mock(ErrorListInterface::class);
         $this->sourceMock
@@ -26,7 +25,7 @@ class TvdbApiTest extends TestCase
             ->andReturn('');
         $this->sourceMock
             ->shouldReceive('getCaFilePath')
-            ->andReturn($this->certFile);
+            ->andReturn($certFile);
         $this->subjectMock = Mockery::mock(TvdbApi::class);
         $this->subjectMock->makePartial();
         $this->subjectMock->setDataSource($this->sourceMock);
@@ -39,8 +38,7 @@ class TvdbApiTest extends TestCase
             ->shouldReceive('isTvdbApiTokenValid')
             ->andReturn(true);
         $subject = new TvdbApi($this->sourceMock, $this->errorListMock);
-        $result = $subject->prepare();
-        $this->assertEquals(true, $result);
+        $this->assertTrue($subject->prepare());
     }
 
     public function testGetNewToken()
@@ -51,28 +49,30 @@ class TvdbApiTest extends TestCase
         $this->sourceMock
             ->shouldReceive('loadTvdbApiKeyAsJSON')
             ->andReturn(file_get_contents($this->keyFile));
-        $this->sourceMock
-            ->shouldReceive('getCaFilePath')
-            ->andReturn($this->certFile);
+        $this->subjectMock
+            ->shouldReceive('file_get_contents')
+            ->withSomeOfArgs('https://api.thetvdb.com/login')
+            ->once()
+            ->andReturn('{"token": "wasd"}');
         $newErrorListMock = Mockery::mock(ErrorListInterface::class);
-        $newErrorListMock
-            ->shouldReceive('isEmpty')
-            ->andReturn(true);
         $this->sourceMock
             ->shouldReceive('saveTvdbApiToken')
+            ->with('wasd')
             ->andReturn($newErrorListMock);
         $this->errorListMock
             ->shouldReceive('add')
             ->with($newErrorListMock)
             ->andReturn($this->errorListMock);
+        $newErrorListMock
+            ->shouldReceive('isEmpty')
+            ->andReturn(true);
+        $result = $this->subjectMock->prepare();
+        $this->assertTrue($result);
         $this->errorListMock
             ->shouldReceive('isEmpty')
             ->andReturn(true);
-        $subject = new TvdbApi($this->sourceMock, $this->errorListMock);
-        $result = $subject->prepare();
-        $this->assertEquals(true, $result);
-        $this->assertEquals(true, $subject->noErrors());
-        $this->assertEquals(true, $subject->addToErrorList($newErrorListMock));
+        $this->assertTrue($this->subjectMock->noErrors());
+        $this->assertTrue($this->subjectMock->addToErrorList($newErrorListMock));
     }
 
     public function testSearch()
@@ -86,8 +86,7 @@ class TvdbApiTest extends TestCase
             ->times(3)
             ->andReturn('{}');
         $this->subjectMock->prepare();
-        $result = $this->subjectMock->search('one piece');
-        $this->assertEquals(true, $result);
+        $this->assertTrue($this->subjectMock->search('one piece'));
     }
 
     public function testGetEpisodes()
@@ -113,7 +112,7 @@ class TvdbApiTest extends TestCase
             ], JSON_PRETTY_PRINT));
         $this->subjectMock->prepare();
         $this->subjectMock->getEpisodes(74796);
-        $this->assertEquals(true, isset($this->subjectMock->getContent()['1']));
+        $this->assertTrue(isset($this->subjectMock->getContent()['1']));
     }
 
     public function testGetImages()
@@ -134,6 +133,27 @@ class TvdbApiTest extends TestCase
                 ]
             ]));
         $this->subjectMock->prepare();
-        $this->assertEquals(true, $this->subjectMock->getImages(74796));
+        $this->assertTrue($this->subjectMock->getImages(74796));
+    }
+
+    public function testGetImagesNoneFound()
+    {
+        $this->sourceMock
+            ->shouldReceive('isTvdbApiTokenValid')
+            ->andReturn(true);
+        $this->subjectMock
+            ->shouldReceive('file_get_contents')
+            ->withSomeOfArgs('https://api.thetvdb.com/series/74796/images/query?keyType=season')
+            ->once()
+            ->andReturn(json_encode([
+                "Error" => ""
+            ]));
+        $this->subjectMock->prepare();
+        $this->assertFalse($this->subjectMock->getImages(74796));
+    }
+
+    public function testGetErrorList()
+    {
+        $this->assertEquals($this->errorListMock, $this->subjectMock->getErrorList());
     }
 }
