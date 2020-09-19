@@ -4,7 +4,6 @@
 namespace OrganizeYourLinks\Api\Middleware\Group;
 
 
-use OrganizeYourLinks\Api\HelperFactory;
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
 use OrganizeYourLinks\Api\Response;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
@@ -16,8 +15,7 @@ class CheckForKeyFileMiddleware extends AbstractMiddleware
 {
     protected function before(PsrRequest $psrRequest, RequestHandler $handler): PsrRequest
     {
-        $factory = new HelperFactory();
-        $fileManager = $factory->getFileManager();
+        $fileManager = $this->helperFactory->getFileManager();
         if (!$fileManager->keyFileExist()) {
             /** @var Response $response */
             $response = $psrRequest->getAttribute(Response::class);

@@ -4,7 +4,6 @@
 namespace OrganizeYourLinks\Api\Middleware\Route;
 
 
-use OrganizeYourLinks\Api\HelperFactory;
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
 use OrganizeYourLinks\Api\Request;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
@@ -17,10 +16,9 @@ class PrepareRequestWithSeriesMiddleware extends AbstractMiddleware
     protected function before(PsrRequest $psrRequest, RequestHandler $handler): PsrRequest
     {
         $request = new Request();
-        $factory = new HelperFactory();
         $request
             ->setConvertedBody($psrRequest->getBody()->getContents())
-            ->convert($factory->getSeriesConverter());
+            ->convert($this->helperFactory->getSeriesConverter());
         $psrRequest = $psrRequest->withAttribute(Request::class, $request);
         return $psrRequest;
     }

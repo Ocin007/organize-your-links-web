@@ -4,6 +4,8 @@
 namespace OrganizeYourLinks\Api\Middleware;
 
 
+use OrganizeYourLinks\Api\HelperFactory;
+use OrganizeYourLinks\Api\HelperFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response as PsrResponse;
@@ -12,6 +14,16 @@ use Slim\Psr7\Message as PsrMessage;
 abstract class AbstractMiddleware implements MiddlewareInterface
 {
     private bool $gotoNextHandler = true;
+    protected HelperFactoryInterface $helperFactory;
+
+    public function __construct(?HelperFactoryInterface $helperFactory = null)
+    {
+        if($helperFactory === null) {
+            $this->helperFactory = new HelperFactory();
+        } else {
+            $this->helperFactory = $helperFactory;
+        }
+    }
 
     public final function __invoke(PsrRequest $psrRequest, RequestHandler $handler): PsrResponse
     {

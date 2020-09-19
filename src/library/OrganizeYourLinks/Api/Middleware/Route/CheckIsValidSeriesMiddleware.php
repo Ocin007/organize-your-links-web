@@ -4,7 +4,6 @@
 namespace OrganizeYourLinks\Api\Middleware\Route;
 
 
-use OrganizeYourLinks\Api\HelperFactory;
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
 use OrganizeYourLinks\Api\Request;
 use OrganizeYourLinks\Api\Response;
@@ -18,8 +17,7 @@ class CheckIsValidSeriesMiddleware extends AbstractMiddleware
 {
     protected function before(PsrRequest $psrRequest, RequestHandler $handler): PsrRequest
     {
-        $factory = new HelperFactory();
-        $validator = $factory->getDataIsSeriesValidator();
+        $validator = $this->helperFactory->getDataIsSeriesValidator();
         $json = $psrRequest->getBody()->getContents();
         $parsedData = json_decode($json, true);
         if (isset($parsedData[Request::KEY_SERIES_LIST])) {

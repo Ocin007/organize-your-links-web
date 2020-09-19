@@ -4,7 +4,6 @@
 namespace OrganizeYourLinks\Api\Middleware\App;
 
 
-use OrganizeYourLinks\Api\HelperFactory;
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
 use OrganizeYourLinks\Api\Response;
 use OrganizeYourLinks\Types\ErrorList;
@@ -18,8 +17,7 @@ class CheckInstallationMiddleware extends AbstractMiddleware
     protected function before(PsrRequest $psrRequest, RequestHandler $handler): PsrRequest
     {
         $errorList = new ErrorList();
-        $factory = new HelperFactory();
-        $fileManager = $factory->getFileManager();
+        $fileManager = $this->helperFactory->getFileManager();
         $installation = [
             'composer_missing' => false,
             'data_dir_not_writable' => false,
