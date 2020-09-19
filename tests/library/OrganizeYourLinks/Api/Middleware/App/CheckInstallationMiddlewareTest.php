@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response as PsrResponse;
-use Slim\Psr7\Message as PsrMessage;
 
 require_once __DIR__ . '/../../../../../helpers/MockFactory.php';
 
@@ -18,7 +17,6 @@ class CheckInstallationMiddlewareTest extends TestCase
     private $psrRequestMock;
     private $psrResponseMock;
     private $psrRequestHandlerMock;
-    private $psrMessageMock;
     private MockFactory $mock;
     private $responseMock;
 
@@ -27,7 +25,6 @@ class CheckInstallationMiddlewareTest extends TestCase
         $this->psrRequestMock = Mockery::mock(PsrRequest::class);
         $this->psrResponseMock = Mockery::mock(PsrResponse::class);
         $this->psrRequestHandlerMock = Mockery::mock(RequestHandler::class);
-        $this->psrMessageMock = Mockery::mock(PsrMessage::class);
         $this->responseMock = Mockery::mock(Response::class);
         $this->mock = new MockFactory();
     }
