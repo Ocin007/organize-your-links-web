@@ -22,7 +22,7 @@ Webanwendung zum Verwalten der Links von Serien mit [TVDB](https://api.thetvdb.c
 
 ## Requirements
 
-- PHP-fähiger Webserver, z.B IIS (PHP 7.0, andere Versionen nicht getestet)
+- PHP-fähiger Webserver, z.B IIS (PHP 7.4)
 - Benötgt "composer"
 - Apikey Zur Nutzung der TVDB API (nicht zwingend notwendig, damit die Webanwendung funktioniert)
 
@@ -37,7 +37,7 @@ Webanwendung zum Verwalten der Links von Serien mit [TVDB](https://api.thetvdb.c
     - Übernehmen => OK => OK
 ##### Für TVDB API ()
 - Öffne das Verzeichnis "data"
-- Benenne die Datei "apikey.json.example" in "apikey.json" um und füge deine Daten ein
+- Füge deine Daten in "apikey.json" ein
 - Zur Kommunikation mit der TVDB API wird die Datei "cacert.pem" im data-Verzeichnis benötigt. Sollte
 diese mittlerweile veraltet sein, kann sie auf <https://curl.haxx.se/docs/caextract.html> heruntergeladen werden.
 
