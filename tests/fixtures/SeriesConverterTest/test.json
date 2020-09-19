@@ -1,0 +1,50 @@
+{
+  "id": "wasd",
+  "tvdbId": 307375,
+  "name_de": "de",
+  "name_en": "en",
+  "name_jpn": "",
+  "list": 1,
+  "rank": 0,
+  "favorite": true,
+  "seasons": [
+    {
+      "thumbnail": "abc",
+      "url": "xyz",
+      "favorite": true,
+      "episodes": [
+        {
+          "name": "name 1",
+          "url": "x",
+          "favorite": true,
+          "watched": true
+        },
+        {
+          "name": "name 2",
+          "url": "y",
+          "favorite": true,
+          "watched": true
+        }
+      ]
+    },
+    {
+      "thumbnail": "",
+      "url": "",
+      "favorite": false,
+      "episodes": [
+        {
+          "name": "",
+          "url": "",
+          "favorite": false,
+          "watched": false
+        },
+        {
+          "name": "",
+          "url": "test url",
+          "favorite": false,
+          "watched": false
+        }
+      ]
+    }
+  ]
+}

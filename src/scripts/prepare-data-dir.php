@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__.'/../../vendor/autoload.php';
 
-use OrganizeYourLinks\Settings;
+use OrganizeYourLinks\Manager\SettingsManager;
 
 
 const DATA_DIR = __DIR__.'/../../data';
@@ -13,7 +13,7 @@ $dirList = [
 $fileList = [
     DATA_DIR.'/apikey.json' => json_encode(["apikey" => "", "userkey" => "", "username" => ""], JSON_PRETTY_PRINT),
     DATA_DIR.'/list-map.json' => '{}',
-    DATA_DIR.'/settings.json' => json_encode(Settings::getDefaultSettings(), JSON_PRETTY_PRINT),
+    DATA_DIR.'/settings.json' => json_encode(SettingsManager::getDefaultSettings(), JSON_PRETTY_PRINT),
     DATA_DIR.'/cacert.pem' => file_get_contents('https://curl.haxx.se/ca/cacert.pem')
 ];
 

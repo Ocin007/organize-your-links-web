@@ -1,7 +1,7 @@
 class TVDB extends AjaxRequest {
 
     static search(token: string, callback: Function) {
-        TVDB.sendAjaxRequest('../api/tvdb/search.php', token, function (http) {
+        TVDB.sendAjaxRequest('POST', '../api/tvdb/search', {searchStr: token}, function (http) {
             TVDB.errFunction(http, 'search');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
@@ -13,7 +13,7 @@ class TVDB extends AjaxRequest {
     }
 
     static getEpisodes(id: number, callback: Function) {
-        TVDB.sendAjaxRequest('../api/tvdb/getEpisodes.php', id, function (http) {
+        TVDB.sendAjaxRequest('GET', '../api/tvdb/'+id+'/episodes', {}, function (http) {
             TVDB.errFunction(http, 'getEpisodes');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
@@ -25,7 +25,7 @@ class TVDB extends AjaxRequest {
     }
 
     static getImages(id: number, callback: Function) {
-        TVDB.sendAjaxRequest('../api/tvdb/getImages.php', id, function (http) {
+        TVDB.sendAjaxRequest('GET', '../api/tvdb/'+id+'/images', {}, function (http) {
             TVDB.errFunction(http, 'getImages');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);

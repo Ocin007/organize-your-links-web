@@ -4,3 +4,4 @@ vendor
 data-backup
 data
 src/public/js/organize-your-links.js
+.phpunit.result.cache

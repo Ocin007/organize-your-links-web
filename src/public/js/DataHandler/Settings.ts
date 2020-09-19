@@ -10,7 +10,7 @@ class Settings extends AjaxRequest {
     static episodeCount: boolean;
 
     static load(callback?: Function) {
-        Settings.sendAjaxRequest('../api/loadSettings.php', {}, function (http) {
+        Settings.sendAjaxRequest('GET', '../api/settings/get', {}, function (http) {
             Settings.errFunction(http, 'load');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
@@ -31,8 +31,8 @@ class Settings extends AjaxRequest {
 
     static update(callback?: Function) {
         const data = Settings.generateSettingsObj();
-        Settings.sendAjaxRequest('../api/updateSettings.php', data, function (http) {
-            Settings.errFunction(http, 'load');
+        Settings.sendAjaxRequest('PUT', '../api/settings/update', data, function (http) {
+            Settings.errFunction(http, 'update');
         }, function (http) {
             const resObj = JSON.parse(http.responseText);
             if(Settings.checkForErrorNotifications(resObj)) {

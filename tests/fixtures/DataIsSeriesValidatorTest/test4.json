@@ -1,0 +1,22 @@
+[
+  {
+    "id": "",
+    "tvdbId": -1,
+    "name_de": "germany",
+    "name_en": "uk",
+    "name_jpn": "",
+    "list": 1,
+    "rank": 0,
+    "favorite": false,
+    "seasons": [
+      {
+        "thumbnail": "",
+        "url": "",
+        "favorite": false,
+        "episodes": [
+          []
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,102 @@
+[
+  {
+    "id": "",
+    "tvdbId": -1,
+    "name_de": "",
+    "name_en": "uk",
+    "name_jpn": "",
+    "list": 1,
+    "rank": 0,
+    "favorite": false,
+    "seasons": [
+      {
+        "thumbnail": "",
+        "url": "",
+        "favorite": false,
+        "episodes": [
+          {
+            "name": "",
+            "url": "",
+            "favorite": false,
+            "watched": true
+          },
+          {
+            "name": "",
+            "url": "",
+            "favorite": false,
+            "watched": true
+          }
+        ]
+      },
+      {
+        "thumbnail": "",
+        "url": "",
+        "favorite": false,
+        "episodes": [
+          {
+            "name": "",
+            "url": "",
+            "favorite": false,
+            "watched": true
+          },
+          {
+            "name": "",
+            "url": "",
+            "favorite": false,
+            "watched": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "",
+    "tvdbId": -1,
+    "name_de": "de",
+    "name_en": "",
+    "name_jpn": "japan",
+    "list": 1,
+    "rank": 0,
+    "favorite": false,
+    "seasons": [
+      {
+        "thumbnail": "",
+        "url": "",
+        "favorite": false,
+        "episodes": [
+          {
+            "name": "",
+            "url": "",
+            "favorite": false,
+            "watched": true
+          },
+          {
+            "name": "",
+            "url": "",
+            "favorite": false,
+            "watched": true
+          }
+        ]
+      },
+      {
+        "thumbnail": "",
+        "url": "",
+        "favorite": false,
+        "episodes": [
+          {
+            "name": "",
+            "url": "",
+            "favorite": false,
+            "watched": true
+          },
+          {
+            "name": "",
+            "url": "",
+            "favorite": false,
+            "watched": true
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -52,7 +52,7 @@ class PageDelete {
 
     private delete(data: DataListElement) {
         const instance = this;
-        this.serverData.delete([data.id], function () {
+        this.serverData.delete(data.id, function () {
             instance.hideElement();
             reloadAllData();
         });
