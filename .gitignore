@@ -4,4 +4,16 @@ vendor
 data-backup
 data
 src/public/js/organize-your-links.js
+src/public/js/DataHandler/*.js
+src/public/js/DataHandler/*.map
+src/public/js/Enums/*.js
+src/public/js/Enums/*.map
+src/public/js/Interfaces/*.js
+src/public/js/Interfaces/*.map
+src/public/js/Other/*.js
+src/public/js/Other/*.map
+src/public/js/Renderer/*.js
+src/public/js/Renderer/*.map
+src/public/js/Style/*.js
+src/public/js/Style/*.map
 .phpunit.result.cache
