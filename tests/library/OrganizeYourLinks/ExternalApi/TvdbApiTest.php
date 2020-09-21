@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 class TvdbApiTest extends TestCase
 {
+    const TEST_FILE = __DIR__ . '/../../../fixtures/TvdbApiTest/read.txt';
+
     private string $keyFile;
     private $sourceMock;
     private $errorListMock;
@@ -161,5 +163,11 @@ class TvdbApiTest extends TestCase
     {
         $subject = new TvdbApi($this->sourceMock, $this->errorListMock);
         $this->assertEquals('https://www.thetvdb.com/banners/', $subject->getTvdbImgUrl());
+    }
+
+    public function testFileGetContents()
+    {
+        $subject = new TvdbApi($this->sourceMock, $this->errorListMock);
+        $this->assertEquals('test', $subject->file_get_contents(self::TEST_FILE));
     }
 }

@@ -227,6 +227,9 @@ class TvdbApi implements ErrorListContainerInterface
      */
     public function file_get_contents(string $url, $context = null)
     {
-        return file_get_contents($url, false, $context);
+        set_error_handler(function () {});
+        $result = file_get_contents($url, false, $context);
+        restore_error_handler();
+        return $result;
     }
 }
