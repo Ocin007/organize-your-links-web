@@ -16,6 +16,7 @@ class Request
     private array $args = [];
     private array $bodyRaw;
     private array $bodyConverted;
+    private string $baseUri;
 
     public function getRawParam(string $key)
     {
@@ -71,5 +72,20 @@ class Request
             $seriesList[] = $converter->convertToObject($seriesData);
         }
         return $seriesList;
+    }
+
+    public function setBaseUri(string $fullUrl)
+    {
+        $baseUri = preg_replace('/src\/api(.*)/', 'src/api', $fullUrl);
+        if($baseUri !== null && gettype($baseUri) === 'string') {
+            $this->baseUri = $baseUri;
+        } else {
+            $this->baseUri = '';
+        }
+    }
+
+    public function getBaseUri()
+    {
+        return $this->baseUri;
     }
 }

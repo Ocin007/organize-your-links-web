@@ -24,6 +24,7 @@ class EndpointHandlerWrapper
                 $request->setRawBody($psrRequest->getBody()->getContents());
             }
             $request->setRouteParams($args);
+            $request->setBaseUri((string)$psrRequest->getUri());
             $handler = new $className($request, new HelperFactory());
             $errorList = $handler->validateRequest();
             if ($errorList->isEmpty()) {

@@ -31,7 +31,7 @@ class GetImageFileEndpoint implements ImageEndpointHandlerInterface
     public function execute(ResponseImage $response): void
     {
         $file = $this->request->getRouteParam('tvdbUrl');
-        $result = $this->tvdb->file_get_contents('https://www.thetvdb.com/banners/' . $file);
+        $result = $this->tvdb->file_get_contents($this->tvdb->getTvdbImgUrl() . $file);
         if($result === false) {
             $response->setContents('');
         } else {

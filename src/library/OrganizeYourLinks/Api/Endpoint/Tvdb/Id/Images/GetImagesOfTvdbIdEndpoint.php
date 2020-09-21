@@ -14,7 +14,8 @@ class GetImagesOfTvdbIdEndpoint extends AbstractTvdbRouteIdEndpoint
     public function execute(ResponseJson $response): void
     {
         $id = $this->request->getRouteParam(Request::KEY_ROUTE_TVDB_ID);
-        $success = $this->tvdb->getImages($id);
+        $imgUri = $this->request->getBaseUri() . '/tvdb/proxy/image';
+        $success = $this->tvdb->getImages($imgUri, $id);
         $errorList = new ErrorList();
         if (!$success) {
             $errorList->add(ErrorList::TVDV_API_NO_THUMBNAILS_FOUND);
