@@ -4,16 +4,16 @@
 namespace OrganizeYourLinks\Api\Endpoint\Settings\Update;
 
 
-use OrganizeYourLinks\Api\EndpointHandlerInterface;
+use OrganizeYourLinks\Api\JsonEndpointHandlerInterface;
 use OrganizeYourLinks\Api\HelperFactoryInterface;
 use OrganizeYourLinks\Api\Request;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
 use OrganizeYourLinks\DataSource\DataSourceInterface;
 use OrganizeYourLinks\Manager\SettingsManager;
 use OrganizeYourLinks\Types\ErrorListInterface;
 use OrganizeYourLinks\Validator\ValidatorInterface;
 
-class UpdateSettingsEndpoint implements EndpointHandlerInterface
+class UpdateSettingsEndpoint implements JsonEndpointHandlerInterface
 {
     private Request $request;
     private SettingsManager $settingsManager;
@@ -41,7 +41,7 @@ class UpdateSettingsEndpoint implements EndpointHandlerInterface
         return $errorList;
     }
 
-    public function execute(Response $response): void
+    public function execute(ResponseJson $response): void
     {
         $newSettings = $this->request->getRawBody();
         $this->settingsManager->setSettings($newSettings);

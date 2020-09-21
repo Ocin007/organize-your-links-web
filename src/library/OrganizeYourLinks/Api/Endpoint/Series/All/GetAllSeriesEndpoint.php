@@ -4,16 +4,16 @@
 namespace OrganizeYourLinks\Api\Endpoint\Series\All;
 
 
-use OrganizeYourLinks\Api\EndpointHandlerInterface;
+use OrganizeYourLinks\Api\JsonEndpointHandlerInterface;
 use OrganizeYourLinks\Api\HelperFactoryInterface;
 use OrganizeYourLinks\Api\Request;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
 use OrganizeYourLinks\Manager\SeriesManager;
 use OrganizeYourLinks\Sorter\SorterInterface;
 use OrganizeYourLinks\Types\ErrorList;
 use OrganizeYourLinks\Types\ErrorListInterface;
 
-class GetAllSeriesEndpoint implements EndpointHandlerInterface
+class GetAllSeriesEndpoint implements JsonEndpointHandlerInterface
 {
     private Request $request;
     private SeriesManager $seriesManager;
@@ -31,7 +31,7 @@ class GetAllSeriesEndpoint implements EndpointHandlerInterface
         return new ErrorList();
     }
 
-    public function execute(Response $response): void
+    public function execute(ResponseJson $response): void
     {
         $allSeries = $this->seriesManager->getAll(null, $this->sorter);
         if ($allSeries === null) {

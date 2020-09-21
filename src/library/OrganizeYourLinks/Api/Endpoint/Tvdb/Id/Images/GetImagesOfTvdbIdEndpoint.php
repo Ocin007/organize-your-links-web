@@ -6,12 +6,12 @@ namespace OrganizeYourLinks\Api\Endpoint\Tvdb\Id\Images;
 
 use OrganizeYourLinks\Api\Endpoint\Tvdb\Id\AbstractTvdbRouteIdEndpoint;
 use OrganizeYourLinks\Api\Request;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
 use OrganizeYourLinks\Types\ErrorList;
 
 class GetImagesOfTvdbIdEndpoint extends AbstractTvdbRouteIdEndpoint
 {
-    public function execute(Response $response): void
+    public function execute(ResponseJson $response): void
     {
         $id = $this->request->getRouteParam(Request::KEY_ROUTE_TVDB_ID);
         $success = $this->tvdb->getImages($id);

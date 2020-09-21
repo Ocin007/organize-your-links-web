@@ -15,7 +15,7 @@ use OrganizeYourLinks\Api\Middleware\Group\CheckForKeyFileMiddleware;
 use OrganizeYourLinks\Api\EndpointHandlerWrapper;
 use OrganizeYourLinks\Api\Middleware\Route\CheckIsValidSeriesMiddleware;
 use OrganizeYourLinks\Api\Middleware\Route\PrepareRequestWithSeriesMiddleware;
-use OrganizeYourLinks\Api\Middleware\Route\SetImageHeaderMiddleware;
+use OrganizeYourLinks\Api\Middleware\Route\ResponseImageMiddleware;
 use Slim\Routing\RouteCollectorProxy as App;
 
 return function (App $app, string $baseUri) {
@@ -42,7 +42,7 @@ return function (App $app, string $baseUri) {
             });
             $app->group('/proxy', function (App $app) {
                 $app->get('/image/{tvdbUrl:.*}', EndpointHandlerWrapper::getHandler(GetImageFileEndpoint::class))
-                ->add(new SetImageHeaderMiddleware());
+                ->add(new ResponseImageMiddleware());
             });
             $app->post('/search', EndpointHandlerWrapper::getHandler(SearchForSeriesInTvdbEndpoint::class));
         })->add(new CheckForKeyFileMiddleware());

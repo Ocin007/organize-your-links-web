@@ -1,15 +1,14 @@
 <?php
 
 
-namespace OrganizeYourLinks\Api;
+namespace OrganizeYourLinks\Api\Response;
 
 
-use OrganizeYourLinks\ErrorListContainerInterface;
 use OrganizeYourLinks\Types\Converter\ConverterInterface;
 use OrganizeYourLinks\Types\ErrorListInterface;
 use OrganizeYourLinks\Types\SeriesInterface;
 
-class Response implements ErrorListContainerInterface
+class ResponseJson implements ResponseInterface
 {
     private array $parameters = [];
     private array $response = [];
@@ -37,6 +36,11 @@ class Response implements ErrorListContainerInterface
             return true;
         }
         return false;
+    }
+
+    public function getContentType(): string
+    {
+        return 'application/json';
     }
 
     public function getParameters(): array
@@ -74,15 +78,19 @@ class Response implements ErrorListContainerInterface
         $this->errorList->add($errorList);
     }
 
-    public function getJSON(ConverterInterface $converter)
+    public function getContents(?ConverterInterface $converter = null): string
     {
+        if($converter === null) {
+            return '{}';
+        }
         $response = $this->parameters;
         $response['response'] = $this->response;
         $this->scanAndReplaceSeriesObj($response, $converter);
         if (!$this->errorList->isEmpty()) {
             $response['error'] = $this->errorList->getErrorList();
         }
-        return json_encode($response, JSON_PRETTY_PRINT);
+        $contents = json_encode($response, JSON_PRETTY_PRINT);
+        return ($contents === false) ? '{}' : $contents;
     }
 
     private function scanAndReplaceSeriesObj(array &$response, ConverterInterface $converter)

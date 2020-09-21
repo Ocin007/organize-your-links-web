@@ -5,7 +5,8 @@ namespace OrganizeYourLinks\Api\Middleware\Group;
 
 
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
+use OrganizeYourLinks\Api\Response\ResponseProvider;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response as PsrResponse;
@@ -17,8 +18,10 @@ class CheckForKeyFileMiddleware extends AbstractMiddleware
     {
         $fileManager = $this->helperFactory->getFileManager();
         if (!$fileManager->keyFileExist()) {
-            /** @var Response $response */
-            $response = $psrRequest->getAttribute(Response::class);
+            /** @var ResponseProvider $provider */
+            $provider = $psrRequest->getAttribute('response');
+            /** @var ResponseJson $response */
+            $response = $provider->getResponse();
             $response->setParameter('key_file_missing', true);
             $this->allowExecOfNextHandler(false);
         }

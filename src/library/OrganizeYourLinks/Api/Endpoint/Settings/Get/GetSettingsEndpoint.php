@@ -4,15 +4,15 @@
 namespace OrganizeYourLinks\Api\Endpoint\Settings\Get;
 
 
-use OrganizeYourLinks\Api\EndpointHandlerInterface;
+use OrganizeYourLinks\Api\JsonEndpointHandlerInterface;
 use OrganizeYourLinks\Api\HelperFactoryInterface;
 use OrganizeYourLinks\Api\Request;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
 use OrganizeYourLinks\Manager\SettingsManager;
 use OrganizeYourLinks\Types\ErrorList;
 use OrganizeYourLinks\Types\ErrorListInterface;
 
-class GetSettingsEndpoint implements EndpointHandlerInterface
+class GetSettingsEndpoint implements JsonEndpointHandlerInterface
 {
     private Request $request;
     private SettingsManager $settingsManager;
@@ -28,7 +28,7 @@ class GetSettingsEndpoint implements EndpointHandlerInterface
         return new ErrorList();
     }
 
-    public function execute(Response $response): void
+    public function execute(ResponseJson $response): void
     {
         $this->settingsManager->loadSettings();
         $settings = $this->settingsManager->getSettings();
