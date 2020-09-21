@@ -32,6 +32,9 @@ class GetImageFileEndpointTest extends TestCase
             ->with('tvdbUrl')
             ->andReturn('test/123.jpg');
         $this->mock->tvdbApi
+            ->shouldReceive('getTvdbImgUrl')
+            ->andReturn('https://www.thetvdb.com/banners/');
+        $this->mock->tvdbApi
             ->shouldReceive('file_get_contents')
             ->with('https://www.thetvdb.com/banners/test/123.jpg')
             ->andReturn(false);
@@ -50,6 +53,9 @@ class GetImageFileEndpointTest extends TestCase
             ->shouldReceive('getRouteParam')
             ->with('tvdbUrl')
             ->andReturn('test/123.jpg');
+        $this->mock->tvdbApi
+            ->shouldReceive('getTvdbImgUrl')
+            ->andReturn('https://www.thetvdb.com/banners/');
         $this->mock->tvdbApi
             ->shouldReceive('file_get_contents')
             ->with('https://www.thetvdb.com/banners/test/123.jpg')

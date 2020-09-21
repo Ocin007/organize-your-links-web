@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface as PsrResponse;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 
 require_once __DIR__ . '/../../../helpers/DummyEndpoint.php';
 
@@ -22,6 +23,7 @@ class EndpointHandlerWrapperTest extends TestCase
     private $bodyMock;
     private $providerMock;
     private $errorMock;
+    private $uriInterfaceMock;
 
     public function setUp(): void
     {
@@ -32,6 +34,7 @@ class EndpointHandlerWrapperTest extends TestCase
         $this->responseMock = Mockery::mock(ResponseJson::class);
         $this->bodyMock = Mockery::mock(StreamInterface::class);
         $this->errorMock = Mockery::mock(ErrorList::class);
+        $this->uriInterfaceMock = Mockery::mock(UriInterface::class);
     }
 
     public function testGetHandler()
@@ -87,5 +90,14 @@ class EndpointHandlerWrapperTest extends TestCase
         $this->requestMock
             ->shouldReceive('setRouteParams')
             ->with(['test' => true]);
+        $this->psrRequestMock
+            ->shouldReceive('getUri')
+            ->andReturn($this->uriInterfaceMock);
+        $this->uriInterfaceMock
+            ->shouldReceive('__toString')
+            ->andReturn('someUri');
+        $this->requestMock
+            ->shouldReceive('setBaseUri')
+            ->with('someUri');
     }
 }

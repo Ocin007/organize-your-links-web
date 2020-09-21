@@ -31,9 +31,12 @@ class GetImagesOfTvdbIdEndpointTest extends TestCase
             ->shouldReceive('getRouteParam')
             ->with('tvdbId')
             ->andReturn(12345);
+        $this->requestMock
+            ->shouldReceive('getBaseUri')
+            ->andReturn('baseUri');
         $this->mock->tvdbApi
             ->shouldReceive('getImages')
-            ->with(12345)
+            ->with('baseUri/tvdb/proxy/image', 12345)
             ->andReturn(true);
         $this->responseMock
             ->shouldReceive('appendErrors');
@@ -55,9 +58,12 @@ class GetImagesOfTvdbIdEndpointTest extends TestCase
             ->shouldReceive('getRouteParam')
             ->with('tvdbId')
             ->andReturn(12345);
+        $this->requestMock
+            ->shouldReceive('getBaseUri')
+            ->andReturn('baseUri');
         $this->mock->tvdbApi
             ->shouldReceive('getImages')
-            ->with(12345)
+            ->with('baseUri/tvdb/proxy/image', 12345)
             ->andReturn(false);
         $this->responseMock
             ->shouldReceive('appendErrors');

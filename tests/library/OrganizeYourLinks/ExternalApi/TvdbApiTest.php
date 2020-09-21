@@ -133,7 +133,7 @@ class TvdbApiTest extends TestCase
                 ]
             ]));
         $this->subjectMock->prepare();
-        $this->assertTrue($this->subjectMock->getImages(74796));
+        $this->assertTrue($this->subjectMock->getImages('baseUri', 74796));
     }
 
     public function testGetImagesNoneFound()
@@ -149,11 +149,17 @@ class TvdbApiTest extends TestCase
                 "Error" => ""
             ]));
         $this->subjectMock->prepare();
-        $this->assertFalse($this->subjectMock->getImages(74796));
+        $this->assertFalse($this->subjectMock->getImages('baseUri', 74796));
     }
 
     public function testGetErrorList()
     {
         $this->assertEquals($this->errorListMock, $this->subjectMock->getErrorList());
+    }
+
+    public function testGetTvdbImgUrl()
+    {
+        $subject = new TvdbApi($this->sourceMock, $this->errorListMock);
+        $this->assertEquals('https://www.thetvdb.com/banners/', $subject->getTvdbImgUrl());
     }
 }
