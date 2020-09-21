@@ -5,7 +5,7 @@ namespace OrganizeYourLinks\Api\Endpoint\Tvdb\Id\Images;
 use Mockery;
 use OrganizeYourLinks\Api\MockFactory;
 use OrganizeYourLinks\Api\Request;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../../../../../../helpers/MockFactory.php';
@@ -19,7 +19,7 @@ class GetImagesOfTvdbIdEndpointTest extends TestCase
 
     public function setUp(): void
     {
-        $this->responseMock = Mockery::mock(Response::class);
+        $this->responseMock = Mockery::mock(ResponseJson::class);
         $this->requestMock = Mockery::mock(Request::class);
         $this->mock = new MockFactory();
         $this->subject = new GetImagesOfTvdbIdEndpoint($this->requestMock, $this->mock);

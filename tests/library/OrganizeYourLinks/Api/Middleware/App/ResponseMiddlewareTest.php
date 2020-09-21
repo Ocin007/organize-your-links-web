@@ -4,7 +4,8 @@ namespace OrganizeYourLinks\Api\Middleware\App;
 
 use Mockery;
 use OrganizeYourLinks\Api\MockFactory;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseInterface;
+use OrganizeYourLinks\Api\Response\ResponseProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Message\StreamInterface;
@@ -23,6 +24,7 @@ class ResponseMiddlewareTest extends TestCase
     private MockFactory $mock;
     private $responseMock;
     private $bodyMock;
+    private $providerMock;
 
     public function setUp(): void
     {
@@ -31,7 +33,8 @@ class ResponseMiddlewareTest extends TestCase
         $this->psrResponseMock = Mockery::mock(PsrResponse::class);
         $this->psrOldResponseMock = Mockery::mock(PsrResponse::class);
         $this->psrRequestHandlerMock = Mockery::mock(RequestHandler::class);
-        $this->responseMock = Mockery::mock(Response::class);
+        $this->providerMock = Mockery::mock(ResponseProvider::class);
+        $this->responseMock = Mockery::mock(ResponseInterface::class);
         $this->bodyMock = Mockery::mock(StreamInterface::class);
         $this->mock = new MockFactory();
     }
@@ -47,8 +50,14 @@ class ResponseMiddlewareTest extends TestCase
             ->andReturn($this->psrOldResponseMock);
         $this->psrRequestMock
             ->shouldReceive('getAttribute')
-            ->with(Response::class)
+            ->with('response')
+            ->andReturn($this->providerMock);
+        $this->providerMock
+            ->shouldReceive('getResponse')
             ->andReturn($this->responseMock);
+        $this->responseMock
+            ->shouldReceive('getContentType')
+            ->andReturn('application/json');
         $this->psrOldResponseMock
             ->shouldReceive('withHeader')
             ->with('Content-type', 'application/json')
@@ -60,7 +69,7 @@ class ResponseMiddlewareTest extends TestCase
             ->shouldReceive('write')
             ->with('{"test":true}');
         $this->responseMock
-            ->shouldReceive('getJSON')
+            ->shouldReceive('getContents')
             ->with($this->mock->converter)
             ->andReturn('{"test":true}');
         $subject = new ResponseMiddleware($this->mock);

@@ -4,7 +4,8 @@ namespace OrganizeYourLinks\Api\Middleware\Route;
 
 use Mockery;
 use OrganizeYourLinks\Api\MockFactory;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
+use OrganizeYourLinks\Api\Response\ResponseProvider;
 use OrganizeYourLinks\Types\ErrorList;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
@@ -23,13 +24,15 @@ class CheckIsValidSeriesMiddlewareTest extends TestCase
     private $responseMock;
     private $bodyMock;
     private $errorListMock;
+    private $providerMock;
 
     public function setUp(): void
     {
         $this->psrRequestMock = Mockery::mock(PsrRequest::class);
         $this->psrResponseMock = Mockery::mock(PsrResponse::class);
         $this->psrRequestHandlerMock = Mockery::mock(RequestHandler::class);
-        $this->responseMock = Mockery::mock(Response::class);
+        $this->providerMock = Mockery::mock(ResponseProvider::class);
+        $this->responseMock = Mockery::mock(ResponseJson::class);
         $this->bodyMock = Mockery::mock(StreamInterface::class);
         $this->errorListMock = Mockery::mock(ErrorList::class);
         $this->mock = new MockFactory();
@@ -45,7 +48,10 @@ class CheckIsValidSeriesMiddlewareTest extends TestCase
             ->andReturn('{}');
         $this->psrRequestMock
             ->shouldReceive('getAttribute')
-            ->with(Response::class)
+            ->with('response')
+            ->andReturn($this->providerMock);
+        $this->providerMock
+            ->shouldReceive('getResponse')
             ->andReturn($this->responseMock);
         $this->responseMock
             ->shouldReceive('appendErrors');
