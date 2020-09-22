@@ -6,7 +6,8 @@ namespace OrganizeYourLinks\Api\Middleware\Route;
 
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
 use OrganizeYourLinks\Api\Request;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
+use OrganizeYourLinks\Api\Response\ResponseProvider;
 use OrganizeYourLinks\Types\ErrorList;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -27,8 +28,10 @@ class CheckIsValidSeriesMiddleware extends AbstractMiddleware
         }
         if (!$errorList->isEmpty()) {
             $this->allowExecOfNextHandler(false);
-            /** @var Response $response */
-            $response = $psrRequest->getAttribute(Response::class);
+            /** @var ResponseProvider $provider */
+            $provider = $psrRequest->getAttribute('response');
+            /** @var ResponseJson $response */
+            $response = $provider->getResponse();
             $response->appendErrors($errorList);
         }
         return $psrRequest;

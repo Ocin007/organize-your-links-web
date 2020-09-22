@@ -1,30 +1,28 @@
 <?php
 
 
-namespace OrganizeYourLinks\Api\Middleware\Group;
+namespace OrganizeYourLinks\Api\Middleware\Route;
 
 
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
+use OrganizeYourLinks\Api\Response\ResponseImage;
 use OrganizeYourLinks\Api\Response\ResponseJson;
 use OrganizeYourLinks\Api\Response\ResponseProvider;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
-use Slim\Psr7\Response as PsrResponse;
 use Slim\Psr7\Message as PsrMessage;
+use Slim\Psr7\Response as PsrResponse;
 
-class CheckForKeyFileMiddleware extends AbstractMiddleware
+class ResponseImageMiddleware extends AbstractMiddleware
 {
     protected function before(PsrRequest $psrRequest, RequestHandler $handler): PsrRequest
     {
-        $fileManager = $this->helperFactory->getFileManager();
-        if (!$fileManager->keyFileExist()) {
-            /** @var ResponseProvider $provider */
-            $provider = $psrRequest->getAttribute('response');
-            /** @var ResponseJson $response */
-            $response = $provider->getResponse();
-            $response->setParameter('key_file_missing', true);
-            $this->allowExecOfNextHandler(false);
-        }
+        /** @var ResponseProvider $provider */
+        $provider = $psrRequest->getAttribute('response');
+        /** @var ResponseJson $responseJson */
+        $responseJson = $provider->getResponse();
+        $responseImage = new ResponseImage($responseJson->getErrorList());
+        $provider->setResponse($responseImage);
         return $psrRequest;
     }
 

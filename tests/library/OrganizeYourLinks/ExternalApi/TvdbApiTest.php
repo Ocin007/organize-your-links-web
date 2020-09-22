@@ -9,6 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 class TvdbApiTest extends TestCase
 {
+    const TEST_FILE = __DIR__ . '/../../../fixtures/TvdbApiTest/read.txt';
+
     private string $keyFile;
     private $sourceMock;
     private $errorListMock;
@@ -133,7 +135,7 @@ class TvdbApiTest extends TestCase
                 ]
             ]));
         $this->subjectMock->prepare();
-        $this->assertTrue($this->subjectMock->getImages(74796));
+        $this->assertTrue($this->subjectMock->getImages('baseUri', 74796));
     }
 
     public function testGetImagesNoneFound()
@@ -149,11 +151,23 @@ class TvdbApiTest extends TestCase
                 "Error" => ""
             ]));
         $this->subjectMock->prepare();
-        $this->assertFalse($this->subjectMock->getImages(74796));
+        $this->assertFalse($this->subjectMock->getImages('baseUri', 74796));
     }
 
     public function testGetErrorList()
     {
         $this->assertEquals($this->errorListMock, $this->subjectMock->getErrorList());
+    }
+
+    public function testGetTvdbImgUrl()
+    {
+        $subject = new TvdbApi($this->sourceMock, $this->errorListMock);
+        $this->assertEquals('https://www.thetvdb.com/banners/', $subject->getTvdbImgUrl());
+    }
+
+    public function testFileGetContents()
+    {
+        $subject = new TvdbApi($this->sourceMock, $this->errorListMock);
+        $this->assertEquals('test', $subject->file_get_contents(self::TEST_FILE));
     }
 }

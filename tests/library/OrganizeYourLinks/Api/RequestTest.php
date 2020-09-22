@@ -47,4 +47,10 @@ class RequestTest extends TestCase
         $seriesList = $this->subject->getConvertedParam('seriesList');
         $this->assertEquals($this->seriesMock, $seriesList[0]);
     }
+
+    public function testSetGetBaseUri()
+    {
+        $this->subject->setBaseUri('http://someUri/src/api/some/route');
+        $this->assertEquals('http://someUri/src/api', $this->subject->getBaseUri());
+    }
 }

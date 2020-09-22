@@ -1,6 +1,6 @@
 <?php
 
-namespace OrganizeYourLinks\Api;
+namespace OrganizeYourLinks\Api\Response;
 
 use Mockery;
 use OrganizeYourLinks\Types\Converter\SeriesConverter;
@@ -8,10 +8,10 @@ use OrganizeYourLinks\Types\ErrorList;
 use OrganizeYourLinks\Types\Series;
 use PHPUnit\Framework\TestCase;
 
-class ResponseTest extends TestCase
+class ResponseJsonTest extends TestCase
 {
     private $errorListMock;
-    private Response $subject;
+    private ResponseJson $subject;
     private $converterMock;
     private $newErrorListMock;
     private $seriesMock;
@@ -21,7 +21,7 @@ class ResponseTest extends TestCase
         $this->seriesMock = Mockery::mock(Series::class);
         $this->errorListMock = Mockery::mock(ErrorList::class);
         $this->newErrorListMock = Mockery::mock(ErrorList::class);
-        $this->subject = new Response($this->errorListMock);
+        $this->subject = new ResponseJson($this->errorListMock);
         $this->converterMock = Mockery::mock(SeriesConverter::class);
     }
 
@@ -86,8 +86,13 @@ class ResponseTest extends TestCase
             ],
             'error' => ['test']
         ]);
-        $json = $this->subject->getJSON($this->converterMock);
+        $json = $this->subject->getContents($this->converterMock);
         $this->assertJsonStringEqualsJsonString($expected, $json);
+    }
+
+    public function testGetContentType()
+    {
+        $this->assertEquals('application/json', $this->subject->getContentType());
     }
 
     public function testGetErrorList()

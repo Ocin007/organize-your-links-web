@@ -4,15 +4,15 @@
 namespace OrganizeYourLinks\Api\Endpoint\Series\Create;
 
 
-use OrganizeYourLinks\Api\EndpointHandlerInterface;
+use OrganizeYourLinks\Api\JsonEndpointHandlerInterface;
 use OrganizeYourLinks\Api\HelperFactoryInterface;
 use OrganizeYourLinks\Api\Request;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
 use OrganizeYourLinks\DataSource\DataSourceInterface;
 use OrganizeYourLinks\Manager\SeriesManager;
 use OrganizeYourLinks\Types\ErrorListInterface;
 
-class CreateNewSeriesEndpoint implements EndpointHandlerInterface
+class CreateNewSeriesEndpoint implements JsonEndpointHandlerInterface
 {
     private Request $request;
     private DataSourceInterface $source;
@@ -31,7 +31,7 @@ class CreateNewSeriesEndpoint implements EndpointHandlerInterface
         return $this->source->checkSeriesNames($seriesData);
     }
 
-    public function execute(Response $response): void
+    public function execute(ResponseJson $response): void
     {
         $seriesList = $this->request->getConvertedParam(Request::KEY_SERIES_LIST);
         $this->seriesManager->createSeriesMulti($seriesList);

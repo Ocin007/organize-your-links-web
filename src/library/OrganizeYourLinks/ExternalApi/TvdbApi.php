@@ -59,6 +59,11 @@ class TvdbApi implements ErrorListContainerInterface
         $this->errorList = $errorList;
     }
 
+    public function getTvdbImgUrl(): string
+    {
+        return self::$tvdbImagesUrl;
+    }
+
     public function getContent(): array
     {
         return $this->content;
@@ -197,7 +202,7 @@ class TvdbApi implements ErrorListContainerInterface
         }
     }
 
-    public function getImages(string $id): bool
+    public function getImages(string $baseUri, string $id): bool
     {
         $urlAndQuery = TvdbApi::$apiUrl . TvdbApi::$rootEpImg1 . $id . TvdbApi::$rootImg2 . '?' . http_build_query([
                 'keyType' => 'season'
@@ -207,7 +212,7 @@ class TvdbApi implements ErrorListContainerInterface
             $parsed = json_decode($result, true);
             foreach ($parsed['data'] as $data) {
                 if (!isset($this->content[$data['subKey']])) {
-                    $this->content[$data['subKey']] = TvdbApi::$tvdbImagesUrl . $data['fileName'];
+                    $this->content[$data['subKey']] = $baseUri . '/' . $data['fileName'];
                 }
             }
             return true;
@@ -217,11 +222,14 @@ class TvdbApi implements ErrorListContainerInterface
 
     /**
      * @param string $url
-     * @param resource $context
+     * @param resource|null $context
      * @return false|string
      */
-    public function file_get_contents(string $url, $context)
+    public function file_get_contents(string $url, $context = null)
     {
-        return file_get_contents($url, false, $context);
+        set_error_handler(function () {});
+        $result = file_get_contents($url, false, $context);
+        restore_error_handler();
+        return $result;
     }
 }

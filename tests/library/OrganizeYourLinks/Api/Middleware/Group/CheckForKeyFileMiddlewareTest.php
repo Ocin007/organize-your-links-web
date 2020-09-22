@@ -4,7 +4,8 @@ namespace OrganizeYourLinks\Api\Middleware\Group;
 
 use Mockery;
 use OrganizeYourLinks\Api\MockFactory;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
+use OrganizeYourLinks\Api\Response\ResponseProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -19,13 +20,15 @@ class CheckForKeyFileMiddlewareTest extends TestCase
     private $psrRequestHandlerMock;
     private MockFactory $mock;
     private $responseMock;
+    private $providerMock;
 
     public function setUp(): void
     {
         $this->psrRequestMock = Mockery::mock(PsrRequest::class);
         $this->psrResponseMock = Mockery::mock(PsrResponse::class);
         $this->psrRequestHandlerMock = Mockery::mock(RequestHandler::class);
-        $this->responseMock = Mockery::mock(Response::class);
+        $this->providerMock = Mockery::mock(ResponseProvider::class);
+        $this->responseMock = Mockery::mock(ResponseJson::class);
         $this->mock = new MockFactory();
     }
 
@@ -36,7 +39,10 @@ class CheckForKeyFileMiddlewareTest extends TestCase
             ->andReturn(false);
         $this->psrRequestMock
             ->shouldReceive('getAttribute')
-            ->with(Response::class)
+            ->with('response')
+            ->andReturn($this->providerMock);
+        $this->providerMock
+            ->shouldReceive('getResponse')
             ->andReturn($this->responseMock);
         $this->responseMock
             ->shouldReceive('setParameter')

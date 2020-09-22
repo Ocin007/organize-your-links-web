@@ -4,15 +4,15 @@
 namespace OrganizeYourLinks\Api\Endpoint\Tvdb\Search;
 
 
-use OrganizeYourLinks\Api\EndpointHandlerInterface;
+use OrganizeYourLinks\Api\JsonEndpointHandlerInterface;
 use OrganizeYourLinks\Api\HelperFactoryInterface;
 use OrganizeYourLinks\Api\Request;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
 use OrganizeYourLinks\ExternalApi\TvdbApi;
 use OrganizeYourLinks\Types\ErrorList;
 use OrganizeYourLinks\Types\ErrorListInterface;
 
-class SearchForSeriesInTvdbEndpoint implements EndpointHandlerInterface
+class SearchForSeriesInTvdbEndpoint implements JsonEndpointHandlerInterface
 {
     private Request $request;
     private TvdbApi $tvdb;
@@ -33,7 +33,7 @@ class SearchForSeriesInTvdbEndpoint implements EndpointHandlerInterface
         return $errorList;
     }
 
-    public function execute(Response $response): void
+    public function execute(ResponseJson $response): void
     {
         $searchStr = $this->request->getRawParam(Request::KEY_SEARCH_STRING);
         $success = $this->tvdb->search($searchStr);

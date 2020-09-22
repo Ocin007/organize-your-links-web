@@ -19,8 +19,7 @@ class PrepareRequestWithSeriesMiddleware extends AbstractMiddleware
         $request
             ->setConvertedBody($psrRequest->getBody()->getContents())
             ->convert($this->helperFactory->getSeriesConverter());
-        $psrRequest = $psrRequest->withAttribute(Request::class, $request);
-        return $psrRequest;
+        return $psrRequest->withAttribute('request', $request);
     }
 
     protected function after(PsrRequest $psrRequest, PsrResponse $psrResponse, RequestHandler $handler): PsrMessage

@@ -4,16 +4,16 @@
 namespace OrganizeYourLinks\Api\Endpoint\Series\Remove;
 
 
-use OrganizeYourLinks\Api\EndpointHandlerInterface;
+use OrganizeYourLinks\Api\JsonEndpointHandlerInterface;
 use OrganizeYourLinks\Api\HelperFactoryInterface;
 use OrganizeYourLinks\Api\Request;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
 use OrganizeYourLinks\DataSource\DataSourceInterface;
 use OrganizeYourLinks\Manager\SeriesManager;
 use OrganizeYourLinks\Types\ErrorList;
 use OrganizeYourLinks\Types\ErrorListInterface;
 
-class RemoveSeriesEndpoint implements EndpointHandlerInterface
+class RemoveSeriesEndpoint implements JsonEndpointHandlerInterface
 {
     private Request $request;
     private DataSourceInterface $source;
@@ -36,7 +36,7 @@ class RemoveSeriesEndpoint implements EndpointHandlerInterface
         return $errorList;
     }
 
-    public function execute(Response $response): void
+    public function execute(ResponseJson $response): void
     {
         $id = $this->request->getRouteParam('id');
         $this->seriesManager->deleteSeriesMulti([$id]);

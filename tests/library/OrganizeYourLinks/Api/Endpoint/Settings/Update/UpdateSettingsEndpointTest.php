@@ -5,7 +5,7 @@ namespace OrganizeYourLinks\Api\Endpoint\Settings\Update;
 use Mockery;
 use OrganizeYourLinks\Api\MockFactory;
 use OrganizeYourLinks\Api\Request;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
 use OrganizeYourLinks\Types\ErrorList;
 use PHPUnit\Framework\TestCase;
 
@@ -22,7 +22,7 @@ class UpdateSettingsEndpointTest extends TestCase
     public function setUp(): void
     {
         $this->errorListMock = Mockery::mock(ErrorList::class);
-        $this->responseMock = Mockery::mock(Response::class);
+        $this->responseMock = Mockery::mock(ResponseJson::class);
         $this->requestMock = Mockery::mock(Request::class);
         $this->mock = new MockFactory();
         $this->subject = new UpdateSettingsEndpoint($this->requestMock, $this->mock);

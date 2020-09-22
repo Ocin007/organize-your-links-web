@@ -6,7 +6,8 @@ namespace OrganizeYourLinks\Api\Middleware\App;
 
 use Exception;
 use OrganizeYourLinks\Api\Middleware\AbstractMiddleware;
-use OrganizeYourLinks\Api\Response;
+use OrganizeYourLinks\Api\Response\ResponseJson;
+use OrganizeYourLinks\Api\Response\ResponseProvider;
 use OrganizeYourLinks\Types\ErrorList;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -33,8 +34,10 @@ class CheckRequestMiddleware extends AbstractMiddleware
             }
         }
         $this->allowExecOfNextHandler($errorList->isEmpty());
-        /** @var Response $response */
-        $response = $psrRequest->getAttribute(Response::class);
+        /** @var ResponseProvider $provider */
+        $provider = $psrRequest->getAttribute('response');
+        /** @var ResponseJson $response */
+        $response = $provider->getResponse();
         $response->appendErrors($errorList);
         return $psrRequest;
     }

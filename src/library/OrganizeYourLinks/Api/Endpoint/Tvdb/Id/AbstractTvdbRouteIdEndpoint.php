@@ -4,14 +4,14 @@
 namespace OrganizeYourLinks\Api\Endpoint\Tvdb\Id;
 
 
-use OrganizeYourLinks\Api\EndpointHandlerInterface;
+use OrganizeYourLinks\Api\JsonEndpointHandlerInterface;
 use OrganizeYourLinks\Api\HelperFactoryInterface;
 use OrganizeYourLinks\Api\Request;
 use OrganizeYourLinks\ExternalApi\TvdbApi;
 use OrganizeYourLinks\Types\ErrorList;
 use OrganizeYourLinks\Types\ErrorListInterface;
 
-abstract class AbstractTvdbRouteIdEndpoint implements EndpointHandlerInterface
+abstract class AbstractTvdbRouteIdEndpoint implements JsonEndpointHandlerInterface
 {
     protected Request $request;
     protected TvdbApi $tvdb;
