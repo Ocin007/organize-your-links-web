@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "sourceMap": true,
+    "rootDirs": [
+      "./components"
+    ]
+  },
+  "exclude": [
+    "../../node_modules"
+  ]
+}

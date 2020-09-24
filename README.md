@@ -24,6 +24,7 @@ Webanwendung zum Verwalten der Links von Serien mit [TVDB](https://api.thetvdb.c
 
 - PHP-fähiger Webserver, z.B IIS (PHP 7.4)
 - Benötgt "composer"
+- benötigt "npm"
 - Apikey Zur Nutzung der TVDB API (nicht zwingend notwendig, damit die Webanwendung funktioniert)
 
 ## Installation

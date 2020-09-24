@@ -1,9 +1,12 @@
 .idea
 organize-your-links-web.iml
 vendor
+node_modules
 data-backup
 data
+package-lock.json
 src/public/js/organize-your-links.js
+src/public/js/components
 src/public/js/DataHandler/*.js
 src/public/js/DataHandler/*.map
 src/public/js/Enums/*.js

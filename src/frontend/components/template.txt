@@ -1,0 +1,33 @@
+import html from './[tag-name].html';
+import scss from './[tag-name].scss';
+import Component from '../component';
+
+class [ClassName] extends Component {
+
+    static TagName(): string {
+        return '[tag-name]';
+    }
+
+    static get observedAttributes() {
+        return [];
+    }
+
+    constructor() {
+        super(html, scss);
+    }
+
+    get customComponents(): Component[] {
+        return [];
+    }
+
+    connectedCallback(): void {
+    }
+
+    attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
+    }
+
+    disconnectedCallback(): void {
+    }
+}
+
+export default [ClassName];
