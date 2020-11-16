@@ -1,5 +1,7 @@
 class Component extends HTMLElement {
 
+    protected static _tagName = '';
+
     static get observedAttributes() {
         return [];
     }
@@ -8,7 +10,7 @@ class Component extends HTMLElement {
         return [];
     }
 
-    constructor(html: string = '', scss: string = '') {
+    protected constructor(html: string = '', scss: string = '') {
         super();
         let style = document.createElement('style');
         style.setAttribute('type', 'text/css');

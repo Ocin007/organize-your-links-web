@@ -1,11 +1,11 @@
-import html from './[tag-name].html';
-import scss from './[tag-name].scss';
-import Component from '../component';
+import html from './{{tag-name}}.html';
+import scss from './{{tag-name}}.scss';
+import Component from '{{path-up}}../component';
 
-class [ClassName] extends Component {
+class {{ClassName}} extends Component {
 
-    static TagName(): string {
-        return '[tag-name]';
+    static get tagName(): string {
+        return '{{tag-name}}';
     }
 
     static get observedAttributes() {
@@ -30,4 +30,4 @@ class [ClassName] extends Component {
     }
 }
 
-export default [ClassName];
+export default {{ClassName}};
