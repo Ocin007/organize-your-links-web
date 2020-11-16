@@ -1,0 +1,13 @@
+import ControllerInterface from "{{path-up}}../../interfaces/ControllerInterface";
+import {{ClassName}} from "./{{tag-name}}";
+
+class {{ClassName}}Controller implements ControllerInterface {
+
+    private readonly _component: {{ClassName}};
+
+    constructor(component: {{ClassName}}) {
+        this._component = component;
+    }
+}
+
+export default {{ClassName}}Controller;

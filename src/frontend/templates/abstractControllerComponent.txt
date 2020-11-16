@@ -1,0 +1,22 @@
+import html from './{{tag-name}}.html';
+import scss from './{{tag-name}}.scss';
+import Component from '{{path-up}}../component';
+import ControllerComponentInterface from "{{path-up}}../../interfaces/ControllerComponentInterface";
+import ControllerInterface from "{{path-up}}../../interfaces/ControllerInterface";
+import {{ClassName}}Controller from "./{{ClassName}}Controller";
+
+class Abstract{{ClassName}} extends Component implements ControllerComponentInterface {
+
+    private readonly _controller: ControllerInterface;
+
+    get controller(): ControllerInterface {
+        return this._controller;
+    }
+
+    constructor() {
+        super(html, scss);
+        this._controller = new {{ClassName}}Controller(this);
+    }
+}
+
+export default Abstract{{ClassName}};

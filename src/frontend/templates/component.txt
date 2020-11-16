@@ -1,8 +1,7 @@
-import html from './{{tag-name}}.html';
-import scss from './{{tag-name}}.scss';
 import Component from '{{path-up}}../component';
+import Abstract{{ClassName}} from "./Abstract{{ClassName}}";
 
-class {{ClassName}} extends Component {
+class {{ClassName}} extends Abstract{{ClassName}} {
 
     static get tagName(): string {
         return '{{tag-name}}';
@@ -10,10 +9,6 @@ class {{ClassName}} extends Component {
 
     static get observedAttributes() {
         return [];
-    }
-
-    constructor() {
-        super(html, scss);
     }
 
     get customComponents(): Component[] {

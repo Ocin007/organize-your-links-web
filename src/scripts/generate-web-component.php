@@ -1,6 +1,13 @@
 <?php
 
-function generateClassName($tagName): string
+const COMPONENTS_DIR = __DIR__ . '/../frontend/components';
+const INDEX_TS = __DIR__ . '/../frontend/components/index.ts';
+const COMPONENTS_TEMPLATE = __DIR__ . '/../frontend/templates/component.txt';
+const CONTROLLER_TEMPLATE = __DIR__ . '/../frontend/templates/controller.txt';
+const ABSTRACT_COMPONENT_TEMPLATE = __DIR__ . '/../frontend/templates/abstractComponent.txt';
+const ABSTRACT_CONTROLLER_COMPONENT_TEMPLATE = __DIR__ . '/../frontend/templates/abstractControllerComponent.txt';
+
+function generateClassName(string $tagName): string
 {
     $nameParts = explode('-', $tagName);
     $className = '';
@@ -11,30 +18,48 @@ function generateClassName($tagName): string
 }
 
 $tagName = readline('Enter tag name, e.g. "tag-name": ');
-$path = readline('Enter path (path will be [path]/' . $tagName . ')');
+$path = readline('Enter path (path will be [path]/' . $tagName . '): ');
+$withController = readline('Generate with Controller? [y/n]: ');
+
 if ($path === false) {
     $path = '';
 }
 $pathUp = str_repeat('../', substr_count($path, '/'));
 $path .= '/' . $tagName;
+$componentDir = COMPONENTS_DIR . $path;
+mkdir($componentDir, 0777, true);
+
 $className = generateClassName($tagName);
 
-const COMPONENTS_DIR = __DIR__ . '/../frontend/components';
-const COMPONENTS_TEMPLATE = __DIR__ . '/../frontend/templates/component.txt';
+$keys = ['{{tag-name}}', '{{ClassName}}', '{{path-up}}'];
+$replaceWith = [$tagName, $className, $pathUp];
 
-mkdir(COMPONENTS_DIR . $path, 0777, true);
-$htmlContent = '';
-file_put_contents(COMPONENTS_DIR . $path . '/' . $tagName . '.html', $htmlContent);
-$scssContent = '';
-file_put_contents(COMPONENTS_DIR . $path . '/' . $tagName . '.scss', $scssContent);
-$componentTemplate = file_get_contents(COMPONENTS_TEMPLATE);
-$componentTemplate = str_replace('{{tag-name}}', $tagName, $componentTemplate);
-$componentTemplate = str_replace('{{ClassName}}', $className, $componentTemplate);
-$componentTemplate = str_replace('{{path-up}}', $pathUp, $componentTemplate);
-file_put_contents(COMPONENTS_DIR . $path . '/' . $tagName . '.ts', $componentTemplate);
+$generateFileFromTemplate = function (string $templateFile, string $destFile) use ($keys, $replaceWith): void {
+    $template = file_get_contents($templateFile);
+    $template = str_replace($keys, $replaceWith, $template);
+    file_put_contents($destFile, $template);
+};
 
+file_put_contents($componentDir . '/' . $tagName . '.html', '');
+file_put_contents($componentDir . '/' . $tagName . '.scss', '');
+$generateFileFromTemplate(COMPONENTS_TEMPLATE, $componentDir . '/' . $tagName . '.ts');
 
-const INDEX_TS = COMPONENTS_DIR . '/index.ts';
+if ($withController === 'y') {
+    $generateFileFromTemplate(
+        CONTROLLER_TEMPLATE,
+        $componentDir . '/' . $className . 'Controller.ts'
+    );
+    $generateFileFromTemplate(
+        ABSTRACT_CONTROLLER_COMPONENT_TEMPLATE,
+        $componentDir . '/Abstract' . $className . '.ts'
+    );
+} else {
+    $generateFileFromTemplate(
+        ABSTRACT_COMPONENT_TEMPLATE,
+        $componentDir . '/Abstract' . $className . '.ts'
+    );
+}
+
 
 $file = fopen(INDEX_TS, 'r');
 $newContent = '';
