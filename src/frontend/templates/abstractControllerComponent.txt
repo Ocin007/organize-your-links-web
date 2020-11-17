@@ -1,9 +1,9 @@
-import html from './{{tag-name}}.html';
-import scss from './{{tag-name}}.scss';
-import Component from '{{path-up}}../component';
-import ControllerComponentInterface from '{{path-up}}../ControllerComponentInterface';
-import ControllerInterface from '{{path-up}}../ControllerInterface';
-import {{ClassName}}Controller from './{{ClassName}}Controller';
+import html from "./{{tag-name}}.html";
+import scss from "./{{tag-name}}.scss";
+import Component from "{{path-up}}../component";
+import ControllerComponentInterface from "{{path-up}}../ControllerComponentInterface";
+import ControllerInterface from "{{path-up}}../ControllerInterface";
+import {{ClassName}}Controller from "./{{ClassName}}Controller";
 
 class Abstract{{ClassName}} extends Component implements ControllerComponentInterface {
 

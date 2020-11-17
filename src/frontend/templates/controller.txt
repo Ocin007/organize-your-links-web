@@ -1,11 +1,13 @@
-import ControllerInterface from '{{path-up}}../ControllerInterface';
-import {{ClassName}} from './{{tag-name}}';
+import AbstractController from "{{path-up}}../AbstractController";
+import ControllerInterface from "{{path-up}}../ControllerInterface";
+import {{ClassName}} from "./{{tag-name}}";
 
-class {{ClassName}}Controller implements ControllerInterface {
+class {{ClassName}}Controller extends AbstractController implements ControllerInterface {
 
     private readonly _component: {{ClassName}};
 
     constructor(component: {{ClassName}}) {
+        super();
         this._component = component;
     }
 }

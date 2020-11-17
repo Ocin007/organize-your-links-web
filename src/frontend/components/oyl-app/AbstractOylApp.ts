@@ -1,9 +1,9 @@
-import html from './oyl-app.html';
-import scss from './oyl-app.scss';
-import Component from '../component';
-import ControllerComponentInterface from '../ControllerComponentInterface';
-import ControllerInterface from '../ControllerInterface';
-import OylAppController from './OylAppController';
+import html from "./oyl-app.html";
+import scss from "./oyl-app.scss";
+import Component from "../component";
+import ControllerComponentInterface from "../ControllerComponentInterface";
+import ControllerInterface from "../ControllerInterface";
+import OylAppController from "./OylAppController";
 
 class AbstractOylApp extends Component implements ControllerComponentInterface {
 

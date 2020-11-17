@@ -1,9 +1,9 @@
-import html from './oyl-popup-frame.html';
-import scss from './oyl-popup-frame.scss';
-import Component from '../../component';
-import ControllerComponentInterface from '../../ControllerComponentInterface';
-import ControllerInterface from '../../ControllerInterface';
-import OylPopupFrameController from './OylPopupFrameController';
+import html from "./oyl-popup-frame.html";
+import scss from "./oyl-popup-frame.scss";
+import Component from "../../component";
+import ControllerComponentInterface from "../../ControllerComponentInterface";
+import ControllerInterface from "../../ControllerInterface";
+import OylPopupFrameController from "./OylPopupFrameController";
 
 class AbstractOylPopupFrame extends Component implements ControllerComponentInterface {
 

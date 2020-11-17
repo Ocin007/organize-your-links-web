@@ -1,9 +1,9 @@
-import html from './oyl-slide-page.html';
-import scss from './oyl-slide-page.scss';
-import Component from '../../component';
-import ControllerComponentInterface from '../../ControllerComponentInterface';
-import ControllerInterface from '../../ControllerInterface';
-import OylSlidePageController from './OylSlidePageController';
+import html from "./oyl-slide-page.html";
+import scss from "./oyl-slide-page.scss";
+import Component from "../../component";
+import ControllerComponentInterface from "../../ControllerComponentInterface";
+import ControllerInterface from "../../ControllerInterface";
+import OylSlidePageController from "./OylSlidePageController";
 
 class AbstractOylSlidePage extends Component implements ControllerComponentInterface {
 

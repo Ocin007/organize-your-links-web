@@ -1,4 +1,4 @@
-import AbstractOylPageFrame from './AbstractOylPageFrame';
+import AbstractOylPageFrame from "./AbstractOylPageFrame";
 
 class OylPageFrame extends AbstractOylPageFrame {
 

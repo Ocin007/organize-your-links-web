@@ -1,4 +1,4 @@
-import AbstractOylApp from './AbstractOylApp';
+import AbstractOylApp from "./AbstractOylApp";
 
 class OylApp extends AbstractOylApp {
 

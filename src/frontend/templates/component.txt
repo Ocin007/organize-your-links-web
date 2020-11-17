@@ -1,4 +1,4 @@
-import Abstract{{ClassName}} from './Abstract{{ClassName}}';
+import Abstract{{ClassName}} from "./Abstract{{ClassName}}";
 
 class {{ClassName}} extends Abstract{{ClassName}} {
 

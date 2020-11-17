@@ -1,4 +1,4 @@
-import AbstractOylPopupFrame from './AbstractOylPopupFrame';
+import AbstractOylPopupFrame from "./AbstractOylPopupFrame";
 
 class OylPopupFrame extends AbstractOylPopupFrame {
 

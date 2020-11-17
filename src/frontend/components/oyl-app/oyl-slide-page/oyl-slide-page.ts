@@ -1,4 +1,4 @@
-import AbstractOylSlidePage from './AbstractOylSlidePage';
+import AbstractOylSlidePage from "./AbstractOylSlidePage";
 
 class OylSlidePage extends AbstractOylSlidePage {
 

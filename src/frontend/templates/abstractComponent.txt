@@ -1,6 +1,6 @@
-import html from './{{tag-name}}.html';
-import scss from './{{tag-name}}.scss';
-import Component from '{{path-up}}../component';
+import html from "./{{tag-name}}.html";
+import scss from "./{{tag-name}}.scss";
+import Component from "{{path-up}}../component";
 
 class Abstract{{ClassName}} extends Component {
 
