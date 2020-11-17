@@ -5,7 +5,7 @@ import ControllerComponentInterface from "../../ControllerComponentInterface";
 import ControllerInterface from "../../ControllerInterface";
 import OylPopupFrameController from "./OylPopupFrameController";
 
-class AbstractOylPopupFrame extends Component implements ControllerComponentInterface {
+abstract class AbstractOylPopupFrame extends Component implements ControllerComponentInterface {
 
     private readonly _controller: ControllerInterface;
 

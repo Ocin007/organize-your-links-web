@@ -5,7 +5,7 @@ import ControllerComponentInterface from "../../ControllerComponentInterface";
 import ControllerInterface from "../../ControllerInterface";
 import OylPageFrameController from "./OylPageFrameController";
 
-class AbstractOylPageFrame extends Component implements ControllerComponentInterface {
+abstract class AbstractOylPageFrame extends Component implements ControllerComponentInterface {
 
     private readonly _controller: ControllerInterface;
 

@@ -5,7 +5,7 @@ import ControllerComponentInterface from "{{path-up}}../ControllerComponentInter
 import ControllerInterface from "{{path-up}}../ControllerInterface";
 import {{ClassName}}Controller from "./{{ClassName}}Controller";
 
-class Abstract{{ClassName}} extends Component implements ControllerComponentInterface {
+abstract class Abstract{{ClassName}} extends Component implements ControllerComponentInterface {
 
     private readonly _controller: ControllerInterface;
 

@@ -5,7 +5,7 @@ import ControllerComponentInterface from "../../ControllerComponentInterface";
 import ControllerInterface from "../../ControllerInterface";
 import OylNotificationController from "./OylNotificationController";
 
-class AbstractOylNotification extends Component implements ControllerComponentInterface {
+abstract class AbstractOylNotification extends Component implements ControllerComponentInterface {
 
     private readonly _controller: ControllerInterface;
 

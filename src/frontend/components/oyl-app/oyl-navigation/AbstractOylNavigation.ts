@@ -5,7 +5,7 @@ import ControllerComponentInterface from "../../ControllerComponentInterface";
 import ControllerInterface from "../../ControllerInterface";
 import OylNavigationController from "./OylNavigationController";
 
-class AbstractOylNavigation extends Component implements ControllerComponentInterface {
+abstract class AbstractOylNavigation extends Component implements ControllerComponentInterface {
 
     private readonly _controller: ControllerInterface;
 
