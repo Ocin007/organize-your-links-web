@@ -1,17 +1,10 @@
-import Component from '{{path-up}}../component';
 import Abstract{{ClassName}} from "./Abstract{{ClassName}}";
 
 class {{ClassName}} extends Abstract{{ClassName}} {
 
-    static get tagName(): string {
-        return '{{tag-name}}';
-    }
+    static readonly tagName = '{{tag-name}}';
 
     static get observedAttributes() {
-        return [];
-    }
-
-    get customComponents(): Component[] {
         return [];
     }
 
