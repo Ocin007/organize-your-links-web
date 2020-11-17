@@ -1,5 +1,5 @@
-import ControllerInterface from "../../../interfaces/ControllerInterface";
-import OylPageFrame from "./oyl-page-frame";
+import ControllerInterface from '../../ControllerInterface';
+import OylPageFrame from './oyl-page-frame';
 
 class OylPageFrameController implements ControllerInterface {
 

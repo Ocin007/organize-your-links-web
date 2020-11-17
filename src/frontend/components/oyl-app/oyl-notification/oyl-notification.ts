@@ -1,4 +1,4 @@
-import AbstractOylNotification from "./AbstractOylNotification";
+import AbstractOylNotification from './AbstractOylNotification';
 
 class OylNotification extends AbstractOylNotification {
 

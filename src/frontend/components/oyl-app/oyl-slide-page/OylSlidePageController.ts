@@ -1,5 +1,5 @@
-import ControllerInterface from "../../../interfaces/ControllerInterface";
-import OylSlidePage from "./oyl-slide-page";
+import ControllerInterface from '../../ControllerInterface';
+import OylSlidePage from './oyl-slide-page';
 
 class OylSlidePageController implements ControllerInterface {
 

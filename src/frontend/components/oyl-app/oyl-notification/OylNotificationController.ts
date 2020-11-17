@@ -1,5 +1,5 @@
-import ControllerInterface from "../../../interfaces/ControllerInterface";
-import OylNotification from "./oyl-notification";
+import ControllerInterface from '../../ControllerInterface';
+import OylNotification from './oyl-notification';
 
 class OylNotificationController implements ControllerInterface {
 

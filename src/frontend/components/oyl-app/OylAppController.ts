@@ -1,5 +1,5 @@
-import ControllerInterface from "../../interfaces/ControllerInterface";
-import OylApp from "./oyl-app";
+import ControllerInterface from '../ControllerInterface';
+import OylApp from './oyl-app';
 
 class OylAppController implements ControllerInterface {
 

@@ -1,5 +1,5 @@
-import ControllerInterface from "../../../interfaces/ControllerInterface";
-import OylNavigation from "./oyl-navigation";
+import ControllerInterface from '../../ControllerInterface';
+import OylNavigation from './oyl-navigation';
 
 class OylNavigationController implements ControllerInterface {
 

@@ -1,4 +1,4 @@
-import AbstractOylNavigation from "./AbstractOylNavigation";
+import AbstractOylNavigation from './AbstractOylNavigation';
 
 class OylNavigation extends AbstractOylNavigation {
 

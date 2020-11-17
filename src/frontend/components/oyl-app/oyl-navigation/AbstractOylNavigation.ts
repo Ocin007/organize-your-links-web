@@ -1,9 +1,9 @@
 import html from './oyl-navigation.html';
 import scss from './oyl-navigation.scss';
 import Component from '../../component';
-import ControllerComponentInterface from "../../../interfaces/ControllerComponentInterface";
-import ControllerInterface from "../../../interfaces/ControllerInterface";
-import OylNavigationController from "./OylNavigationController";
+import ControllerComponentInterface from '../../ControllerComponentInterface';
+import ControllerInterface from '../../ControllerInterface';
+import OylNavigationController from './OylNavigationController';
 
 class AbstractOylNavigation extends Component implements ControllerComponentInterface {
 

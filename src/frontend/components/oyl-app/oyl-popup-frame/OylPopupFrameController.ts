@@ -1,5 +1,5 @@
-import ControllerInterface from "../../../interfaces/ControllerInterface";
-import OylPopupFrame from "./oyl-popup-frame";
+import ControllerInterface from '../../ControllerInterface';
+import OylPopupFrame from './oyl-popup-frame';
 
 class OylPopupFrameController implements ControllerInterface {
 

@@ -1,9 +1,9 @@
 import html from './oyl-page-frame.html';
 import scss from './oyl-page-frame.scss';
 import Component from '../../component';
-import ControllerComponentInterface from "../../../interfaces/ControllerComponentInterface";
-import ControllerInterface from "../../../interfaces/ControllerInterface";
-import OylPageFrameController from "./OylPageFrameController";
+import ControllerComponentInterface from '../../ControllerComponentInterface';
+import ControllerInterface from '../../ControllerInterface';
+import OylPageFrameController from './OylPageFrameController';
 
 class AbstractOylPageFrame extends Component implements ControllerComponentInterface {
 
