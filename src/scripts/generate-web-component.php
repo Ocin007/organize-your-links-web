@@ -71,7 +71,7 @@ if ($file !== false) {
             $importAdded = true;
         }
         if (preg_match('/^];(\s*)$/', $line) === 1) {
-            $newContent .= '    '.$className.','.PHP_EOL;
+            $newContent .= '    ' . $className . ',' . PHP_EOL;
         }
         $newContent .= $line;
     }
