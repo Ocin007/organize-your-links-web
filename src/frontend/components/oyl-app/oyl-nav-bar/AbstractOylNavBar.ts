@@ -1,11 +1,11 @@
-import html from "./oyl-navigation.html";
-import scss from "./oyl-navigation.scss";
+import html from "./oyl-nav-bar.html";
+import scss from "./oyl-nav-bar.scss";
 import Component from "../../component";
 import ControllerComponentInterface from "../../ControllerComponentInterface";
 import ControllerInterface from "../../ControllerInterface";
-import OylNavigationController from "./OylNavigationController";
+import OylNavBarController from "./OylNavBarController";
 
-abstract class AbstractOylNavigation extends Component implements ControllerComponentInterface {
+abstract class AbstractOylNavBar extends Component implements ControllerComponentInterface {
 
     private readonly _controller: ControllerInterface;
 
@@ -15,8 +15,8 @@ abstract class AbstractOylNavigation extends Component implements ControllerComp
 
     constructor() {
         super(html, scss);
-        this._controller = new OylNavigationController(this);
+        this._controller = new OylNavBarController(this);
     }
 }
 
-export default AbstractOylNavigation;
+export default AbstractOylNavBar;

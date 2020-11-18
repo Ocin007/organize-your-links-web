@@ -4,7 +4,7 @@ import Component from "../component";
 import ControllerComponentInterface from "../ControllerComponentInterface";
 import ControllerInterface from "../ControllerInterface";
 import OylAppController from "./OylAppController";
-import OylNavigation from "./oyl-navigation/oyl-navigation";
+import OylNavBar from "./oyl-nav-bar/oyl-nav-bar";
 import OylPageFrame from "./oyl-page-frame/oyl-page-frame";
 import OylSlidePage from "./oyl-slide-page/oyl-slide-page";
 import OylPopupFrame from "./oyl-popup-frame/oyl-popup-frame";
@@ -14,7 +14,7 @@ abstract class AbstractOylApp extends Component implements ControllerComponentIn
 
     private readonly _controller: ControllerInterface;
 
-    protected navigation: OylNavigation;
+    protected navBar: OylNavBar;
     protected pageFrame: OylPageFrame;
     protected slidePage: OylSlidePage;
     protected popupFrame: OylPopupFrame;

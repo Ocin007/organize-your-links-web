@@ -1,8 +1,8 @@
-import AbstractOylNavigation from "./AbstractOylNavigation";
+import AbstractOylNavBar from "./AbstractOylNavBar";
 
-class OylNavigation extends AbstractOylNavigation {
+class OylNavBar extends AbstractOylNavBar {
 
-    static readonly tagName = 'oyl-navigation';
+    static readonly tagName = 'oyl-nav-bar';
 
     static get observedAttributes() {
         return [];
@@ -18,4 +18,4 @@ class OylNavigation extends AbstractOylNavigation {
     }
 }
 
-export default OylNavigation;
+export default OylNavBar;
