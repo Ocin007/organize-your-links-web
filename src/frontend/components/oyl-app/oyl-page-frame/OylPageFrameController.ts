@@ -1,8 +1,7 @@
 import AbstractController from "../../AbstractController";
-import ControllerInterface from "../../ControllerInterface";
 import OylPageFrame from "./oyl-page-frame";
 
-class OylPageFrameController extends AbstractController implements ControllerInterface {
+class OylPageFrameController extends AbstractController {
 
     private readonly _component: OylPageFrame;
 

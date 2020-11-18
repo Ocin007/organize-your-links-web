@@ -2,14 +2,13 @@ import html from "./oyl-popup-frame.html";
 import scss from "./oyl-popup-frame.scss";
 import Component from "../../component";
 import ControllerComponentInterface from "../../ControllerComponentInterface";
-import ControllerInterface from "../../ControllerInterface";
 import OylPopupFrameController from "./OylPopupFrameController";
 
 abstract class AbstractOylPopupFrame extends Component implements ControllerComponentInterface {
 
-    private readonly _controller: ControllerInterface;
+    private readonly _controller: OylPopupFrameController;
 
-    get controller(): ControllerInterface {
+    get controller(): OylPopupFrameController {
         return this._controller;
     }
 

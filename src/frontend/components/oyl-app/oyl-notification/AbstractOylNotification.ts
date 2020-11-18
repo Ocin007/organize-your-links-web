@@ -2,14 +2,13 @@ import html from "./oyl-notification.html";
 import scss from "./oyl-notification.scss";
 import Component from "../../component";
 import ControllerComponentInterface from "../../ControllerComponentInterface";
-import ControllerInterface from "../../ControllerInterface";
 import OylNotificationController from "./OylNotificationController";
 
 abstract class AbstractOylNotification extends Component implements ControllerComponentInterface {
 
-    private readonly _controller: ControllerInterface;
+    private readonly _controller: OylNotificationController;
 
-    get controller(): ControllerInterface {
+    get controller(): OylNotificationController {
         return this._controller;
     }
 

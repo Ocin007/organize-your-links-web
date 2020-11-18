@@ -1,8 +1,7 @@
 import AbstractController from "{{path-up}}../AbstractController";
-import ControllerInterface from "{{path-up}}../ControllerInterface";
 import {{ClassName}} from "./{{tag-name}}";
 
-class {{ClassName}}Controller extends AbstractController implements ControllerInterface {
+class {{ClassName}}Controller extends AbstractController {
 
     private readonly _component: {{ClassName}};
 

@@ -1,8 +1,7 @@
 import AbstractController from "../../AbstractController";
-import ControllerInterface from "../../ControllerInterface";
 import OylSlidePage from "./oyl-slide-page";
 
-class OylSlidePageController extends AbstractController implements ControllerInterface {
+class OylSlidePageController extends AbstractController {
 
     private readonly _component: OylSlidePage;
 

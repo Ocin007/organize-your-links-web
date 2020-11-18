@@ -1,8 +1,7 @@
 import AbstractController from "../AbstractController";
-import ControllerInterface from "../ControllerInterface";
 import OylApp from "./oyl-app";
 
-class OylAppController extends AbstractController implements ControllerInterface {
+class OylAppController extends AbstractController {
 
     private readonly _component: OylApp;
 

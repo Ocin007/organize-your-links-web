@@ -1,8 +1,7 @@
 import AbstractController from "../../AbstractController";
-import ControllerInterface from "../../ControllerInterface";
 import OylPopupFrame from "./oyl-popup-frame";
 
-class OylPopupFrameController extends AbstractController implements ControllerInterface {
+class OylPopupFrameController extends AbstractController {
 
     private readonly _component: OylPopupFrame;
 

@@ -1,8 +1,7 @@
 import AbstractController from "../../AbstractController";
-import ControllerInterface from "../../ControllerInterface";
 import OylNavBar from "./oyl-nav-bar";
 
-class OylNavBarController extends AbstractController implements ControllerInterface {
+class OylNavBarController extends AbstractController {
 
     private readonly _component: OylNavBar;
 

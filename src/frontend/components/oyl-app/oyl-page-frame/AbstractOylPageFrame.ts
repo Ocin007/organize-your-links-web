@@ -2,14 +2,13 @@ import html from "./oyl-page-frame.html";
 import scss from "./oyl-page-frame.scss";
 import Component from "../../component";
 import ControllerComponentInterface from "../../ControllerComponentInterface";
-import ControllerInterface from "../../ControllerInterface";
 import OylPageFrameController from "./OylPageFrameController";
 
 abstract class AbstractOylPageFrame extends Component implements ControllerComponentInterface {
 
-    private readonly _controller: ControllerInterface;
+    private readonly _controller: OylPageFrameController;
 
-    get controller(): ControllerInterface {
+    get controller(): OylPageFrameController {
         return this._controller;
     }
 

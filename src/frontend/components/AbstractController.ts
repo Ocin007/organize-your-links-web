@@ -1,7 +1,8 @@
 import ServiceProvider from "../services/ServiceProvider";
 import PageProvider from "./pages/PageProvider";
+import ControllerInterface from "./ControllerInterface";
 
-class AbstractController {
+class AbstractController implements ControllerInterface {
 
     protected get services(): ServiceProvider {
         return ServiceProvider.instance;

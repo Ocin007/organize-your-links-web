@@ -1,8 +1,7 @@
 import AbstractController from "../../AbstractController";
-import ControllerInterface from "../../ControllerInterface";
 import OylNotification from "./oyl-notification";
 
-class OylNotificationController extends AbstractController implements ControllerInterface {
+class OylNotificationController extends AbstractController {
 
     private readonly _component: OylNotification;
 

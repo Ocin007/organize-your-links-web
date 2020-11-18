@@ -2,14 +2,13 @@ import html from "./oyl-slide-page.html";
 import scss from "./oyl-slide-page.scss";
 import Component from "../../component";
 import ControllerComponentInterface from "../../ControllerComponentInterface";
-import ControllerInterface from "../../ControllerInterface";
 import OylSlidePageController from "./OylSlidePageController";
 
 abstract class AbstractOylSlidePage extends Component implements ControllerComponentInterface {
 
-    private readonly _controller: ControllerInterface;
+    private readonly _controller: OylSlidePageController;
 
-    get controller(): ControllerInterface {
+    get controller(): OylSlidePageController {
         return this._controller;
     }
 
