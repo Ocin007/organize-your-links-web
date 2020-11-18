@@ -2,7 +2,9 @@ import AbstractOylHeader from "./AbstractOylHeader";
 
 class OylHeader extends AbstractOylHeader {
 
-    static readonly tagName = 'oyl-header';
+    static get tagName(): string {
+        return 'oyl-header';
+    }
 
     static get observedAttributes() {
         return [];

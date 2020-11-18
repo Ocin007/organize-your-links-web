@@ -2,7 +2,9 @@ import AbstractOylNavBar from "./AbstractOylNavBar";
 
 class OylNavBar extends AbstractOylNavBar {
 
-    static readonly tagName = 'oyl-nav-bar';
+    static get tagName(): string {
+        return 'oyl-nav-bar';
+    }
 
     static get observedAttributes() {
         return [];

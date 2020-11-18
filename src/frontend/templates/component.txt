@@ -2,7 +2,9 @@ import Abstract{{ClassName}} from "./Abstract{{ClassName}}";
 
 class {{ClassName}} extends Abstract{{ClassName}} {
 
-    static readonly tagName = '{{tag-name}}';
+    static get tagName(): string {
+        return '{{tag-name}}';
+    }
 
     static get observedAttributes() {
         return [];

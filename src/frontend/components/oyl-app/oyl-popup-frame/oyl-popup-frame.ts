@@ -2,7 +2,9 @@ import AbstractOylPopupFrame from "./AbstractOylPopupFrame";
 
 class OylPopupFrame extends AbstractOylPopupFrame {
 
-    static readonly tagName = 'oyl-popup-frame';
+    static get tagName(): string {
+        return 'oyl-popup-frame';
+    }
 
     static get observedAttributes() {
         return [];

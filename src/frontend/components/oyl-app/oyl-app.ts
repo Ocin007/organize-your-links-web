@@ -2,7 +2,9 @@ import AbstractOylApp from "./AbstractOylApp";
 
 class OylApp extends AbstractOylApp {
 
-    static readonly tagName = 'oyl-app';
+    static get tagName(): string {
+        return 'oyl-app';
+    }
 
     static get observedAttributes() {
         return [];

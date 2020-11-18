@@ -2,7 +2,9 @@ import AbstractOylPageFrame from "./AbstractOylPageFrame";
 
 class OylPageFrame extends AbstractOylPageFrame {
 
-    static readonly tagName = 'oyl-page-frame';
+    static get tagName(): string {
+        return 'oyl-page-frame';
+    }
 
     static get observedAttributes() {
         return [];

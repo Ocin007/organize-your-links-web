@@ -2,7 +2,9 @@ import AbstractOylSlidePage from "./AbstractOylSlidePage";
 
 class OylSlidePage extends AbstractOylSlidePage {
 
-    static readonly tagName = 'oyl-slide-page';
+    static get tagName(): string {
+        return 'oyl-slide-page';
+    }
 
     static get observedAttributes() {
         return [];

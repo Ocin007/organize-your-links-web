@@ -2,7 +2,9 @@ import AbstractOylNotification from "./AbstractOylNotification";
 
 class OylNotification extends AbstractOylNotification {
 
-    static readonly tagName = 'oyl-notification';
+    static get tagName(): string {
+        return 'oyl-notification';
+    }
 
     static get observedAttributes() {
         return [];

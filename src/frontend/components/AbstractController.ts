@@ -3,12 +3,12 @@ import PageProvider from "./pages/PageProvider";
 
 class AbstractController {
 
-    protected readonly services: ServiceProvider;
-    protected readonly pages: PageProvider;
+    protected get services(): ServiceProvider {
+        return ServiceProvider.instance;
+    }
 
-    protected constructor() {
-        this.services = ServiceProvider.instance;
-        this.pages = PageProvider.instance;
+    protected get pages(): PageProvider {
+        return PageProvider.instance;
     }
 }
 
