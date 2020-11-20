@@ -1,6 +1,13 @@
-import AbstractOylHeader from "./AbstractOylHeader";
+import html from "./oyl-header.html";
+import scss from "./oyl-header.scss";
+import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import Component from "../../component";
 
-class OylHeader extends AbstractOylHeader {
+@OylComponent({
+    html: html,
+    scss: scss
+})
+class OylHeader extends Component {
 
     static get tagName(): string {
         return 'oyl-header';
@@ -10,6 +17,7 @@ class OylHeader extends AbstractOylHeader {
         return [];
     }
 
+    @ComponentReady()
     connectedCallback(): void {
     }
 
@@ -17,6 +25,9 @@ class OylHeader extends AbstractOylHeader {
     }
 
     disconnectedCallback(): void {
+    }
+
+    eventCallback(ev: Event): void {
     }
 }
 

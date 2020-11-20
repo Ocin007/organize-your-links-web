@@ -1,23 +1,38 @@
-class Component extends HTMLElement {
+import ServiceProvider from "../services/ServiceProvider";
+import PageProvider from "./pages/PageProvider";
+import {ComponentReady} from "../decorators/decorators";
 
-    protected constructor(html: string = '', css: string = '') {
+abstract class Component extends HTMLElement {
+
+    protected html: string;
+    protected scss: string;
+
+    protected get services(): ServiceProvider {
+        return ServiceProvider.instance;
+    }
+
+    protected get pages(): PageProvider {
+        return PageProvider.instance;
+    }
+
+    constructor() {
         super();
-        let style = Component.createStyleElement(css)
-        let template = Component.createTemplateElement(html);
+        let style = this.createStyleElement();
+        let template = this.createTemplateElement();
         this.initShadowRoot(style, template);
         this.bindElementsToProperties();
     }
 
-    private static createStyleElement(css: string): HTMLStyleElement {
+    private createStyleElement(): HTMLStyleElement {
         let style = document.createElement('style');
         style.setAttribute('type', 'text/css');
-        style.appendChild(document.createTextNode(css));
+        style.appendChild(document.createTextNode(this.scss));
         return style;
     }
 
-    private static createTemplateElement(html: string): HTMLTemplateElement {
+    private createTemplateElement(): HTMLTemplateElement {
         let template = document.createElement('template');
-        template.innerHTML = html;
+        template.innerHTML = this.html;
         return template;
     }
 
@@ -37,6 +52,7 @@ class Component extends HTMLElement {
         return [];
     }
 
+    @ComponentReady()
     connectedCallback(): void {
     }
 
@@ -44,6 +60,9 @@ class Component extends HTMLElement {
     }
 
     disconnectedCallback(): void {
+    }
+
+    eventCallback(ev: Event): void {
     }
 }
 

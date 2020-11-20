@@ -1,6 +1,13 @@
-import AbstractOylApp from "./AbstractOylApp";
+import html from "./oyl-app.html";
+import scss from "./oyl-app.scss";
+import {ComponentReady, OylComponent} from "../../decorators/decorators";
+import Component from "../component";
 
-class OylApp extends AbstractOylApp {
+@OylComponent({
+    html: html,
+    scss: scss
+})
+class OylApp extends Component {
 
     static get tagName(): string {
         return 'oyl-app';
@@ -10,6 +17,7 @@ class OylApp extends AbstractOylApp {
         return [];
     }
 
+    @ComponentReady()
     connectedCallback(): void {
     }
 
@@ -17,6 +25,9 @@ class OylApp extends AbstractOylApp {
     }
 
     disconnectedCallback(): void {
+    }
+
+    eventCallback(ev: Event): void {
     }
 }
 

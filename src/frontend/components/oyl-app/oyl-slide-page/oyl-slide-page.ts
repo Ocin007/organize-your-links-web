@@ -1,6 +1,13 @@
-import AbstractOylSlidePage from "./AbstractOylSlidePage";
+import html from "./oyl-slide-page.html";
+import scss from "./oyl-slide-page.scss";
+import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import Component from "../../component";
 
-class OylSlidePage extends AbstractOylSlidePage {
+@OylComponent({
+    html: html,
+    scss: scss
+})
+class OylSlidePage extends Component {
 
     static get tagName(): string {
         return 'oyl-slide-page';
@@ -10,6 +17,7 @@ class OylSlidePage extends AbstractOylSlidePage {
         return [];
     }
 
+    @ComponentReady()
     connectedCallback(): void {
     }
 
@@ -17,6 +25,9 @@ class OylSlidePage extends AbstractOylSlidePage {
     }
 
     disconnectedCallback(): void {
+    }
+
+    eventCallback(ev: Event): void {
     }
 }
 

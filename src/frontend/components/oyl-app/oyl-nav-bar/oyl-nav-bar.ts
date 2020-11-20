@@ -1,6 +1,13 @@
-import AbstractOylNavBar from "./AbstractOylNavBar";
+import html from "./oyl-nav-bar.html";
+import scss from "./oyl-nav-bar.scss";
+import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import Component from "../../component";
 
-class OylNavBar extends AbstractOylNavBar {
+@OylComponent({
+    html: html,
+    scss: scss
+})
+class OylNavBar extends Component {
 
     static get tagName(): string {
         return 'oyl-nav-bar';
@@ -10,6 +17,7 @@ class OylNavBar extends AbstractOylNavBar {
         return [];
     }
 
+    @ComponentReady()
     connectedCallback(): void {
     }
 
@@ -17,6 +25,9 @@ class OylNavBar extends AbstractOylNavBar {
     }
 
     disconnectedCallback(): void {
+    }
+
+    eventCallback(ev: Event): void {
     }
 }
 

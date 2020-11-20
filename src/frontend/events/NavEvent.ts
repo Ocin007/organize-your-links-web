@@ -1,4 +1,7 @@
-class NavEvent<T = any> extends CustomEvent<T> {
+import {EventType} from "../@types/enums";
+import AbstractBubblingEvent from "./AbstractBubblingEvent";
+
+class NavEvent<T = any> extends AbstractBubblingEvent<T> {
 
     readonly pageId: PageID;
 

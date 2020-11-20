@@ -1,6 +1,13 @@
-import Abstract{{ClassName}} from "./Abstract{{ClassName}}";
+import html from "./{{tag-name}}.html";
+import scss from "./{{tag-name}}.scss";
+import {ComponentReady, OylComponent} from "{{path-up}}../../decorators/decorators";
+import Component from "{{path-up}}../component";
 
-class {{ClassName}} extends Abstract{{ClassName}} {
+@OylComponent({
+    html: html,
+    scss: scss
+})
+class {{ClassName}} extends Component {
 
     static get tagName(): string {
         return '{{tag-name}}';
@@ -10,6 +17,7 @@ class {{ClassName}} extends Abstract{{ClassName}} {
         return [];
     }
 
+    @ComponentReady()
     connectedCallback(): void {
     }
 
@@ -17,6 +25,9 @@ class {{ClassName}} extends Abstract{{ClassName}} {
     }
 
     disconnectedCallback(): void {
+    }
+
+    eventCallback(ev: Event): void {
     }
 }
 

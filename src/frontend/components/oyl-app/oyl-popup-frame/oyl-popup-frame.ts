@@ -1,6 +1,13 @@
-import AbstractOylPopupFrame from "./AbstractOylPopupFrame";
+import html from "./oyl-popup-frame.html";
+import scss from "./oyl-popup-frame.scss";
+import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import Component from "../../component";
 
-class OylPopupFrame extends AbstractOylPopupFrame {
+@OylComponent({
+    html: html,
+    scss: scss
+})
+class OylPopupFrame extends Component {
 
     static get tagName(): string {
         return 'oyl-popup-frame';
@@ -10,6 +17,7 @@ class OylPopupFrame extends AbstractOylPopupFrame {
         return [];
     }
 
+    @ComponentReady()
     connectedCallback(): void {
     }
 
@@ -17,6 +25,9 @@ class OylPopupFrame extends AbstractOylPopupFrame {
     }
 
     disconnectedCallback(): void {
+    }
+
+    eventCallback(ev: Event): void {
     }
 }
 

@@ -1,6 +1,13 @@
-import AbstractOylPageFrame from "./AbstractOylPageFrame";
+import html from "./oyl-page-frame.html";
+import scss from "./oyl-page-frame.scss";
+import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import Component from "../../component";
 
-class OylPageFrame extends AbstractOylPageFrame {
+@OylComponent({
+    html: html,
+    scss: scss
+})
+class OylPageFrame extends Component {
 
     static get tagName(): string {
         return 'oyl-page-frame';
@@ -10,6 +17,7 @@ class OylPageFrame extends AbstractOylPageFrame {
         return [];
     }
 
+    @ComponentReady()
     connectedCallback(): void {
     }
 
@@ -17,6 +25,9 @@ class OylPageFrame extends AbstractOylPageFrame {
     }
 
     disconnectedCallback(): void {
+    }
+
+    eventCallback(ev: Event): void {
     }
 }
 

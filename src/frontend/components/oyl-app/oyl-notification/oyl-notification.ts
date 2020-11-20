@@ -1,6 +1,13 @@
-import AbstractOylNotification from "./AbstractOylNotification";
+import html from "./oyl-notification.html";
+import scss from "./oyl-notification.scss";
+import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import Component from "../../component";
 
-class OylNotification extends AbstractOylNotification {
+@OylComponent({
+    html: html,
+    scss: scss
+})
+class OylNotification extends Component {
 
     static get tagName(): string {
         return 'oyl-notification';
@@ -10,6 +17,7 @@ class OylNotification extends AbstractOylNotification {
         return [];
     }
 
+    @ComponentReady()
     connectedCallback(): void {
     }
 
@@ -17,6 +25,9 @@ class OylNotification extends AbstractOylNotification {
     }
 
     disconnectedCallback(): void {
+    }
+
+    eventCallback(ev: Event): void {
     }
 }
 

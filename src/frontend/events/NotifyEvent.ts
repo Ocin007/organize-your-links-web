@@ -1,4 +1,7 @@
-class NotifyEvent<T = any> extends CustomEvent<T> {
+import {EventType, Status} from "../@types/enums";
+import AbstractBubblingEvent from "./AbstractBubblingEvent";
+
+class NotifyEvent<T = any> extends AbstractBubblingEvent<T> {
 
     private status: Status;
     private msg: string;
