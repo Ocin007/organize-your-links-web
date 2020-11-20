@@ -2,7 +2,7 @@ import html from "./oyl-app.html";
 import scss from "./oyl-app.scss";
 import {ComponentReady, ExecOn, OylComponent} from "../../decorators/decorators";
 import Component from "../component";
-import {EventType} from "../../@types/enums";
+import {Events} from "../../@types/enums";
 import OylNavBar from "./oyl-nav-bar/oyl-nav-bar";
 import OylPageFrame from "./oyl-page-frame/oyl-page-frame";
 import OylSlidePage from "./oyl-slide-page/oyl-slide-page";
@@ -46,21 +46,21 @@ class OylApp extends Component {
     }
 
     private addNavEventCallbacks(): void {
-        this.addEventCallback(this.navBar, EventType.Nav);
-        this.addEventCallback(this.pageFrame, EventType.Nav);
-        this.addEventCallback(this.slidePage, EventType.Nav);
+        this.addEventCallback(this.navBar, Events.Nav);
+        this.addEventCallback(this.pageFrame, Events.Nav);
+        this.addEventCallback(this.slidePage, Events.Nav);
     }
 
     private addPopupEventCallbacks(): void {
-        this.addEventCallback(this.popupFrame, EventType.Popup);
+        this.addEventCallback(this.popupFrame, Events.Popup);
     }
 
     private addNotifyEventCallbacks(): void {
-        this.addEventCallback(this.notification, EventType.Notify);
+        this.addEventCallback(this.notification, Events.Notify);
     }
 
-    @ExecOn(EventType.ComponentReady)
-    private addEventCallback(component: Component, eventType: EventType): void {
+    @ExecOn(Events.ComponentReady)
+    private addEventCallback(component: Component, eventType: Events): void {
         this.addEventListener(eventType, ev => component.eventCallback(ev));
     }
 }

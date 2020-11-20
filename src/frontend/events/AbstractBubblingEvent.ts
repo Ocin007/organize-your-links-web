@@ -1,8 +1,8 @@
-import {EventType} from "../@types/enums";
+import {Events} from "../@types/enums";
 
 abstract class AbstractBubblingEvent<T = any> extends CustomEvent<T> {
 
-    protected constructor(eventType: EventType, eventInitDict?: CustomEventInit<T>) {
+    protected constructor(eventType: Events, eventInitDict?: CustomEventInit<T>) {
         if (eventInitDict === undefined) {
             eventInitDict = {bubbles: true, composed: true};
         } else {

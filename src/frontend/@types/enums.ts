@@ -1,4 +1,4 @@
-export enum EventType {
+export enum Events {
     Nav = 'navEvent',
     Notify = 'notifyEvent',
     Popup = 'popupEvent',

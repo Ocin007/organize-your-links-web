@@ -1,6 +1,6 @@
 import ComponentReadyEvent from "../events/ComponentReadyEvent";
 import Component from "../components/component";
-import {EventType} from "../@types/enums";
+import {Events} from "../@types/enums";
 
 /**
  * **Class decorator**
@@ -36,10 +36,10 @@ export function ComponentReady() {
 
 /**
  * **Method decorator**
- * <p>Method is executed when {@link Component component} fires an event of type {@link EventType eventType}.</p>
+ * <p>Method is executed when {@link Component component} fires an event of type {@link Events eventType}.</p>
  * @constructor
  */
-export function ExecOn(eventType: EventType) {
+export function ExecOn(eventType: Events) {
     return function (target: Object, key: string | symbol, descriptor: DescriptorFuncWithFirstArg<Component>) {
         let originalFunc = descriptor.value;
 
