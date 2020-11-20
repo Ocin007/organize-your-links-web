@@ -9,12 +9,14 @@ import Component from "../../component";
 })
 class OylHeader extends Component {
 
+    protected heading: HTMLHeadingElement;
+
     static get tagName(): string {
         return 'oyl-header';
     }
 
     static get observedAttributes() {
-        return [];
+        return ['title'];
     }
 
     @ComponentReady()
@@ -22,6 +24,7 @@ class OylHeader extends Component {
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
+        this.heading.innerText = newVal;
     }
 
     disconnectedCallback(): void {

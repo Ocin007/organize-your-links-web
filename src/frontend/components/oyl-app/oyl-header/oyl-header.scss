@@ -1,1 +1,15 @@
 @import "../../global.scss";
+div {
+  background-color: $background-darkgray;
+  z-index: 2;
+  box-shadow: $shadow-bottom;
+
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+
+  h1 {
+    color: $font-green;
+  }
+}
