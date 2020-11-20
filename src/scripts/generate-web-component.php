@@ -3,6 +3,7 @@
 const COMPONENTS_DIR = __DIR__ . '/../frontend/components';
 const INDEX_TS = __DIR__ . '/../frontend/components/index.ts';
 const COMPONENTS_TEMPLATE = __DIR__ . '/../frontend/templates/component.txt';
+const STYLE_TEMPLATE = __DIR__ . '/../frontend/templates/style.txt';
 
 function generateClassName(string $tagName): string
 {
@@ -37,7 +38,7 @@ $generateFileFromTemplate = function (string $templateFile, string $destFile) us
 };
 
 file_put_contents($componentDir . '/' . $tagName . '.html', '');
-file_put_contents($componentDir . '/' . $tagName . '.scss', '');
+$generateFileFromTemplate(STYLE_TEMPLATE, $componentDir . '/' . $tagName . '.scss');
 $generateFileFromTemplate(COMPONENTS_TEMPLATE, $componentDir . '/' . $tagName . '.ts');
 
 
