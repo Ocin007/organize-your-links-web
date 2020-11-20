@@ -4,8 +4,8 @@ import {ComponentReady} from "../decorators/decorators";
 
 abstract class Component extends HTMLElement {
 
-    protected html: string;
-    protected scss: string;
+    private html: string;
+    private scss: string;
 
     protected get services(): ServiceProvider {
         return ServiceProvider.instance;
