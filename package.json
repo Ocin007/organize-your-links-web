@@ -3,6 +3,7 @@
   "version": "1.3.0",
   "private": true,
   "scripts": {
+    "webpack:watch": "webpack --config webpack.config.js --watch",
     "webpack": "webpack --config webpack.config.js",
     "generate": "php src/scripts/generate-web-component.php"
   },
