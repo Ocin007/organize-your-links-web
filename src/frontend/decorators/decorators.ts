@@ -36,19 +36,24 @@ export function ComponentReady() {
 
 /**
  * **Method decorator**
- * <p>Method is executed when {@link Component component} fires an event of type {@link Events eventType}.</p>
+ * <p>Method is always executed when {@link Component component} fires an event of type {@link Events eventType}.
+ * The method will only be executed once if singleExec is true.</p>
  * @constructor
  */
-export function ExecOn(eventType: Events) {
+export function ExecOn(eventType: Events, singleExec: boolean = false) {
     return function (target: Object, key: string | symbol, descriptor: DescriptorFuncWithFirstArg<Component>) {
         let originalFunc = descriptor.value;
 
         descriptor.value = function (component: Component, ...args: any[]): void {
-            component.addEventListener(eventType, (ev) => {
+            let listener = (ev) => {
                 if (ev.composedPath()[0] === component) {
+                    if (singleExec) {
+                        component.removeEventListener(eventType, listener);
+                    }
                     originalFunc.apply(this, [component, ...args]);
                 }
-            });
+            };
+            component.addEventListener(eventType, listener);
         };
 
         return descriptor;
