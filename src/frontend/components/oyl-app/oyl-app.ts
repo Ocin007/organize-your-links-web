@@ -1,6 +1,6 @@
 import html from "./oyl-app.html";
 import scss from "./oyl-app.scss";
-import {ComponentReady, ExecOn, OylComponent} from "../../decorators/decorators";
+import {ComponentReady, ExecOnReady, OylComponent} from "../../decorators/decorators";
 import Component from "../component";
 import {Events} from "../../@types/enums";
 import OylNavBar from "./oyl-nav-bar/oyl-nav-bar";
@@ -8,6 +8,7 @@ import OylPageFrame from "./oyl-page-frame/oyl-page-frame";
 import OylSlidePage from "./oyl-slide-page/oyl-slide-page";
 import OylPopupFrame from "./oyl-popup-frame/oyl-popup-frame";
 import OylNotification from "./oyl-notification/oyl-notification";
+import NavEvent from "../../events/NavEvent";
 
 @OylComponent({
     html: html,
@@ -31,7 +32,7 @@ class OylApp extends Component {
 
     @ComponentReady()
     connectedCallback(): void {
-        this.addNavEventCallbacks();
+        this.initNavigation();
         this.addPopupEventCallbacks();
         this.addNotifyEventCallbacks();
     }
@@ -45,10 +46,21 @@ class OylApp extends Component {
     eventCallback(ev: Event): void {
     }
 
-    private addNavEventCallbacks(): void {
-        this.addEventCallback(this.navBar, Events.Nav);
-        this.addEventCallback(this.pageFrame, Events.Nav);
-        this.addEventCallback(this.slidePage, Events.Nav);
+    private initNavigation(): void {
+        this.addEventListener(Events.Nav, (ev: NavEvent) => {
+            this.navBar.setAttribute('page-id', ev.pageId);
+            this.pageFrame.setAttribute('page-id', ev.pageId);
+            this.slidePage.setAttribute('page-id', ev.pageId);
+        });
+        let startPage = this.services.settings.startPage;
+        this.setPageId(this.navBar, startPage);
+        this.setPageId(this.pageFrame, startPage);
+        this.setPageId(this.slidePage, startPage);
+    }
+
+    @ExecOnReady(true)
+    private setPageId(component: Component, pageId: PageID) {
+        component.setAttribute('page-id', pageId);
     }
 
     private addPopupEventCallbacks(): void {
@@ -59,7 +71,7 @@ class OylApp extends Component {
         this.addEventCallback(this.notification, Events.Notify);
     }
 
-    @ExecOn(Events.ComponentReady)
+    @ExecOnReady()
     private addEventCallback(component: Component, eventType: Events): void {
         this.addEventListener(eventType, ev => component.eventCallback(ev));
     }

@@ -1,3 +1,5 @@
+import SettingsService from "./SettingsService";
+
 class ServiceProvider {
 
     private static _instance: ServiceProvider;
@@ -10,6 +12,10 @@ class ServiceProvider {
             this._instance = new ServiceProvider();
         }
         return this._instance;
+    }
+
+    get settings(): SettingsService {
+        return SettingsService.instance;
     }
 }
 

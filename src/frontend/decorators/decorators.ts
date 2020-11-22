@@ -38,6 +38,8 @@ export function ComponentReady() {
  * **Method decorator**
  * <p>Method is always executed when {@link Component component} fires an event of type {@link Events eventType}.
  * The method will only be executed once if singleExec is true.</p>
+ * @param eventType Events
+ * @param singleExec boolean
  * @constructor
  */
 export function ExecOn(eventType: Events, singleExec: boolean = false) {
@@ -58,4 +60,14 @@ export function ExecOn(eventType: Events, singleExec: boolean = false) {
 
         return descriptor;
     };
+}
+
+/**
+ * **Method decorator**
+ * <p>Method executed on {@link ComponentReadyEvent}.</p>
+ * @see ExecOn
+ * @constructor
+ */
+export function ExecOnReady(singleExec: boolean = false) {
+    return ExecOn(Events.ComponentReady, singleExec);
 }

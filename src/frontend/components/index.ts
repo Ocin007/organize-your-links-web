@@ -5,6 +5,7 @@ import OylPopupFrame from "./oyl-app/oyl-popup-frame/oyl-popup-frame";
 import OylNotification from "./oyl-app/oyl-notification/oyl-notification";
 import OylNavBar from "./oyl-app/oyl-nav-bar/oyl-nav-bar";
 import OylHeader from "./oyl-app/oyl-header/oyl-header";
+import OylNavBarTab from "./oyl-app/oyl-nav-bar/oyl-nav-bar-tab/oyl-nav-bar-tab";
 
 const Components = [
     OylApp,
@@ -14,6 +15,7 @@ const Components = [
     OylNotification,
     OylNavBar,
     OylHeader,
+    OylNavBarTab,
 ];
 
 for (let component of Components) {

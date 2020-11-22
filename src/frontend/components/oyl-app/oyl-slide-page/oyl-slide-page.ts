@@ -14,7 +14,7 @@ class OylSlidePage extends Component {
     }
 
     static get observedAttributes() {
-        return [];
+        return ['page-id'];
     }
 
     @ComponentReady()
