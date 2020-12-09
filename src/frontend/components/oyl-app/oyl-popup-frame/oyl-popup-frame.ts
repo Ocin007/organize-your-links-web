@@ -17,6 +17,8 @@ class OylPopupFrame extends Component {
         return [];
     }
 
+    //TODO: bekommt im event html element zum anzeigen + callbacks
+
     @ComponentReady()
     connectedCallback(): void {
     }

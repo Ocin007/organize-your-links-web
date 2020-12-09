@@ -1,1 +1,109 @@
 @import "../../global.scss";
+
+$close-button-back: #646464;
+$close-button-front: #2c2c2c;
+
+.outer-container {
+  display: flex;
+  flex-direction: column-reverse;
+  position: fixed;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  max-height: 100%;
+  direction: rtl;
+  &:hover .close-all-button {
+    opacity: 0.5;
+  }
+  &::-webkit-scrollbar {
+    width: 4px;
+    &-track {
+      background-color: rgba(150, 150, 150, 0);
+    }
+    &-thumb {
+      background-color: $font-white;
+      transition: background-color 0.2s;
+    }
+  }
+  .inner-container {
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    padding-bottom: 20px;
+  }
+  .close-all-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+    @include boxShadow(4);
+    background-color: $close-button-back;
+    opacity: 0;
+    &:hover {
+      opacity: 1;
+      bottom: 7px;
+      left: 7px;
+      width: 46px;
+      height: 46px;
+      @include boxShadow(8);
+      .cross-symbol {
+        right: -17px;
+        width: 36px;
+      }
+    }
+    &:active {
+      background-color: $close-button-front;
+      box-shadow: none;
+      transition: none;
+      .cross-symbol {
+        background-color: $close-button-back;
+        transition: none;
+      }
+    }
+    .cross-symbol {
+      position: absolute;
+      top: -1px;
+      right: -14px;
+      width: 30px;
+      height: 5px;
+      background-color: $close-button-front;
+      border-radius: 2px;
+      &:nth-child(1) {
+        transform: rotate(45deg);
+      }
+      &:nth-child(2) {
+        transform: rotate(-45deg);
+      }
+    }
+  }
+}
+.cross-symbol-container {
+  position: relative;
+  height: 1px;
+  width: 1px;
+}
+.trans-02 {
+  transition:
+          opacity 0.2s,
+          box-shadow 0.2s,
+          background-color 0.2s,
+          bottom 0.2s,
+          left 0.2s,
+          right 0.2s,
+          top 0.2s,
+          width 0.2s,
+          height 0.2s;
+}
+oyl-notify-card {
+  transition: margin-top 0.1s linear;
+  &.no-height {
+    margin-top: -1 * $card-height;
+  }
+}
+oyl-notify-card + oyl-notify-card {
+  margin-top: 20px;
+}

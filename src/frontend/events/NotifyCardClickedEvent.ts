@@ -1,11 +1,12 @@
 import {Events} from "../@types/enums";
 import AbstractBubblingEvent from "./AbstractBubblingEvent";
 
-class ComponentReadyEvent<T = any> extends AbstractBubblingEvent<T> {
+class NotifyCardClickedEvent<T = any> extends AbstractBubblingEvent<T> {
 
     constructor(eventInitDict?: CustomEventInit<T>) {
-        super(Events.Ready, eventInitDict);
+        super(Events.NotifyClick, eventInitDict);
     }
+
 }
 
-export default ComponentReadyEvent;
+export default NotifyCardClickedEvent;

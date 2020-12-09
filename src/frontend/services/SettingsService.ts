@@ -1,4 +1,5 @@
 import AbstractService from "./AbstractService";
+import {Status} from "../@types/enums";
 
 class SettingsService extends AbstractService {
 
@@ -16,11 +17,25 @@ class SettingsService extends AbstractService {
     }
 
     //TODO: implement SettingsService
+    // observable pattern
     get startPage(): PageID {
         return 's'
     }
 
     set startPage(pageId: PageID) {
+
+    }
+
+    getNotify(status: Status): NotifySettings {
+
+        return {
+            visible: true,
+            autoClose: Math.floor(Math.random() * 2) === 1,
+            interval: 5000
+        };
+    }
+
+    setNotify(status: Status, settings: {visible?: boolean, autoClose?: boolean, interval?: number}) {
 
     }
 }

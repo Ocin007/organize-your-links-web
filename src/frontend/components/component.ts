@@ -36,13 +36,13 @@ abstract class Component extends HTMLElement {
         return template;
     }
 
-    private initShadowRoot(style: HTMLStyleElement, template: HTMLTemplateElement) {
+    private initShadowRoot(style: HTMLStyleElement, template: HTMLTemplateElement): void {
         this.attachShadow({mode: "open"});
         this.shadowRoot.appendChild(style);
         this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
 
-    private bindElementsToProperties() {
+    private bindElementsToProperties(): void {
         this.shadowRoot
             .querySelectorAll<HTMLElement>('[data-property]')
             .forEach(element => this[element.dataset.property] = element);

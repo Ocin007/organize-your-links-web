@@ -49,7 +49,7 @@ class OylNavBar extends Component {
     eventCallback(ev: Event): void {
     }
 
-    private setTabActive(pageId: PageID, active: boolean) {
+    private setTabActive(pageId: PageID, active: boolean): void {
         let tab = this.tabContainer.querySelector<OylNavBarTab>('[page-id="' + pageId + '"]');
         if (tab === null) {
             this.sendError(pageId);
@@ -58,11 +58,11 @@ class OylNavBar extends Component {
         }
     }
 
-    private sendError(pageId: PageID) {
-        this.dispatchEvent(new NotifyEvent<{}>(
+    private sendError(pageId: PageID): void {
+        this.dispatchEvent(new NotifyEvent(
             Status.ERROR,
             OylNavBar.PAGE_DOES_NOT_EXIST,
-            {detail: {pageId: pageId}}
+            {detail: {raw: {pageId: pageId}}}
         ));
     }
 }

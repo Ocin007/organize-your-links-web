@@ -69,5 +69,5 @@ export function ExecOn(eventType: Events, singleExec: boolean = false) {
  * @constructor
  */
 export function ExecOnReady(singleExec: boolean = false) {
-    return ExecOn(Events.ComponentReady, singleExec);
+    return ExecOn(Events.Ready, singleExec);
 }

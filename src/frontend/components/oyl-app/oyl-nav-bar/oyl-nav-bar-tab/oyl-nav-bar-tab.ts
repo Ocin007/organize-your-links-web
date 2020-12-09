@@ -42,7 +42,7 @@ class OylNavBarTab extends Component {
     eventCallback(ev: Event): void {
     }
 
-    private setActive(bool: boolean) {
+    private setActive(bool: boolean): void {
         if (bool) {
             if (!this.divElement.classList.contains('active')) {
                 this.divElement.classList.add('active');

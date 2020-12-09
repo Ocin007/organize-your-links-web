@@ -1,13 +1,11 @@
 @import "../../global.scss";
 .nav-bar {
   background-color: $background-darkgray;
-  box-shadow: $shadow-bottom;
-
+  @include boxShadow(16);
   display: flex;
   flex-direction: row;
   position: sticky;
   top: 0;
   width: 100%;
-
   user-select: none;
 }

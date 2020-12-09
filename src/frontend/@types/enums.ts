@@ -2,11 +2,13 @@ export enum Events {
     Nav = 'navEvent',
     Notify = 'notifyEvent',
     Popup = 'popupEvent',
-    ComponentReady = 'componentReadyEvent'
+    Ready = 'readyEvent',
+    NotifyClick = 'notifyClickEvent'
 }
 export enum Status {
-    SUCCESS,
-    INFO,
-    WARN,
-    ERROR
+    SUCCESS = 'success',
+    DEBUG = 'debug',
+    INFO = 'info',
+    WARN = 'warn',
+    ERROR = 'error'
 }

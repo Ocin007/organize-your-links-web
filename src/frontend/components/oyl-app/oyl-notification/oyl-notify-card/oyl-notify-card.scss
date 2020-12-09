@@ -1,0 +1,134 @@
+@import "../../../global.scss";
+
+$card-width: 300px;
+$icon-width: 45px;
+$transition-speed-in: 0.3s;
+$transition-speed-out: 0.1s;
+$transition-delay: 75ms;
+$transition-fn: cubic-bezier(.5,1.05,.5,1.05);
+
+.notify-card {
+  height: $card-height;
+  width: $card-width;
+  @include boxShadow(4);
+  background-color: $background-darkgray-active;
+  color: $notify-front;
+  margin-left: 16px;
+  margin-right: 6px;
+  border-radius: 5px;
+  direction: ltr;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+  user-select: none;
+
+  visibility: hidden;
+  left: 0;
+  transition: none;
+  &-not-visible {
+    left: ($card-width + 16px + 6px + 4px) * -1;
+  }
+  &-slide-in {
+    visibility: visible;
+    left: 0;
+    transition: left $transition-speed-in $transition-fn $transition-delay;
+  }
+  &-slide-out {
+    left: ($card-width + 16px + 6px + 4px) * -1;
+    transition: left $transition-speed-out linear;
+  }
+}
+.outer-container {
+  width: inherit;
+  height: 100%;
+  background-color: $notify-back;
+  border-radius: 5px 0 0 5px;
+  display: flex;
+  flex-direction: row;
+}
+.content-container {
+  height: 100%;
+  width: 100%;
+  margin-left: 10px;
+  .heading-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    h3 {
+      margin: 10px 0 0;
+      &.error {
+        color: $error;
+      }
+      &.warn {
+        color: $warn;
+      }
+      &.info {
+        color: $info;
+      }
+      &.debug {
+        color: $debug;
+      }
+      &.success {
+        color: $success;
+      }
+    }
+    oyl-date {
+      margin: 10px 10px 0 0;
+      font-style: italic;
+      color: $notify-front-weak;
+    }
+  }
+  p {
+    overflow-wrap: break-word;
+    max-width: $card-width - 6px - 45px - 10px;
+    margin: 5px 0 0;
+    height: $default-line-height * 2;
+    &.fade-last-line {
+      @include FadeInLastLine();
+    }
+  }
+  .detail-link-container {
+    display: flex;
+    flex-direction: row;
+    margin: 10px 0 0;
+  }
+  h5 {
+    margin: 0;
+    &:hover {
+      text-decoration: underline $notify-front;
+    }
+  }
+}
+.icon-container {
+  background-color: $background-gray;
+  height: 100%;
+  width: $icon-width;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.lifetime-bar {
+  width: 6px;
+  height: 100%;
+  border-radius: 0 5px 5px 0;
+
+  &-error {
+    background-color: $error;
+  }
+  &-warn {
+    background-color: $warn;
+  }
+  &-info {
+    background-color: $info;
+  }
+  &-debug {
+    background-color: $debug;
+  }
+  &-success {
+    background-color: $success;
+  }
+}
