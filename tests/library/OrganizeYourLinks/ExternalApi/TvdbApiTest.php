@@ -28,10 +28,8 @@ class TvdbApiTest extends TestCase
         $this->sourceMock
             ->shouldReceive('getCaFilePath')
             ->andReturn($certFile);
-        $this->subjectMock = Mockery::mock(TvdbApi::class);
+        $this->subjectMock = Mockery::mock(TvdbApi::class, [$this->sourceMock, $this->errorListMock]);
         $this->subjectMock->makePartial();
-        $this->subjectMock->setDataSource($this->sourceMock);
-        $this->subjectMock->setErrorList($this->errorListMock);
     }
 
     public function testPrepare()

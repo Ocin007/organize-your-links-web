@@ -49,16 +49,6 @@ class TvdbApi implements ErrorListContainerInterface
         return false;
     }
 
-    public function setDataSource(DataSourceInterface $source)
-    {
-        $this->source = $source;
-    }
-
-    public function setErrorList(ErrorListInterface $errorList)
-    {
-        $this->errorList = $errorList;
-    }
-
     public function getTvdbImgUrl(): string
     {
         return self::$tvdbImagesUrl;
