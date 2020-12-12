@@ -183,10 +183,10 @@ class OylNotifyCard extends Component {
     }
 
     private renderSlideInAnimation(): void {
-        getComputedStyle(this.card).width;
         this.card.classList.add('notify-card-not-visible');
-        getComputedStyle(this.card).width;
-        this.card.classList.add('notify-card-slide-in');
+        requestAnimationFrame(() => {
+            this.card.classList.add('notify-card-slide-in');
+        });
     }
 }
 
