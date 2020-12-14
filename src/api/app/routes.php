@@ -35,6 +35,12 @@ return function (App $app, string $baseUri) {
             $app->put('/update', EndpointHandlerWrapper::getHandler(UpdateSettingsEndpoint::class));
         });
 
+        //TODO: route umbenennen
+        $app->group('/settings-v2', function (App $app) {
+            $app->get('', EndpointHandlerWrapper::getHandler(GetSettingsEndpoint::class));
+            $app->put('', EndpointHandlerWrapper::getHandler(UpdateSettingsEndpoint::class));
+        });
+
         $app->group('/tvdb', function (App $app) {
             $app->group('/{tvdbId}', function (App $app) {
                 $app->get('/episodes', EndpointHandlerWrapper::getHandler(GetEpisodesOfTvdbIdEndpoint::class));

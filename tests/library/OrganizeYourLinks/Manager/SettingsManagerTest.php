@@ -25,7 +25,34 @@ class SettingsManagerTest extends TestCase
             'minSizeOfPlaylist' => 10,
             'colorBrightness' => 255,
             'titleLanguage' => "name_de",
-            'episodeCount' => false
+            'episodeCount' => false,
+            'notification' => [
+                'success' => [
+                    'visible' => true,
+                    'autoClose' => true,
+                    'interval' => 5000,
+                ],
+                'debug' => [
+                    'visible' => false,
+                    'autoClose' => false,
+                    'interval' => 5000,
+                ],
+                'info' => [
+                    'visible' => true,
+                    'autoClose' => false,
+                    'interval' => 5000,
+                ],
+                'warn' => [
+                    'visible' => true,
+                    'autoClose' => false,
+                    'interval' => 5000,
+                ],
+                'error' => [
+                    'visible' => true,
+                    'autoClose' => false,
+                    'interval' => 5000,
+                ],
+            ],
         ];
         $this->sourceMock = Mockery::mock(DataSourceInterface::class);
         $this->errorListMock = Mockery::mock(ErrorList::class);

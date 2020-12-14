@@ -11,6 +11,7 @@ use OrganizeYourLinks\Api\Response\ResponseJson;
 use OrganizeYourLinks\DataSource\DataSourceInterface;
 use OrganizeYourLinks\Manager\SettingsManager;
 use OrganizeYourLinks\Types\ErrorListInterface;
+use OrganizeYourLinks\Types\Setting;
 use OrganizeYourLinks\Validator\ValidatorInterface;
 
 class UpdateSettingsEndpoint implements JsonEndpointHandlerInterface
@@ -32,7 +33,7 @@ class UpdateSettingsEndpoint implements JsonEndpointHandlerInterface
     {
         $newSettings = $this->request->getRawBody();
         $errorList = $this->settingsValidator->validate($newSettings);
-        $initialDataId = $newSettings[SettingsManager::KEY_INITIAL_DATA_ID];
+        $initialDataId = $newSettings[Setting::KEY_INITIAL_DATA_ID];
         if ($initialDataId !== null && $initialDataId !== '') {
             if (!$this->source->seriesExist($initialDataId)) {
                 $errorList->add(ErrorListInterface::SERIES_DOES_NOT_EXIST);
