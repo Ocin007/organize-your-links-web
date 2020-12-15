@@ -9,7 +9,6 @@ import errorIcon from "./assets/icons/error.ico";
 import debugIcon from "./assets/icons/debug.ico";
 import NotifyEvent from "../../../../events/NotifyEvent";
 import {Status} from "../../../../@types/enums";
-import OylLabel from "../../../common/oyl-label/oyl-label";
 import NotifyCardClickedEvent from "../../../../events/NotifyCardClickedEvent";
 import OylDate from "../../../common/oyl-date/oyl-date";
 
@@ -37,7 +36,7 @@ class OylNotifyCard extends Component {
 
     private status: Status;
     private msgString: string = '';
-    private msgLabel: OylLabel;
+    private msgLabel: HTMLElement;
     private date: Date;
     private details: NotifyDetails;
     private milliSeconds: number;
@@ -62,7 +61,7 @@ class OylNotifyCard extends Component {
 
     setAttributesFromEvent(ev: NotifyEvent): void {
         this.status = ev.status;
-        if (ev.msg instanceof OylLabel) {
+        if (ev.msg instanceof HTMLElement) {
             this.msgLabel = ev.msg;
         } else {
             this.msgString = ev.msg;
