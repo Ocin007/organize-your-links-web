@@ -164,7 +164,7 @@ class OylNotifyCard extends Component {
         this.oylDate.setAttribute('timestamp', this.date.getTime().toString());
     }
 
-    private renderStatusSpecificElements(appendix: 'success' | 'info' | 'warn' | 'error' | 'debug' ): void {
+    private renderStatusSpecificElements(appendix: NotifyType): void {
         this.heading.innerText = this.headLine[appendix];
         this.heading.classList.add(appendix);
         this.icon.src = this.iconPath[appendix];

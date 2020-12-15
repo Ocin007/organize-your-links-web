@@ -10,4 +10,17 @@ declare type NotifySettings = {
     visible: boolean,
     autoClose: boolean,
     interval: number
-}
+};
+declare type NotifyType = 'success' | 'debug' | 'info' | 'warn' | 'error';
+declare type NotifySetting = 'visible' | 'autoClose' | 'interval';
+declare type SettingKey =
+    'startPage' |
+    'initialDataId' |
+    'animationSpeedSingle' |
+    'animationSpeedMulti' |
+    'minSizeOfPlaylist' |
+    'colorBrightness' |
+    'titleLanguage' |
+    'episodeCount' |
+    ['notification', NotifyType, NotifySetting];
+declare type Settings = Map<SettingKey,any>;
