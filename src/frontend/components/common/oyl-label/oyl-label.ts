@@ -10,12 +10,6 @@ import Component from "../../component";
 class OylLabel extends Component {
 
     protected span: HTMLSpanElement;
-    private label: string = '';
-    private val1: string = '';
-    private val2: string = '';
-    private val3: string = '';
-    private val4: string = '';
-    private val5: string = '';
 
     static get tagName(): string {
         return 'oyl-label';
@@ -23,6 +17,11 @@ class OylLabel extends Component {
 
     static get observedAttributes() {
         return ['label', 'val1', 'val2', 'val3', 'val4', 'val5'];
+    }
+
+    constructor(private label: string = '', private val1: string = '', private val2: string = '', private val3: string = '', private val4: string = '', private val5: string = '') {
+        super();
+        this.refreshContent();
     }
 
     @ComponentReady()

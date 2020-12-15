@@ -83,18 +83,14 @@ class OylApp extends Component {
     }
 
     private debugLoadedComponentsCount(): void {
-        let label = document.createElement(OylLabel.tagName);
+        let label = new OylLabel('Loaded components: {{val1}}', '0');
         let componentCount = 0;
-        if (label instanceof OylLabel) {
-            label.setAttribute('label', 'Loaded components: {{val1}}');
-            label.setAttribute('val1', '0');
-            this.addEventListener(Events.Ready, () => {
-                componentCount++;
-                label.setAttribute('val1', componentCount.toString());
-            });
-            let debug = new NotifyEvent(Status.DEBUG, label, {detail: {html: label}});
-            this.dispatchEvent(debug);
-        }
+        this.addEventListener(Events.Ready, () => {
+            componentCount++;
+            label.setAttribute('val1', componentCount.toString());
+        });
+        let debug = new NotifyEvent(Status.DEBUG, label, {detail: {html: label}});
+        this.dispatchEvent(debug);
     }
 
     private catchAllNotificationsUntilReady() {
