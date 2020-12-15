@@ -90,6 +90,26 @@ class SettingsManagerTest extends TestCase
         $this->assertEquals($this->defaultSettings, $settings);
     }
 
+    public function testLoadSettingsNullCannotSaveDefault()
+    {
+        $this->sourceMock
+            ->shouldReceive('loadSettings')
+            ->andReturn(null);
+        $this->sourceMock
+            ->shouldReceive('saveSettings')
+            ->with($this->defaultSettings)
+            ->andReturn($this->newErrorListMock);
+        $this->newErrorListMock
+            ->shouldReceive('isEmpty')
+            ->andReturn(false);
+        $this->errorListMock
+            ->shouldReceive('add')
+            ->with(Mockery::any());
+        $this->subject->loadSettings();
+        $settings = $this->subject->getSettings();
+        $this->assertEquals([], $settings);
+    }
+
     public function testGetSet()
     {
         $this->subject->setSettings(['setting' => 'test']);

@@ -6,6 +6,7 @@ namespace OrganizeYourLinks\Manager;
 
 use OrganizeYourLinks\DataSource\DataSourceInterface;
 use OrganizeYourLinks\ErrorListContainerInterface;
+use OrganizeYourLinks\Types\ErrorList;
 use OrganizeYourLinks\Types\ErrorListInterface;
 use OrganizeYourLinks\Types\Setting;
 
@@ -19,6 +20,7 @@ class SettingsManager implements ErrorListContainerInterface
     {
         $this->source = $source;
         $this->errorList = $errorList;
+        $this->settings = [];
     }
 
     public function noErrors(): bool
@@ -44,7 +46,9 @@ class SettingsManager implements ErrorListContainerInterface
     {
         $settings = $this->source->loadSettings();
         if ($settings === null) {
-            $this->errorList->add($this->setDefaultSettings());
+            if (!$this->setDefaultSettings()->isEmpty()) {
+                $this->errorList->add(ErrorListInterface::CANNOT_LOAD_SETTINGS);
+            }
         } else {
             $this->settings = $settings;
         }
@@ -82,6 +86,8 @@ class SettingsManager implements ErrorListContainerInterface
         $errorList = $this->source->saveSettings($settings);
         if ($errorList->isEmpty()) {
             $this->settings = $settings;
+        } else {
+            $errorList = new ErrorList(ErrorListInterface::CANNOT_SAVE_DEFAULT_SETTINGS);
         }
         return $errorList;
     }

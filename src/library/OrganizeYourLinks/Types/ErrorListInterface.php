@@ -10,9 +10,11 @@ interface ErrorListInterface
     const CANNOT_DELETE_SERIES = 'cannot delete series';
     const CANNOT_LOAD_ALL_SERIES = 'cannot load all series';
     const CANNOT_LOAD_SERIES = 'cannot load series';
+    const CANNOT_LOAD_SETTINGS = 'cannot load settings';
     const CANNOT_LOAD_TVDB_API_KEY = 'cannot load tvdb api key';
     const CANNOT_LOAD_TVDB_API_TOKEN = 'cannot load tvdb api token';
     const CANNOT_READ_ID_FILE_MAP = 'cannot read id-file-map file';
+    const CANNOT_SAVE_DEFAULT_SETTINGS = 'cannot save default settings';
     const CANNOT_SAVE_ID_FILE_MAP = 'cannot save id-file-map file';
     const CANNOT_SAVE_SERIES = 'cannot save series';
     const CANNOT_SAVE_SERIES_NOT_EXIST = 'cannot save series, does not exist';
