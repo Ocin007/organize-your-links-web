@@ -6,6 +6,8 @@ import ServiceInterface from "./ServiceInterface";
 
 class SettingsService extends AbstractService implements ServiceInterface, Observable<SettingKey[]> {
 
+    static CANNOT_LOAD_SETTINGS = 'Settings konnten nicht geladen werden.';
+
     //TODO: neue route anlegen
     private static ROUTE = "/settings-v2";
 
@@ -30,14 +32,16 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         return this._isInitialised;
     }
 
-    async init(): Promise<void> {
+    async init(): Promise<boolean> {
         let result = await this.api.get(SettingsService.ROUTE);
         if (result.error !== undefined || result.response === undefined) {
-            throw new Error('SettingsService: initialisation failed.');
+            this.notifier.error(SettingsService.CANNOT_LOAD_SETTINGS);
+            return false;
         }
         this.settings = this.objectToSettings(result.response);
         this._isInitialised = true;
         this.notifySubs(this.settings);
+        return true;
     }
 
     subscribe(observer: Observer, watch?: SettingKey[]): void {

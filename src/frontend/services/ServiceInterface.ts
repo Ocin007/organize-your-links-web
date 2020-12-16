@@ -1,6 +1,6 @@
 interface ServiceInterface {
     isInitialised: boolean;
-    init(): Promise<void>;
+    init(): Promise<boolean>;
 }
 
 export default ServiceInterface;

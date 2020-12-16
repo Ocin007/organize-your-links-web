@@ -43,8 +43,6 @@ class ApiClient {
         this.debugIncRequestCount();
         this.notifier.debug(`ApiClient: Request ${method} ${route}`, data);
 
-
-        //TODO: hier evtl nur debug, der aufrufende macht dann richtige messages
         return fetch(ApiClient.baseApiUrl + route, {
             method: method,
             headers: {
@@ -61,14 +59,13 @@ class ApiClient {
         }).then(res => {
             if (res.error !== undefined && Array.isArray(res.error)) {
                 res.error.forEach((error: string) => {
-                    //TODO: je nach statuscode warning oder error
-                    this.notifier.warn('ApiClient Server: ' + error, res);
+                    this.notifier.debug('ApiClient Server: ' + error, res);
                 });
             }
             this.notifier.debug(`ApiClient: Response for ${method} ${route} received.`, res);
             return res;
         }).catch(error => {
-            this.notifier.error('ApiClient ' + error.toString(), error);
+            this.notifier.debug('ApiClient ' + error.toString(), error);
             return error;
         });
     }

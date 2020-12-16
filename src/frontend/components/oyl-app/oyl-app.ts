@@ -37,7 +37,7 @@ class OylApp extends Component {
         super();
         this.initGlobalDefaultErrorHandling();
         this.catchAllNotificationsUntilReady();
-        this.sendInitialNotifications();
+        this.debugLoadedComponentsCount();
     }
 
     @ComponentReady()
@@ -78,10 +78,6 @@ class OylApp extends Component {
         this.addEventListener(eventType, ev => component.eventCallback(ev));
     }
 
-    private sendInitialNotifications() {
-        this.debugLoadedComponentsCount();
-    }
-
     private debugLoadedComponentsCount(): void {
         let label = new OylLabel('Loaded components: {{val1}}', '0');
         let componentCount = 0;
@@ -89,8 +85,7 @@ class OylApp extends Component {
             componentCount++;
             label.setAttribute('val1', componentCount.toString());
         });
-        let debug = new NotifyEvent(Status.DEBUG, label, {detail: {html: label}});
-        this.dispatchEvent(debug);
+        this.dispatchEvent(new NotifyEvent(Status.DEBUG, label, {detail: {html: label}}));
     }
 
     private catchAllNotificationsUntilReady() {
