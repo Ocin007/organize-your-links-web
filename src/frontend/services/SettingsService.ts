@@ -1,5 +1,4 @@
 import AbstractService from "./AbstractService";
-import { Status } from "../@types/enums";
 import Observable from "../utils/Observable";
 import Observer from "../utils/Observer";
 import ServiceInterface from "./ServiceInterface";
@@ -71,10 +70,12 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
             throw new Error('SettingsService: Tried to read settings before initialisation.');
         }
         if (keyList === undefined) {
+            //TODO: testen, ob ich setSettings umgehen kann mit der referenz
             return this.settings;
         }
         let subSettings = new Map<SettingKey, any>();
         keyList.forEach((key => {
+            //TODO: this.settings.get(key) = undefined für array keys
             subSettings.set(key, this.settings.get(key));
         }));
         return subSettings;
@@ -160,20 +161,8 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
 
     }
 
-    getNotify(status: Status): NotifySettings {
-
-        return {
-            visible: true,
-            autoClose: Math.floor(Math.random() * 2) === 1,
-            interval: 5000
-        };
-    }
-
-    setNotify(status: Status, settings: {visible?: boolean, autoClose?: boolean, interval?: number}) {
-
-    }
-
     private sendDebugCannotFindObserver(observer: Observer, watch?: SettingKey[]) {
+        //TODO: alle messages in konstanten
         this.notifier.debug('SettingsService: Given observer is not subscribed to the given list of items.', {
             observer: observer, watch: watch
         });

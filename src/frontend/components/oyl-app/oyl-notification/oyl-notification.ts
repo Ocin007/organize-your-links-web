@@ -4,7 +4,7 @@ import {ComponentReady, OylComponent} from "../../../decorators/decorators";
 import Component from "../../component";
 import NotifyEvent from "../../../events/NotifyEvent";
 import OylNotifyCard from "./oyl-notify-card/oyl-notify-card";
-import {Events} from "../../../@types/enums";
+import { Events, Status } from "../../../@types/enums";
 import NotifyCardClickedEvent from "../../../events/NotifyCardClickedEvent";
 
 @OylComponent({
@@ -39,7 +39,7 @@ class OylNotification extends Component {
     }
 
     eventCallback(ev: NotifyEvent): void {
-        let settings = this.services.settings.getNotify(ev.status);
+        let settings = this.getNotifySettings(ev.status);
         if (!settings.visible) {
             return;
         }
@@ -57,6 +57,23 @@ class OylNotification extends Component {
                 notify.classList.remove('no-height');
             }
         }
+    }
+
+    private getNotifySettings(status: Status): NotifySettings {
+        if (!this.services.settings.isInitialised) {
+            return OylNotification.defaultNotifySettings;
+        }
+        let settingKeys: SettingKey[] = [
+            ['notification', status, 'visible'],
+            ['notification', status, 'autoClose'],
+            ['notification', status, 'interval'],
+        ];
+        let settings = this.services.settings.getSettings(settingKeys);
+        return {
+            visible: settings.get(settingKeys[0]),
+            autoClose: settings.get(settingKeys[1]),
+            interval: settings.get(settingKeys[2])
+        };
     }
 
     private renderCloseAllButton(): void {
@@ -112,6 +129,10 @@ class OylNotification extends Component {
         this.closeAll.addEventListener('click', () => {
             this.removeAllNotifications();
         });
+    }
+
+    private static get defaultNotifySettings(): NotifySettings {
+        return {visible: true, autoClose: false, interval: 5000};
     }
 }
 
