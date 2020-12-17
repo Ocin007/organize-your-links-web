@@ -1,10 +1,10 @@
 import html from "./oyl-notification.html";
 import scss from "./oyl-notification.scss";
-import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import { ComponentReady, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 import NotifyEvent from "../../../events/NotifyEvent";
 import OylNotifyCard from "./oyl-notify-card/oyl-notify-card";
-import { Events, Status } from "../../../@types/enums";
+import { Events, SettingKey, Status } from "../../../@types/enums";
 import NotifyCardClickedEvent from "../../../events/NotifyCardClickedEvent";
 
 @OylComponent({
@@ -76,23 +76,33 @@ class OylNotification extends Component {
         switch (type) {
             case Status.SUCCESS:
                 return [
-                    'notification_success_visible', 'notification_success_autoClose', 'notification_success_interval'
+                    SettingKey.NOTIFY_SUCCESS_VISIBLE,
+                    SettingKey.NOTIFY_SUCCESS_AUTO_CLOSE,
+                    SettingKey.NOTIFY_SUCCESS_INTERVAL
                 ];
             case Status.DEBUG:
                 return [
-                    'notification_debug_visible', 'notification_debug_autoClose', 'notification_debug_interval'
+                    SettingKey.NOTIFY_DEBUG_VISIBLE,
+                    SettingKey.NOTIFY_DEBUG_AUTO_CLOSE,
+                    SettingKey.NOTIFY_DEBUG_INTERVAL
                 ];
             case Status.INFO:
                 return [
-                    'notification_info_visible', 'notification_info_autoClose', 'notification_info_interval'
+                    SettingKey.NOTIFY_INFO_VISIBLE,
+                    SettingKey.NOTIFY_INFO_AUTO_CLOSE,
+                    SettingKey.NOTIFY_INFO_INTERVAL
                 ];
             case Status.WARN:
                 return [
-                    'notification_warn_visible', 'notification_warn_autoClose', 'notification_warn_interval'
+                    SettingKey.NOTIFY_WARN_VISIBLE,
+                    SettingKey.NOTIFY_WARN_AUTO_CLOSE,
+                    SettingKey.NOTIFY_WARN_INTERVAL
                 ];
             case Status.ERROR:
                 return [
-                    'notification_error_visible', 'notification_error_autoClose', 'notification_error_interval'
+                    SettingKey.NOTIFY_ERROR_VISIBLE,
+                    SettingKey.NOTIFY_ERROR_AUTO_CLOSE,
+                    SettingKey.NOTIFY_ERROR_INTERVAL
                 ];
         }
     }
