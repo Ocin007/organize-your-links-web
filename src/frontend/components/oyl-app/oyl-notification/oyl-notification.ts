@@ -18,6 +18,9 @@ class OylNotification extends Component {
     protected container: HTMLDivElement;
     protected closeAll: HTMLDivElement;
 
+    private storeInBuffer: boolean = true;
+    private buffer: NotifyEvent[] = [];
+
     static get tagName(): string {
         return 'oyl-notification';
     }
@@ -28,6 +31,9 @@ class OylNotification extends Component {
 
     @ComponentReady()
     connectedCallback(): void {
+        this.services.settings.ifInitSuccessful
+            .then(() => this.showNotificationsInBuffer())
+            .catch(() => this.showNotificationsInBuffer());
         this.initCloseButtonRendering();
         this.initEventListeners();
     }
@@ -39,6 +45,14 @@ class OylNotification extends Component {
     }
 
     eventCallback(ev: NotifyEvent): void {
+        if (this.storeInBuffer) {
+            this.buffer.push(ev);
+            return;
+        }
+        this.showNotification(ev);
+    }
+
+    private showNotification(ev: NotifyEvent): void {
         let settings = this.getNotifySettings(ev.status);
         if (!settings.visible) {
             return;
@@ -57,6 +71,11 @@ class OylNotification extends Component {
                 notify.classList.remove('no-height');
             }
         }
+    }
+
+    private showNotificationsInBuffer(): void {
+        this.storeInBuffer = false;
+        this.buffer.forEach(ev => this.showNotification(ev));
     }
 
     private getNotifySettings(status: Status): NotifySettings {

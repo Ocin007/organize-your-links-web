@@ -8,6 +8,10 @@ import { Settings } from "../@types/types";
 class SettingsService extends AbstractService implements ServiceInterface, Observable<SettingKey[]> {
 
     static CANNOT_LOAD_SETTINGS = 'Settings konnten nicht geladen werden.';
+    static INIT_SUCCESSFUL = 'SettingsService: initialisation successful.';
+    static INIT_FAILED = 'SettingsService: initialisation failed.';
+    static READ_BEFORE_INIT = 'SettingsService: Tried to read settings before initialisation.';
+    static OBSERVER_NOT_FOUND = 'SettingsService: Given observer is not subscribed to the given list of items.';
 
     //TODO: neue route anlegen
     private static ROUTE = "/settings-v2";
@@ -18,8 +22,16 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
     private subs: { observer: Observer, watch?: SettingKey[] }[] = [];
     private _isInitialised: boolean = false;
 
+    private readonly _initSuccessful: Promise<void>;
+    private initResolve: () => void;
+    private initReject: (reason: string) => void;
+
     private constructor() {
         super();
+        this._initSuccessful = new Promise<void>((resolve, reject) => {
+            this.initResolve = resolve;
+            this.initReject = reject;
+        });
     }
 
     static get instance(): SettingsService {
@@ -37,13 +49,19 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         let result = await this.api.get(SettingsService.ROUTE);
         if (result.error !== undefined || result.response === undefined) {
             this.notifier.error(SettingsService.CANNOT_LOAD_SETTINGS);
+            this.initReject(SettingsService.INIT_FAILED);
             return false;
         }
         this.settings = this.objectToSettings(result.response);
         this._isInitialised = true;
-        this.notifier.debug('SettingsService: initialisation successful.', result);
+        this.notifier.debug(SettingsService.INIT_SUCCESSFUL, result);
+        this.initResolve();
         this.notifySubs(this.settings);
         return true;
+    }
+
+    get ifInitSuccessful(): Promise<void> {
+        return this._initSuccessful;
     }
 
     subscribe(observer: Observer, watch?: SettingKey[]): void {
@@ -70,7 +88,7 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
 
     getSettings(keyList?: SettingKey[]): Settings {
         if (!this.isInitialised) {
-            throw new Error('SettingsService: Tried to read settings before initialisation.');
+            throw new Error(SettingsService.READ_BEFORE_INIT);
         }
         if (keyList === undefined) {
             //TODO: testen, ob ich setSettings umgehen kann mit der referenz
@@ -167,7 +185,7 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
 
     private sendDebugCannotFindObserver(observer: Observer, watch?: SettingKey[]) {
         //TODO: alle messages in konstanten
-        this.notifier.debug('SettingsService: Given observer is not subscribed to the given list of items.', {
+        this.notifier.debug(SettingsService.OBSERVER_NOT_FOUND, {
             observer: observer, watch: watch
         });
     }
