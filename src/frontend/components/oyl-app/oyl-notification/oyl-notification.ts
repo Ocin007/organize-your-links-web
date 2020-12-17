@@ -63,17 +63,38 @@ class OylNotification extends Component {
         if (!this.services.settings.isInitialised) {
             return OylNotification.defaultNotifySettings;
         }
-        let settingKeys: SettingKey[] = [
-            ['notification', status, 'visible'],
-            ['notification', status, 'autoClose'],
-            ['notification', status, 'interval'],
-        ];
+        let settingKeys: SettingKey[] = OylNotification.getSettingKeys(status);
         let settings = this.services.settings.getSettings(settingKeys);
         return {
             visible: settings.get(settingKeys[0]),
             autoClose: settings.get(settingKeys[1]),
             interval: settings.get(settingKeys[2])
         };
+    }
+
+    private static getSettingKeys(type: Status): SettingKey[] {
+        switch (type) {
+            case Status.SUCCESS:
+                return [
+                    'notification_success_visible', 'notification_success_autoClose', 'notification_success_interval'
+                ];
+            case Status.DEBUG:
+                return [
+                    'notification_debug_visible', 'notification_debug_autoClose', 'notification_debug_interval'
+                ];
+            case Status.INFO:
+                return [
+                    'notification_info_visible', 'notification_info_autoClose', 'notification_info_interval'
+                ];
+            case Status.WARN:
+                return [
+                    'notification_warn_visible', 'notification_warn_autoClose', 'notification_warn_interval'
+                ];
+            case Status.ERROR:
+                return [
+                    'notification_error_visible', 'notification_error_autoClose', 'notification_error_interval'
+                ];
+        }
     }
 
     private renderCloseAllButton(): void {

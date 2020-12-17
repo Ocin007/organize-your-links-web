@@ -98,8 +98,9 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
     private settingsToObject(settings: Settings): object {
         let object = {};
         settings.forEach((value, key) => {
-            if (Array.isArray(key)) {
-                object = this.setNestedValue(key, value, object);
+            let keyFragments = key.split('_');
+            if (keyFragments.length > 1) {
+                object = this.setNestedValue(keyFragments, value, object);
             } else {
                 object[key] = value;
             }
@@ -119,7 +120,7 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
                 if (previousKeys.length === 0) {
                     settingKey = SettingsService.strToSettingKey(key);
                 } else {
-                    settingKey = SettingsService.strToSettingKey(previousKeys.concat(key));
+                    settingKey = SettingsService.strToSettingKey(previousKeys.concat(key).join('_'));
                 }
                 settings.set(settingKey, object[key]);
             }
