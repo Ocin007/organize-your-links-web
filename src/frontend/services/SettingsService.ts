@@ -41,6 +41,7 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         }
         this.settings = this.objectToSettings(result.response);
         this._isInitialised = true;
+        this.notifier.debug('SettingsService: initialisation successful.', result);
         this.notifySubs(this.settings);
         return true;
     }
