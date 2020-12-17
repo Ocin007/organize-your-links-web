@@ -111,6 +111,10 @@ class OylApp extends Component {
         window.addEventListener("error", ev => {
             this.dispatchEvent(new NotifyEvent(Status.ERROR, ev.message, {detail: {raw: ev}}));
         });
+        window.addEventListener('unhandledrejection', ev => {
+            console.log(ev);
+            this.dispatchEvent(new NotifyEvent(Status.ERROR, 'Uncaught Promise: ' + ev.reason, {detail: {raw: ev}}));
+        });
     }
 }
 
