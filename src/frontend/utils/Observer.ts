@@ -1,5 +1,5 @@
-interface Observer {
-    update<T extends any>(newValue: T): void;
+interface Observer<T extends any> {
+    update(newValue: T): void;
 }
 
 export default Observer;

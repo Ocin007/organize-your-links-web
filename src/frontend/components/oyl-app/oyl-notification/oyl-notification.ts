@@ -13,7 +13,8 @@ import NotifyCardClickedEvent from "../../../events/NotifyCardClickedEvent";
 })
 class OylNotification extends Component {
 
-    public static DELAY = 100;
+    static ELEMENT_INCORRECT_TYPE = 'Created Element <oyl-notify-card> not instance of OylNotifyCard';
+    static DELAY = 100;
 
     protected container: HTMLDivElement;
     protected closeAll: HTMLDivElement;
@@ -53,24 +54,37 @@ class OylNotification extends Component {
     }
 
     private showNotification(ev: NotifyEvent): void {
-        let settings = this.getNotifySettings(ev.status);
-        if (!settings.visible) {
+        let config = this.getNotifyConfig(ev.status);
+        if (!config.visible) {
             return;
         }
+        let notify = OylNotification.createNotificationElement(ev, config);
+        this.subscribeElementToSettingsService(notify, ev.status);
+        if (this.container.children.length === 0) {
+            this.container.appendChild(notify);
+        } else {
+            notify.classList.add("no-height");
+            this.container.appendChild(notify);
+            notify.classList.remove("no-height");
+        }
+    }
+
+    private static createNotificationElement(ev: NotifyEvent, settings: NotifyConfig): OylNotifyCard {
         let notify = document.createElement(OylNotifyCard.tagName);
         if (notify instanceof OylNotifyCard) {
             notify.setAttributesFromEvent(ev);
             if (settings.autoClose) {
                 notify.closeAfter(settings.interval, OylNotification.DELAY);
             }
-            if (this.container.children.length === 0) {
-                this.container.appendChild(notify);
-            } else {
-                notify.classList.add('no-height');
-                this.container.appendChild(notify);
-                notify.classList.remove('no-height');
-            }
+            return notify;
         }
+        throw new Error(OylNotification.ELEMENT_INCORRECT_TYPE);
+    }
+
+    private subscribeElementToSettingsService(notify: OylNotifyCard, status: Status): void {
+        let settingKeys = OylNotification.getSettingKeys(status);
+        notify.setSettingKeys(...settingKeys);
+        this.services.settings.subscribe(notify, settingKeys);
     }
 
     private showNotificationsInBuffer(): void {
@@ -78,9 +92,9 @@ class OylNotification extends Component {
         this.buffer.forEach(ev => this.showNotification(ev));
     }
 
-    private getNotifySettings(status: Status): NotifySettings {
+    private getNotifyConfig(status: Status): NotifyConfig {
         if (!this.services.settings.isInitialised) {
-            return OylNotification.defaultNotifySettings;
+            return OylNotification.defaultNotifyConfig;
         }
         let settingKeys: SettingKey[] = OylNotification.getSettingKeys(status);
         let settings = this.services.settings.getSettings(settingKeys);
@@ -91,7 +105,7 @@ class OylNotification extends Component {
         };
     }
 
-    private static getSettingKeys(type: Status): SettingKey[] {
+    private static getSettingKeys(type: Status): [SettingKey, SettingKey, SettingKey] {
         switch (type) {
             case Status.SUCCESS:
                 return [
@@ -135,6 +149,7 @@ class OylNotification extends Component {
     }
 
     private removeNotification(card: OylNotifyCard): void {
+        this.services.settings.unsubscribe(card, card.getSettingKeys());
         setTimeout(() => {
             if (this.container.firstElementChild === card) {
                 this.container.removeChild(card);
@@ -169,7 +184,7 @@ class OylNotification extends Component {
         };
     }
 
-    private initEventListeners() {
+    private initEventListeners(): void {
         this.addEventListener(Events.NotifyClick, (ev: NotifyCardClickedEvent) => {
             let card = ev.composedPath()[0];
             if (card instanceof OylNotifyCard) {
@@ -181,7 +196,7 @@ class OylNotification extends Component {
         });
     }
 
-    private static get defaultNotifySettings(): NotifySettings {
+    private static get defaultNotifyConfig(): NotifyConfig {
         return {visible: true, autoClose: false, interval: 5000};
     }
 }

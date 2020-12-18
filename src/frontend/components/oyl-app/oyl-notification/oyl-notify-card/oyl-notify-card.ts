@@ -8,15 +8,17 @@ import warnIcon from "./assets/icons/warn.ico";
 import errorIcon from "./assets/icons/error.ico";
 import debugIcon from "./assets/icons/debug.ico";
 import NotifyEvent from "../../../../events/NotifyEvent";
-import {Status} from "../../../../@types/enums";
+import { SettingKey, Status } from "../../../../@types/enums";
 import NotifyCardClickedEvent from "../../../../events/NotifyCardClickedEvent";
 import OylDate from "../../../common/oyl-date/oyl-date";
+import Observer from "../../../../utils/Observer";
+import { Settings } from "../../../../@types/types";
 
 @OylComponent({
     html: html,
     scss: scss
 })
-class OylNotifyCard extends Component {
+class OylNotifyCard extends Component implements Observer<Settings> {
 
     private readonly headLine = {
         success: 'SUCCESS',
@@ -39,8 +41,10 @@ class OylNotifyCard extends Component {
     private msgLabel: HTMLElement;
     private date: Date;
     private details: NotifyDetails;
-    private milliSeconds: number;
+    private interval: number;
 
+    private timeoutId: NodeJS.Timeout;
+    private autoClose: boolean = false;
     private isRemoved: boolean;
 
     private readonly iconPath = {
@@ -50,6 +54,10 @@ class OylNotifyCard extends Component {
         error: errorIcon,
         debug: debugIcon
     };
+
+    private keyVisible: SettingKey;
+    private keyAutoClose: SettingKey;
+    private keyInterval: SettingKey;
 
     static get tagName(): string {
         return 'oyl-notify-card';
@@ -71,23 +79,57 @@ class OylNotifyCard extends Component {
     }
 
     closeAfter(milliSeconds: number, delay: number): void {
-        this.milliSeconds = milliSeconds;
+        this.interval = milliSeconds;
+        this.autoClose = true;
         setTimeout(() => {
             this.startLifeTimeBar();
         }, delay);
-        let timeout = setTimeout(() => {
+        this.timeoutId = setTimeout(() => {
             this.closeCard();
         }, milliSeconds + delay);
-        this.addEventListener('mouseenter', () => {
-            this.resetLifeTimeBar();
-            clearTimeout(timeout);
-        });
-        this.addEventListener('mouseleave', () => {
-            this.startLifeTimeBar();
-            timeout = setTimeout(() => {
-                this.closeCard();
-            }, milliSeconds);
-        });
+        this.addEventListener('mouseenter', this.stopTimer);
+        this.addEventListener('mouseleave', this.startTimer);
+    }
+
+    disableAutoClose(): void {
+        this.autoClose = false;
+        this.stopTimer();
+        this.removeEventListener('mouseenter', this.stopTimer);
+        this.removeEventListener('mouseleave', this.startTimer);
+    }
+
+    setSettingKeys(visible: SettingKey, autoClose: SettingKey, interval: SettingKey): void {
+        this.keyVisible = visible;
+        this.keyAutoClose = autoClose;
+        this.keyInterval = interval;
+    }
+
+    getSettingKeys(): SettingKey[] {
+        return [
+            this.keyVisible,
+            this.keyAutoClose,
+            this.keyInterval,
+        ];
+    }
+
+    update(settings: Settings): void {
+        let visible: boolean = settings.get(this.keyVisible);
+        if (!visible) {
+            this.closeCard();
+            return;
+        }
+        let autoClose: boolean = settings.get(this.keyAutoClose);
+        let interval: number = settings.get(this.keyInterval);
+        if (autoClose !== this.autoClose) {
+            if (autoClose) {
+                this.closeAfter(interval, 0);
+            } else {
+                this.disableAutoClose();
+            }
+        } else if (interval !== this.interval && this.autoClose) {
+            this.disableAutoClose();
+            this.closeAfter(interval, 0);
+        }
     }
 
     @ComponentReady()
@@ -171,8 +213,24 @@ class OylNotifyCard extends Component {
         this.lifetimeBar.classList.add('lifetime-bar-' + appendix);
     }
 
+    private startTimer = () => {
+        if (this.timeoutId !== undefined) {
+            return;
+        }
+        this.startLifeTimeBar();
+        this.timeoutId = setTimeout(() => {
+            this.closeCard();
+        }, this.interval);
+    }
+
+    private stopTimer = () => {
+        this.resetLifeTimeBar();
+        clearTimeout(this.timeoutId);
+        this.timeoutId = undefined;
+    }
+
     private startLifeTimeBar(): void {
-        this.lifetimeBar.style.transition = `height ${this.milliSeconds}ms linear`;
+        this.lifetimeBar.style.transition = `height ${this.interval}ms linear`;
         this.lifetimeBar.style.height = '0';
     }
 

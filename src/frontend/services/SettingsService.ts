@@ -19,7 +19,7 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
     private static _instance: SettingsService;
 
     private settings: Settings = new Map<SettingKey, any>();
-    private subs: { observer: Observer, watch?: SettingKey[] }[] = [];
+    private subs: { observer: Observer<any>, watch?: SettingKey[] }[] = [];
     private _isInitialised: boolean = false;
 
     private readonly _initSuccessful: Promise<void>;
@@ -64,26 +64,17 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         return this._initSuccessful;
     }
 
-    subscribe(observer: Observer, watch?: SettingKey[]): void {
-        let newEntity: { observer: Observer, watch?: SettingKey[] } = {observer: observer};
-
-        //TODO: braucht man das?
-        if (watch !== undefined) {
-            newEntity.watch = watch;
-        }
-        if (this.isInitialised) {
-            observer.update(this.getSettings(watch));
-        }
-        this.subs.push(newEntity);
+    subscribe<K>(observer: Observer<K>, watch?: SettingKey[]): void {
+        this.subs.push({observer: observer, watch: watch});
     }
 
-    unsubscribe(observer: Observer, watch?: SettingKey[]): void {
-        let index = this.subs.findIndex((value => value.observer === observer && value.watch === watch));
+    unsubscribe<K>(observer: Observer<K>, watch?: SettingKey[]): void {
+        let index = this.subs.findIndex((value => value.observer === observer && this.settingKeysEqual(value.watch, watch)));
         if (index === -1) {
-            this.sendDebugCannotFindObserver(observer, watch);
+            this.notifier.debug(SettingsService.OBSERVER_NOT_FOUND, {observer: observer, watch: watch});
             return;
         }
-        this.subs.splice(index);
+        this.subs.splice(index, 1);
     }
 
     getSettings(keyList?: SettingKey[]): Settings {
@@ -91,27 +82,38 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
             throw new Error(SettingsService.READ_BEFORE_INIT);
         }
         if (keyList === undefined) {
-            //TODO: testen, ob ich setSettings umgehen kann mit der referenz
-            return this.settings;
+            return new Map<SettingKey, any>([...this.settings]);
         }
         let subSettings = new Map<SettingKey, any>();
-        keyList.forEach((key => {
-            //TODO: this.settings.get(key) = undefined für array keys
-            subSettings.set(key, this.settings.get(key));
-        }));
+        keyList.forEach(key => subSettings.set(key, this.settings.get(key)));
         return subSettings;
+    }
+
+    private settingKeysEqual(arr1?: SettingKey[], arr2?: SettingKey[]): boolean {
+        if (arr1 === undefined && arr2 === undefined) {
+            return true;
+        }
+        if (arr1 === undefined || arr2 === undefined) {
+            return false;
+        }
+        if (arr1.length !== arr2.length) {
+            return false;
+        }
+        let equal: boolean = true;
+        arr1.forEach(key => equal &&= arr2.includes(key));
+        return equal;
     }
 
     private notifySubs(newSettings: Settings): void {
         this.subs.forEach((sub) => {
             if (sub.watch === undefined) {
-                sub.observer.update<Settings>(this.settings);
+                sub.observer.update(new Map<SettingKey, any>([...this.settings]));
                 return;
             }
             let hasAnyKey = false;
-            sub.watch.forEach(key => hasAnyKey = hasAnyKey || newSettings.has(key));
+            sub.watch.forEach(key => hasAnyKey ||= newSettings.has(key));
             if (hasAnyKey) {
-                sub.observer.update<Settings>(this.getSettings(sub.watch));
+                sub.observer.update(this.getSettings(sub.watch));
             }
         });
     }
@@ -166,10 +168,11 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
     async setSettings(changed: Settings): Promise<boolean> {
         //TODO: async mit Promise? welcher typ
         // check isInitialised?
-        debugger;
         let newSettings = new Map<SettingKey, any>([...this.settings, ...changed]);
         let data = this.settingsToObject(newSettings);
         // let response = await this.api.put(SettingsService.ROUTE, data);
+        this.settings = newSettings;
+        this.notifySubs(changed);
         return true;
     }
 
@@ -181,13 +184,6 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
 
     set startPage(pageId: PageID) {
 
-    }
-
-    private sendDebugCannotFindObserver(observer: Observer, watch?: SettingKey[]) {
-        //TODO: alle messages in konstanten
-        this.notifier.debug(SettingsService.OBSERVER_NOT_FOUND, {
-            observer: observer, watch: watch
-        });
     }
 }
 

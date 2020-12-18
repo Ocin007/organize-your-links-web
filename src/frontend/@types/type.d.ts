@@ -6,7 +6,7 @@ declare type NotifyDetails = {
     html?: HTMLElement,
     raw?: Object
 };
-declare type NotifySettings = {
+declare type NotifyConfig = {
     visible: boolean,
     autoClose: boolean,
     interval: number

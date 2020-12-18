@@ -1,8 +1,8 @@
 import Observer from "./Observer";
 
 interface Observable<T extends any[]> {
-    subscribe(observer: Observer, watch?: T): void;
-    unsubscribe(observer: Observer, watch?: T): void;
+    subscribe<K>(observer: Observer<K>, watch?: T): void;
+    unsubscribe<K>(observer: Observer<K>, watch?: T): void;
 }
 
 export default Observable;
