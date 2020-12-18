@@ -26,12 +26,12 @@ class PageProvider {
                 label: 'Ein Testlabel (s)'
             },
             {
-                pageId: 'd',
-                label: 'Ein Testlabel (d)'
+                pageId: '3',
+                label: 'Ein Testlabel (3)'
             },
             {
-                pageId: 'f',
-                label: 'Ein Testlabel (f)'
+                pageId: 'playlist_all',
+                label: 'Playlist: Alle'
             },
         ];
     }

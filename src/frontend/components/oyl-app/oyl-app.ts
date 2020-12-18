@@ -62,10 +62,15 @@ class OylApp extends Component {
             this.pageFrame.setAttribute('page-id', ev.pageId);
             this.slidePage.setAttribute('page-id', ev.pageId);
         });
-        let startPage = this.services.settings.startPage;
-        this.setPageId(this.navBar, startPage);
-        this.setPageId(this.pageFrame, startPage);
-        this.setPageId(this.slidePage, startPage);
+        let startPage: PageID;
+        this.services.settings.ifInitSuccessful
+            .then(_ => startPage = this.services.settings.get<PageID>(SettingKey.START_PAGE))
+            .catch(_ => startPage = 'playlist_all')//TODO: feste id oder garnix, weil eh keine settings
+            .finally(() => {
+                this.navBar.setAttribute('page-id', startPage);
+                this.pageFrame.setAttribute('page-id', startPage);
+                this.slidePage.setAttribute('page-id', startPage);
+            });
     }
 
     @ExecOnReady(true)

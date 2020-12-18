@@ -96,6 +96,13 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         return subSettings;
     }
 
+    get<T extends any>(key: SettingKey): T {
+        if (!this.isInitialised) {
+            throw new Error(SettingsService.READ_BEFORE_INIT);
+        }
+        return this.settings.get(key);
+    }
+
     async setSettings(changed: Settings): Promise<string[]> {
         if (!this.isInitialised) {
             throw new Error(SettingsService.WRITE_BEFORE_INIT);
@@ -191,16 +198,6 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         }
         object[key] = this.setNestedValue(keyList, value, object[key]);
         return object;
-    }
-
-    //TODO: implement SettingsService
-    // observable pattern
-    get startPage(): PageID {
-        return 's'
-    }
-
-    set startPage(pageId: PageID) {
-
     }
 }
 
