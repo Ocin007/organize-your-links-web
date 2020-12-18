@@ -9,6 +9,8 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
 
     static INIT_SUCCESSFUL = 'SettingsService: initialisation successful.';
     static INIT_FAILED = 'SettingsService: initialisation failed.';
+    static SAVE_SETTINGS_SUCCESSFUL = 'SettingsService: save settings successful.';
+    static SAVE_SETTINGS_FAILED = 'SettingsService: save settings failed.';
     static READ_BEFORE_INIT = 'SettingsService: Tried to read settings before initialisation.';
     static WRITE_BEFORE_INIT = 'SettingsService: Tried to write settings before initialisation.';
     static OBSERVER_NOT_FOUND = 'SettingsService: Given observer is not subscribed to the given list of items.';
@@ -48,10 +50,12 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
     async init(): Promise<string[]> {
         let result = await this.api.get(SettingsService.ROUTE);
         if (result instanceof Error) {
+            this.notifier.debug(SettingsService.INIT_FAILED, result);
             this.initReject(SettingsService.INIT_FAILED);
             throw result;
         }
         if (result.error !== undefined) {
+            this.notifier.debug(SettingsService.INIT_FAILED, result);
             this.initReject(SettingsService.INIT_FAILED);
             return result.error;
         }
@@ -176,12 +180,15 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         let data = this.settingsToObject(newSettings);
         let result = await this.api.put(SettingsService.ROUTE, data);
         if (result instanceof Error) {
+            this.notifier.debug(SettingsService.SAVE_SETTINGS_FAILED, result);
             throw result;
         }
         if (result.error !== undefined) {
+            this.notifier.debug(SettingsService.SAVE_SETTINGS_FAILED, result);
             return result.error;
         }
         this.settings = newSettings;
+        this.notifier.debug(SettingsService.SAVE_SETTINGS_SUCCESSFUL, result);
         this.notifySubs(changed);
         return [];
     }
