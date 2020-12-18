@@ -81,12 +81,10 @@ class OylNotifyCard extends Component implements Observer<Settings> {
     closeAfter(milliSeconds: number, delay: number): void {
         this.interval = milliSeconds;
         this.autoClose = true;
-        setTimeout(() => {
-            this.startLifeTimeBar();
-        }, delay);
         this.timeoutId = setTimeout(() => {
-            this.closeCard();
-        }, milliSeconds + delay);
+            this.timeoutId = undefined;
+            this.startTimer();
+        }, delay);
         this.addEventListener('mouseenter', this.stopTimer);
         this.addEventListener('mouseleave', this.startTimer);
     }

@@ -7,10 +7,10 @@ import { Settings } from "../@types/types";
 
 class SettingsService extends AbstractService implements ServiceInterface, Observable<SettingKey[]> {
 
-    static CANNOT_LOAD_SETTINGS = 'Settings konnten nicht geladen werden.';
     static INIT_SUCCESSFUL = 'SettingsService: initialisation successful.';
     static INIT_FAILED = 'SettingsService: initialisation failed.';
     static READ_BEFORE_INIT = 'SettingsService: Tried to read settings before initialisation.';
+    static WRITE_BEFORE_INIT = 'SettingsService: Tried to write settings before initialisation.';
     static OBSERVER_NOT_FOUND = 'SettingsService: Given observer is not subscribed to the given list of items.';
 
     //TODO: neue route anlegen
@@ -45,19 +45,22 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         return this._isInitialised;
     }
 
-    async init(): Promise<boolean> {
+    async init(): Promise<string[]> {
         let result = await this.api.get(SettingsService.ROUTE);
-        if (result.error !== undefined || result.response === undefined) {
-            this.notifier.error(SettingsService.CANNOT_LOAD_SETTINGS);
+        if (result instanceof Error) {
             this.initReject(SettingsService.INIT_FAILED);
-            return false;
+            throw result;
+        }
+        if (result.error !== undefined) {
+            this.initReject(SettingsService.INIT_FAILED);
+            return result.error;
         }
         this.settings = this.objectToSettings(result.response);
         this._isInitialised = true;
         this.notifier.debug(SettingsService.INIT_SUCCESSFUL, result);
         this.initResolve();
         this.notifySubs(this.settings);
-        return true;
+        return [];
     }
 
     get ifInitSuccessful(): Promise<void> {
@@ -165,15 +168,22 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         return object;
     }
 
-    async setSettings(changed: Settings): Promise<boolean> {
-        //TODO: async mit Promise? welcher typ
-        // check isInitialised?
+    async setSettings(changed: Settings): Promise<string[]> {
+        if (!this.isInitialised) {
+            throw new Error(SettingsService.WRITE_BEFORE_INIT);
+        }
         let newSettings = new Map<SettingKey, any>([...this.settings, ...changed]);
         let data = this.settingsToObject(newSettings);
-        // let response = await this.api.put(SettingsService.ROUTE, data);
+        let result = await this.api.put(SettingsService.ROUTE, data);
+        if (result instanceof Error) {
+            throw result;
+        }
+        if (result.error !== undefined) {
+            return result.error;
+        }
         this.settings = newSettings;
         this.notifySubs(changed);
-        return true;
+        return [];
     }
 
     //TODO: implement SettingsService
