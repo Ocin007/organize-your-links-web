@@ -96,6 +96,27 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         return subSettings;
     }
 
+    async setSettings(changed: Settings): Promise<string[]> {
+        if (!this.isInitialised) {
+            throw new Error(SettingsService.WRITE_BEFORE_INIT);
+        }
+        let newSettings = new Map<SettingKey, any>([...this.settings, ...changed]);
+        let data = this.settingsToObject(newSettings);
+        let result = await this.api.put(SettingsService.ROUTE, data);
+        if (result instanceof Error) {
+            this.notifier.debug(SettingsService.SAVE_SETTINGS_FAILED, result);
+            throw result;
+        }
+        if (result.error !== undefined) {
+            this.notifier.debug(SettingsService.SAVE_SETTINGS_FAILED, result);
+            return result.error;
+        }
+        this.settings = newSettings;
+        this.notifier.debug(SettingsService.SAVE_SETTINGS_SUCCESSFUL, result);
+        this.notifySubs(changed);
+        return [];
+    }
+
     private settingKeysEqual(arr1?: SettingKey[], arr2?: SettingKey[]): boolean {
         if (arr1 === undefined && arr2 === undefined) {
             return true;
@@ -170,27 +191,6 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         }
         object[key] = this.setNestedValue(keyList, value, object[key]);
         return object;
-    }
-
-    async setSettings(changed: Settings): Promise<string[]> {
-        if (!this.isInitialised) {
-            throw new Error(SettingsService.WRITE_BEFORE_INIT);
-        }
-        let newSettings = new Map<SettingKey, any>([...this.settings, ...changed]);
-        let data = this.settingsToObject(newSettings);
-        let result = await this.api.put(SettingsService.ROUTE, data);
-        if (result instanceof Error) {
-            this.notifier.debug(SettingsService.SAVE_SETTINGS_FAILED, result);
-            throw result;
-        }
-        if (result.error !== undefined) {
-            this.notifier.debug(SettingsService.SAVE_SETTINGS_FAILED, result);
-            return result.error;
-        }
-        this.settings = newSettings;
-        this.notifier.debug(SettingsService.SAVE_SETTINGS_SUCCESSFUL, result);
-        this.notifySubs(changed);
-        return [];
     }
 
     //TODO: implement SettingsService
