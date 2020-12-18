@@ -11,7 +11,6 @@ import OylNotification from "./oyl-notification/oyl-notification";
 import NavEvent from "../../events/NavEvent";
 import OylLabel from "../common/oyl-label/oyl-label";
 import NotifyEvent from "../../events/NotifyEvent";
-import ComponentReadyEvent from "../../events/ComponentReadyEvent";
 
 @OylComponent({
     html: html,
@@ -93,18 +92,14 @@ class OylApp extends Component {
         let pushInBuffer = (ev: NotifyEvent) => {
             notifyBuffer.push(ev);
         };
-        let onReady = (ev: ComponentReadyEvent) => {
-            if (ev.composedPath()[0] !== this.notification) {
-                return;
-            }
+        let onReady = () => {
             this.removeEventListener(Events.Notify, pushInBuffer);
-            this.notification.removeEventListener(Events.Ready, onReady);
             notifyBuffer.forEach((notify) => {
                 this.notification.eventCallback(notify);
             });
         };
         this.addEventListener(Events.Notify, pushInBuffer);
-        this.notification.addEventListener(Events.Ready, onReady);
+        this.notification.addEventListener(Events.Ready, onReady, {once: true});
     }
 
     private initGlobalDefaultErrorHandling() {

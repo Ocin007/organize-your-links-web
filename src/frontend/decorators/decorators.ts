@@ -49,13 +49,10 @@ export function ExecOn(eventType: Events, singleExec: boolean = false) {
         descriptor.value = function (component: Component, ...args: any[]): void {
             let listener = (ev) => {
                 if (ev.composedPath()[0] === component) {
-                    if (singleExec) {
-                        component.removeEventListener(eventType, listener);
-                    }
                     originalFunc.apply(this, [component, ...args]);
                 }
             };
-            component.addEventListener(eventType, listener);
+            component.addEventListener(eventType, listener, {once: singleExec});
         };
 
         return descriptor;
