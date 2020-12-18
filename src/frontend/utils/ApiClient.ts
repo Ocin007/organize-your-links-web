@@ -37,8 +37,6 @@ class ApiClient {
     }
 
     private request(method: 'GET' | 'PUT' | 'POST' | 'DELETE', route: string, data?: object): Promise<any> {
-
-        //TODO: notifications wieder buggy (wieder normal, wenn alle geschlossen mit button)
         this.debugInitTotalRequestCount();
         this.debugIncRequestCount();
         this.notifier.debug(`ApiClient: Request ${method} ${route}`, data);

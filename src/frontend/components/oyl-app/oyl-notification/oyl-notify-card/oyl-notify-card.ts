@@ -240,7 +240,9 @@ class OylNotifyCard extends Component implements Observer<Settings> {
     private renderSlideInAnimation(): void {
         this.card.classList.add('notify-card-not-visible');
         requestAnimationFrame(() => {
-            this.card.classList.add('notify-card-slide-in');
+            requestAnimationFrame(() => {
+                this.card.classList.add('notify-card-slide-in');
+            });
         });
     }
 }
