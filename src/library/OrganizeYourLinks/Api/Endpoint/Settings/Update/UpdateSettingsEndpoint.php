@@ -10,6 +10,7 @@ use OrganizeYourLinks\Api\Request;
 use OrganizeYourLinks\Api\Response\ResponseJson;
 use OrganizeYourLinks\DataSource\DataSourceInterface;
 use OrganizeYourLinks\Manager\SettingsManager;
+use OrganizeYourLinks\Types\ErrorList;
 use OrganizeYourLinks\Types\ErrorListInterface;
 use OrganizeYourLinks\Types\Setting;
 use OrganizeYourLinks\Validator\ValidatorInterface;
@@ -44,6 +45,8 @@ class UpdateSettingsEndpoint implements JsonEndpointHandlerInterface
 
     public function execute(ResponseJson $response): void
     {
+//        throw new \Exception('test');//TODO: remove this
+//        $response->appendErrors(new ErrorList(['test 1', 'test 2']));return;//TODO: remove this
         $newSettings = $this->request->getRawBody();
         $this->settingsManager->setSettings($newSettings);
         $this->settingsManager->saveSettings();

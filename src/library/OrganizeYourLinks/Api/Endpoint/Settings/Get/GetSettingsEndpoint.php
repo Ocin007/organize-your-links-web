@@ -30,6 +30,8 @@ class GetSettingsEndpoint implements JsonEndpointHandlerInterface
 
     public function execute(ResponseJson $response): void
     {
+//        throw new \Exception('test');//TODO: remove this
+//        $response->appendErrors(new ErrorList(['test 1', 'test 2']));return;//TODO: remove this
         $this->settingsManager->loadSettings();
         $settings = $this->settingsManager->getSettings();
         $errorList = $this->settingsManager->getErrorList();

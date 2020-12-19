@@ -177,6 +177,15 @@ class OylNotifyCard extends Component implements Observer<Settings> {
 
     private openPopup(): void {
         //TODO: PopupEvent
+
+        //TODO: remove this, setSettings test
+        let settings = this.services.settings.getSettings(this.getSettingKeys());
+        settings.delete(this.keyInterval);
+        settings.delete(this.keyVisible);
+        settings.set(this.keyAutoClose, !settings.get(this.keyAutoClose));
+        this.services.settings.setSettings(settings)
+            .then((bool) => console.log('set settings: ' + bool))
+            .catch(error => console.log(error));
     }
 
     closeCard(): void {

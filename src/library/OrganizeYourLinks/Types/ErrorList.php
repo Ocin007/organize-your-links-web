@@ -19,6 +19,8 @@ class ErrorList implements ErrorListInterface
         }
     }
 
+    //TODO: statuscode überall dazu
+
     public function getErrorList(): array
     {
         return $this->errorList;

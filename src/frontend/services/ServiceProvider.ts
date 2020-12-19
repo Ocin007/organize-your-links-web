@@ -14,6 +14,8 @@ class ServiceProvider {
         return this._instance;
     }
 
+    //TODO: dependency injection system bauen
+    //TODO: mit interfaces arbeiten
     get settings(): SettingsService {
         return SettingsService.instance;
     }

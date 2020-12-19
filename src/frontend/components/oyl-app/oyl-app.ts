@@ -1,8 +1,8 @@
 import html from "./oyl-app.html";
 import scss from "./oyl-app.scss";
-import {ComponentReady, ExecOnReady, OylComponent} from "../../decorators/decorators";
+import { ComponentReady, ExecOnReady, OylComponent } from "../../decorators/decorators";
 import Component from "../component";
-import {Events, Status} from "../../@types/enums";
+import { Events, SettingKey, Status } from "../../@types/enums";
 import OylNavBar from "./oyl-nav-bar/oyl-nav-bar";
 import OylPageFrame from "./oyl-page-frame/oyl-page-frame";
 import OylSlidePage from "./oyl-slide-page/oyl-slide-page";
@@ -10,6 +10,7 @@ import OylPopupFrame from "./oyl-popup-frame/oyl-popup-frame";
 import OylNotification from "./oyl-notification/oyl-notification";
 import NavEvent from "../../events/NavEvent";
 import OylLabel from "../common/oyl-label/oyl-label";
+import SettingsService from "../../services/SettingsService";
 import NotifyEvent from "../../events/NotifyEvent";
 import ComponentReadyEvent from "../../events/ComponentReadyEvent";
 
@@ -18,6 +19,8 @@ import ComponentReadyEvent from "../../events/ComponentReadyEvent";
     scss: scss
 })
 class OylApp extends Component {
+
+    static CANNOT_LOAD_SETTINGS = 'Settings konnten nicht geladen werden.';
 
     protected navBar: OylNavBar;
     protected pageFrame: OylPageFrame;
@@ -33,11 +36,18 @@ class OylApp extends Component {
         return [];
     }
 
+    //TODO: oyl-app per js in <body> einfügen, selbe instanz für den Notifier (dependency system)
     constructor() {
         super();
-        this.initGlobalDefaultErrorHandling();
         this.catchAllNotificationsUntilReady();
+        this.initGlobalDefaultErrorHandling();
         this.debugLoadedComponentsCount();
+        this.initServices().then(success => {
+            console.log('initServices success: ' + success);
+            //TODO: ladescreen
+            //TODO: elemente sollen selbst bestimmen, ob sie gerendert werden wollen,
+            // wenn entsprechender service nicht initialisiert ist
+        });
     }
 
     @ComponentReady()
@@ -51,6 +61,42 @@ class OylApp extends Component {
     }
 
     disconnectedCallback(): void {
+    }
+
+    //TODO: init in dependency system?
+    async initServices(): Promise<boolean> {
+        try {
+            //TODO: vlt mit service provider ServiceInterface[]
+            let promises: Promise<boolean>[] = [
+                //TODO: testen, ob das so noch parallel ausführt
+                SettingsService.instance.init()
+                    .then(this.sendErrorOnFailure(OylApp.CANNOT_LOAD_SETTINGS))
+                    .catch(this.sendError(OylApp.CANNOT_LOAD_SETTINGS))
+            ];
+            let results = await Promise.all(promises);
+            let success = results.reduce<boolean>((a, b) => a && b, true);
+            console.log(results);
+            return success;
+        } catch (e) {
+            this.dispatchEvent(new NotifyEvent(Status.ERROR, e, {detail: {raw: e}}));
+            return false;
+        }
+    }
+
+    private sendErrorOnFailure(msg: string): (arr: string[]) => boolean {
+        return (arr: string[]): boolean => {
+            if (arr.length === 0) {
+                return true;
+            }
+            return this.sendError(msg)(arr);
+        };
+    }
+
+    private sendError(msg: string): (err: any) => boolean {
+        return (err: any): boolean => {
+            this.dispatchEvent(new NotifyEvent(Status.ERROR, msg, {detail: {raw: err}}));
+            return false;
+        };
     }
 
     eventCallback(ev: Event): void {
