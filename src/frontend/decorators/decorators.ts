@@ -53,18 +53,21 @@ export function OylComponent(options: { html: string, scss: string }) {
  */
 export function InjectionTarget() {
     return function (constructor: ConstructorFunction) {
-        let newConstr: any = function (...oldArgs: any[]) {
-            let newArgs = DependencyInjector.getInjectableParameters(constructor.name);
-            for (let i = 0; i < oldArgs.length; i++) {
-                if (oldArgs[i] !== undefined) {
-                    newArgs[i] = oldArgs[i];
+        let newClass: any = class extends constructor {
+            constructor(...oldArgs: any[]) {
+                let newArgs = DependencyInjector.getInjectableParameters(constructor.name);
+                for (let i = 0; i < oldArgs.length; i++) {
+                    if (oldArgs[i] !== undefined) {
+                        newArgs[i] = oldArgs[i];
+                    }
                 }
+                super(...newArgs);
             }
-            return new constructor(...newArgs);
         }
-        newConstr.prototype = constructor.prototype;
-        Object.defineProperty(newConstr, 'name', {value: constructor.name});
-        return newConstr;
+        Object.defineProperty(newClass, 'name', {
+            value: constructor.name
+        });
+        return newClass;
     }
 }
 
