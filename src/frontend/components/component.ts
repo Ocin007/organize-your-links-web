@@ -4,6 +4,8 @@ import {ComponentReady} from "../decorators/decorators";
 
 abstract class Component extends HTMLElement {
 
+    static tagName: string;
+
     private html: string;
     private scss: string;
 

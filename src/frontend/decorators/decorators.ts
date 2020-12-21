@@ -1,6 +1,37 @@
 import ComponentReadyEvent from "../events/ComponentReadyEvent";
 import Component from "../components/component";
 import {Events} from "../@types/enums";
+import DependencyInjector from "../utils/DependencyInjector";
+
+/**
+ * **Class decorator**
+ * <p>Marks class as a module. The components in declarations will be defined as custom elements and the
+ * classes in dependencies will be injected into classes decorated with {@link InjectionTarget}.</p>
+ * @param options
+ * @constructor
+ */
+export function OylModule(options: {
+    declarations: ComponentConstructor[],
+    dependencies: {
+        injectable: ConstructorFunction,
+        provider?: new() => ProviderInterface,
+        alias?: string
+    }[]
+}) {
+    return function (_) {
+        options.dependencies.forEach(dependency => {
+            DependencyInjector.addInjectable(
+                dependency.injectable.name,
+                dependency.injectable,
+                dependency.provider,
+                dependency.alias
+            );
+        });
+        for (let component of options.declarations) {
+            window.customElements.define(component.tagName, component);
+        }
+    }
+}
 
 /**
  * **Class decorator**
@@ -12,6 +43,45 @@ export function OylComponent(options: { html: string, scss: string }) {
     return function (constructor: Function) {
         constructor.prototype.html = options.html;
         constructor.prototype.scss = options.scss;
+    }
+}
+
+/**
+ * **Class decorator**
+ * <p>Inject dependencies as constructor parameters which are decorated with {@link Inject}.</p>
+ * @constructor
+ */
+export function InjectionTarget() {
+    return function (constructor: ConstructorFunction) {
+        let newConstr: any = function (...oldArgs: any[]) {
+            let newArgs = DependencyInjector.getInjectableParameters(constructor.name);
+            for (let i = 0; i < oldArgs.length; i++) {
+                if (oldArgs[i] !== undefined) {
+                    newArgs[i] = oldArgs[i];
+                }
+            }
+            return new constructor(...newArgs);
+        }
+        newConstr.prototype = constructor.prototype;
+        Object.defineProperty(newConstr, 'name', {value: constructor.name});
+        return newConstr;
+    }
+}
+
+/**
+ * **Parameter decorator**
+ * <p>An instance of the class specified by dependency will be added via dependency injection.</p>
+ * <p>Use this decorator only for constructor parameters. The classes where this decorator is used
+ * must be decorated with {@link InjectionTarget}.</p>
+ * @param dependency The name of the class (or alias) which should be injected.
+ * @constructor
+ */
+export function Inject(dependency: string) {
+    return function (target: ConstructorFunction, key: string | symbol, parameterIndex: number) {
+        if (target.name === undefined) {
+            throw new Error('Decorator @Inject: use decorator only for constructor parameters.');
+        }
+        DependencyInjector.registerDependency(target.name, dependency, parameterIndex);
     }
 }
 
