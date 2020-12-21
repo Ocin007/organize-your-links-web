@@ -11,7 +11,6 @@ import NotifyEvent from "../../../../events/NotifyEvent";
 import { SettingKey, Status } from "../../../../@types/enums";
 import NotifyCardClickedEvent from "../../../../events/NotifyCardClickedEvent";
 import OylDate from "../../../common/oyl-date/oyl-date";
-import Observer from "../../../../utils/Observer";
 import { Settings } from "../../../../@types/types";
 
 @OylComponent({

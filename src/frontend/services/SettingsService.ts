@@ -1,7 +1,4 @@
 import AbstractService from "./AbstractService";
-import Observable from "../utils/Observable";
-import Observer from "../utils/Observer";
-import ServiceInterface from "./ServiceInterface";
 import { SettingKey } from "../@types/enums";
 import { Settings } from "../@types/types";
 
