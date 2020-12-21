@@ -1,7 +1,7 @@
 <?php
 
 const COMPONENTS_DIR = __DIR__ . '/../frontend/components';
-const INDEX_TS = __DIR__ . '/../frontend/components/index.ts';
+const APP_MODULE = __DIR__ . '/../frontend/components/oyl-app/oyl-app.module.ts';
 const COMPONENTS_TEMPLATE = __DIR__ . '/../frontend/templates/component.txt';
 const STYLE_TEMPLATE = __DIR__ . '/../frontend/templates/style.txt';
 
@@ -41,8 +41,8 @@ file_put_contents($componentDir . '/' . $tagName . '.html', '');
 $generateFileFromTemplate(STYLE_TEMPLATE, $componentDir . '/' . $tagName . '.scss');
 $generateFileFromTemplate(COMPONENTS_TEMPLATE, $componentDir . '/' . $tagName . '.ts');
 
-
-$file = fopen(INDEX_TS, 'r');
+/*
+$file = fopen(APP_MODULE, 'r');
 $newContent = '';
 $importAdded = false;
 if ($file !== false) {
@@ -57,5 +57,6 @@ if ($file !== false) {
         $newContent .= $line;
     }
     fclose($file);
-    file_put_contents(INDEX_TS, $newContent);
+    file_put_contents(APP_MODULE, $newContent);
 }
+*/
