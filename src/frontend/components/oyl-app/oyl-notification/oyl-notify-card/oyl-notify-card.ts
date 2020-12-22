@@ -1,6 +1,6 @@
 import html from "./oyl-notify-card.html";
 import scss from "./oyl-notify-card.scss";
-import {ComponentReady, OylComponent} from "../../../../decorators/decorators";
+import { ComponentReady, Inject, InjectionTarget, OylComponent } from "../../../../decorators/decorators";
 import Component from "../../../component";
 import successIcon from "./assets/icons/success.ico";
 import infoIcon from "./assets/icons/info.ico";
@@ -11,8 +11,10 @@ import NotifyEvent from "../../../../events/NotifyEvent";
 import { SettingKey, Status } from "../../../../@types/enums";
 import NotifyCardClickedEvent from "../../../../events/NotifyCardClickedEvent";
 import OylDate from "../../../common/oyl-date/oyl-date";
-import { Settings } from "../../../../@types/types";
+import { Settings, SettingsServiceInterface } from "../../../../@types/types";
 
+//TODO: remove this, setSettings test
+@InjectionTarget()
 @OylComponent({
     html: html,
     scss: scss
@@ -57,6 +59,13 @@ class OylNotifyCard extends Component implements Observer<Settings> {
     private keyVisible: SettingKey;
     private keyAutoClose: SettingKey;
     private keyInterval: SettingKey;
+
+    constructor(
+        //TODO: remove this, setSettings test
+        @Inject('SettingsServiceInterface') private settings: SettingsServiceInterface
+    ) {
+        super();
+    }
 
     static get tagName(): string {
         return 'oyl-notify-card';
@@ -178,11 +187,11 @@ class OylNotifyCard extends Component implements Observer<Settings> {
         //TODO: PopupEvent
 
         //TODO: remove this, setSettings test
-        let settings = this.services.settings.getSettings(this.getSettingKeys());
+        let settings = this.settings.getSettings(this.getSettingKeys());
         settings.delete(this.keyInterval);
         settings.delete(this.keyVisible);
         settings.set(this.keyAutoClose, !settings.get(this.keyAutoClose));
-        this.services.settings.setSettings(settings)
+        this.settings.setSettings(settings)
             .then((bool) => console.log('set settings: ' + bool))
             .catch(error => console.log(error));
     }

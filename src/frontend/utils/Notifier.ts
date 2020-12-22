@@ -1,40 +1,79 @@
 import { Status } from "../@types/enums";
 import NotifyEvent from "../events/NotifyEvent";
+import { NotificationServiceInterface } from "../@types/types";
+import Component from "../components/component";
 
-class Notifier {
+class Notifier implements NotificationServiceInterface {
 
-    //TODO: interface Messanger?
+    private notifyReceiver: Component;
+    private buffer: NotifyEvent[] = [];
+    private storeInBuffer: boolean = true;
 
-    private static get appRoot(): HTMLElement {
-        return document.querySelector("oyl-app") ?? document.createElement('div');
+    setReceiver(element: Component): this {
+        this.notifyReceiver = element;
+        return this;
     }
 
-    success(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
-        Notifier.send(Status.SUCCESS, msg, raw, html);
+    sendNotificationsToReceiver(): this {
+        this.storeInBuffer = false;
+        this.buffer.forEach(ev => {
+            this.notifyReceiver.dispatchEvent(ev);
+        });
+        this.buffer = [];
+        return this;
     }
 
-    debug(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
-        Notifier.send(Status.DEBUG, msg, raw, html);
+    success(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this {
+        this.send(Status.SUCCESS, msg, raw, html);
+        Notifier.console(console.log, msg, raw, html);
+        return this;
     }
 
-    info(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
-        Notifier.send(Status.INFO, msg, raw, html);
+    debug(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this {
+        this.send(Status.DEBUG, msg, raw, html);
+        Notifier.console(console.log, msg, raw, html);
+        return this;
     }
 
-    warn(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
-        Notifier.send(Status.WARN, msg, raw, html);
+    info(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this {
+        this.send(Status.INFO, msg, raw, html);
+        Notifier.console(console.log, msg, raw, html);
+        return this;
     }
 
-    error(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
-        Notifier.send(Status.ERROR, msg, raw, html);
+    warn(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this {
+        this.send(Status.WARN, msg, raw, html);
+        Notifier.console(console.warn, msg, raw, html);
+        return this;
     }
 
-    private static send(status: Status, msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
-        let eventInitDict: CustomEventInit<NotifyDetails> = undefined;
+    error(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this {
+        this.send(Status.ERROR, msg, raw, html);
+        Notifier.console(console.error, msg, raw, html);
+        return this;
+    }
+
+    private send(status: Status, msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
+        let eventInitDict: CustomEventInit<NotifyDetails>;
         if (raw !== undefined || html !== undefined) {
             eventInitDict = {detail: {raw: raw, html: html}};
         }
-        Notifier.appRoot.dispatchEvent(new NotifyEvent(status, msg, eventInitDict));
+        let ev = new NotifyEvent(status, msg, eventInitDict);
+        if (this.notifyReceiver === undefined || this.storeInBuffer) {
+            this.buffer.push(ev);
+        } else {
+            this.notifyReceiver.dispatchEvent(ev);
+        }
+    }
+
+    private static console(logFn: (...args: any[]) => void, msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
+        logFn(msg);
+        if (raw !== undefined) {
+            logFn(raw);
+        }
+        if (html !== undefined) {
+            logFn(html);
+        }
     }
 }
 

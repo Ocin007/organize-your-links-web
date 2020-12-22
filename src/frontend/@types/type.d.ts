@@ -28,10 +28,14 @@ declare interface ConstructorFunction<T = Object> extends Function {
 declare interface ComponentConstructor extends ConstructorFunction<HTMLElement> {
     tagName: string;
 }
-declare interface ServiceInterface {
+declare interface RestServiceInterface {
     isInitialised: boolean;
+
+    //TODO: rename to whenInitSuccessful, vielleicht besser als methode?
     ifInitSuccessful: Promise<void>;
     init(): Promise<string[]>;
+    readonly successMessage: string;
+    readonly errorMessage: string;
 }
 declare interface Observer<T extends any> {
     update(newValue: T): void;
@@ -42,4 +46,10 @@ declare interface Observable<T extends any[]> {
 }
 declare interface ProviderInterface {
     getInstance(constructor: ConstructorFunction): Object;
+}
+declare interface RestClientInterface {
+    get(route: string): Promise<any>;
+    put(route: string, data?: object): Promise<any>;
+    post(route: string, data?: object): Promise<any>;
+    delete(route: string, data?: object): Promise<any>;
 }

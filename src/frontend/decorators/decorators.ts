@@ -3,6 +3,8 @@ import Component from "../components/component";
 import {Events} from "../@types/enums";
 import DependencyInjector from "../utils/DependencyInjector";
 
+//TODO: Directive decorator anschauen
+
 /**
  * **Class decorator**
  * <p>Marks class as a module. The components in declarations will be defined as custom elements and the
@@ -14,7 +16,7 @@ export function OylModule(options: {
     declarations: ComponentConstructor[],
     dependencies: {
         injectable: ConstructorFunction,
-        provider?: new() => ProviderInterface,
+        provider?: ConstructorFunction<ProviderInterface>,
         alias?: string
     }[]
 }) {
@@ -28,6 +30,7 @@ export function OylModule(options: {
     }
 }
 
+//TODO: InjectionTarget hier einbinden (nur wenn es dependencies gibt)
 /**
  * **Class decorator**
  * <p>Adds the HTML and SCSS to the Component.</p>
@@ -51,6 +54,8 @@ export function InjectionTarget() {
         let newClass: any = class extends constructor {
             constructor(...oldArgs: any[]) {
                 let newArgs = DependencyInjector.getInjectableParameters(constructor.name);
+                //TODO: diese logik in DependencyInjector verschieben
+                // vlt. methode umbenennen und alte argumente mit übergeben
                 for (let i = 0; i < oldArgs.length; i++) {
                     if (oldArgs[i] !== undefined) {
                         newArgs[i] = oldArgs[i];

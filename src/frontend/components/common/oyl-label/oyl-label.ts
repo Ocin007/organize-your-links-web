@@ -33,6 +33,7 @@ class OylLabel extends Component {
         this.refreshContent();
     }
 
+    //TODO: vielleicht event ComponentDisconnectedEvent
     disconnectedCallback(): void {
     }
 

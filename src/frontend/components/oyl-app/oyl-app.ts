@@ -1,8 +1,8 @@
 import html from "./oyl-app.html";
 import scss from "./oyl-app.scss";
-import { ComponentReady, ExecOnReady, OylComponent } from "../../decorators/decorators";
+import { ComponentReady, ExecOnReady, Inject, InjectionTarget, OylComponent } from "../../decorators/decorators";
 import Component from "../component";
-import { Events, SettingKey, Status } from "../../@types/enums";
+import { Events, SettingKey } from "../../@types/enums";
 import OylNavBar from "./oyl-nav-bar/oyl-nav-bar";
 import OylPageFrame from "./oyl-page-frame/oyl-page-frame";
 import OylSlidePage from "./oyl-slide-page/oyl-slide-page";
@@ -10,17 +10,14 @@ import OylPopupFrame from "./oyl-popup-frame/oyl-popup-frame";
 import OylNotification from "./oyl-notification/oyl-notification";
 import NavEvent from "../../events/NavEvent";
 import OylLabel from "../common/oyl-label/oyl-label";
-import SettingsService from "../../services/SettingsService";
-import NotifyEvent from "../../events/NotifyEvent";
-import ComponentReadyEvent from "../../events/ComponentReadyEvent";
+import { NotificationServiceInterface, SettingsServiceInterface } from "../../@types/types";
 
+@InjectionTarget()
 @OylComponent({
     html: html,
     scss: scss
 })
 class OylApp extends Component {
-
-    static CANNOT_LOAD_SETTINGS = 'Settings konnten nicht geladen werden.';
 
     protected navBar: OylNavBar;
     protected pageFrame: OylPageFrame;
@@ -36,67 +33,29 @@ class OylApp extends Component {
         return [];
     }
 
-    //TODO: oyl-app per js in <body> einfügen, selbe instanz für den Notifier (dependency system)
-    constructor() {
+    constructor(
+        @Inject('SettingsServiceInterface') private settings: SettingsServiceInterface,
+        @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface
+    ) {
         super();
-        this.catchAllNotificationsUntilReady();
         this.initGlobalDefaultErrorHandling();
         this.debugLoadedComponentsCount();
-        this.initServices().then(success => {
-            console.log('initServices success: ' + success);
-            //TODO: ladescreen
-            //TODO: elemente sollen selbst bestimmen, ob sie gerendert werden wollen,
-            // wenn entsprechender service nicht initialisiert ist
-        });
+        //TODO: ladescreen
+        //TODO: elemente sollen selbst bestimmen, ob sie gerendert werden wollen,
+        // wenn entsprechender service nicht initialisiert ist
     }
 
     @ComponentReady()
     connectedCallback(): void {
         this.initNavigation();
-        this.addEventCallback(this.popupFrame, Events.Popup);
-        this.addEventCallback(this.notification, Events.Notify);
+        this.initPopups(this.popupFrame, Events.Popup);
+        this.initNotifications(this.notification);
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
     }
 
     disconnectedCallback(): void {
-    }
-
-    //TODO: init in dependency system?
-    async initServices(): Promise<boolean> {
-        try {
-            //TODO: vlt mit service provider ServiceInterface[]
-            let promises: Promise<boolean>[] = [
-                //TODO: testen, ob das so noch parallel ausführt
-                SettingsService.instance.init()
-                    .then(this.sendErrorOnFailure(OylApp.CANNOT_LOAD_SETTINGS))
-                    .catch(this.sendError(OylApp.CANNOT_LOAD_SETTINGS))
-            ];
-            let results = await Promise.all(promises);
-            let success = results.reduce<boolean>((a, b) => a && b, true);
-            console.log(results);
-            return success;
-        } catch (e) {
-            this.dispatchEvent(new NotifyEvent(Status.ERROR, e, {detail: {raw: e}}));
-            return false;
-        }
-    }
-
-    private sendErrorOnFailure(msg: string): (arr: string[]) => boolean {
-        return (arr: string[]): boolean => {
-            if (arr.length === 0) {
-                return true;
-            }
-            return this.sendError(msg)(arr);
-        };
-    }
-
-    private sendError(msg: string): (err: any) => boolean {
-        return (err: any): boolean => {
-            this.dispatchEvent(new NotifyEvent(Status.ERROR, msg, {detail: {raw: err}}));
-            return false;
-        };
     }
 
     eventCallback(ev: Event): void {
@@ -107,10 +66,11 @@ class OylApp extends Component {
             this.navBar.setAttribute('page-id', ev.pageId);
             this.pageFrame.setAttribute('page-id', ev.pageId);
             this.slidePage.setAttribute('page-id', ev.pageId);
+            this.notifier.debug(`OylApp: navigate to pageId '${ev.pageId}'.`);
         });
         let startPage: PageID;
-        this.services.settings.ifInitSuccessful
-            .then(_ => startPage = this.services.settings.get<PageID>(SettingKey.START_PAGE))
+        this.settings.ifInitSuccessful
+            .then(_ => startPage = this.settings.get<PageID>(SettingKey.START_PAGE))
             .catch(_ => startPage = 'playlist_all')//TODO: feste id oder garnix, weil eh keine settings
             .finally(() => {
                 this.navBar.setAttribute('page-id', startPage);
@@ -120,13 +80,14 @@ class OylApp extends Component {
     }
 
     @ExecOnReady()
-    private setPageId(component: Component, pageId: PageID): void {
-        component.setAttribute('page-id', pageId);
+    private initPopups(component: Component, eventType: Events): void {
+        this.addEventListener(eventType, ev => component.eventCallback(ev));
     }
 
     @ExecOnReady()
-    private addEventCallback(component: Component, eventType: Events): void {
-        this.addEventListener(eventType, ev => component.eventCallback(ev));
+    private initNotifications(component: Component): void {
+        this.addEventListener(Events.Notify, ev => component.eventCallback(ev));
+        this.notifier.setReceiver(this).sendNotificationsToReceiver();
     }
 
     private debugLoadedComponentsCount(): void {
@@ -136,34 +97,15 @@ class OylApp extends Component {
             componentCount++;
             label.setAttribute('val1', componentCount.toString());
         });
-        this.dispatchEvent(new NotifyEvent(Status.DEBUG, label, {detail: {html: label}}));
-    }
-
-    private catchAllNotificationsUntilReady() {
-        let notifyBuffer: NotifyEvent[] = [];
-        let pushInBuffer = (ev: NotifyEvent) => {
-            notifyBuffer.push(ev);
-        };
-        let onReady = (ev: ComponentReadyEvent) => {
-            if (ev.composedPath()[0] !== this.notification) {
-                return;
-            }
-            this.removeEventListener(Events.Notify, pushInBuffer);
-            this.notification.removeEventListener(Events.Ready, onReady);
-            notifyBuffer.forEach((notify) => {
-                this.notification.eventCallback(notify);
-            });
-        };
-        this.addEventListener(Events.Notify, pushInBuffer);
-        this.notification.addEventListener(Events.Ready, onReady);
+        this.notifier.debug(label, undefined, label);
     }
 
     private initGlobalDefaultErrorHandling() {
         window.addEventListener("error", ev => {
-            this.dispatchEvent(new NotifyEvent(Status.ERROR, ev.message, {detail: {raw: ev}}));
+            this.notifier.error(ev.message, ev);
         });
         window.addEventListener('unhandledrejection', ev => {
-            this.dispatchEvent(new NotifyEvent(Status.ERROR, 'Uncaught Promise: ' + ev.reason, {detail: {raw: ev}}));
+            this.notifier.error('Uncaught Promise: ' + ev.reason, ev);
         });
     }
 }

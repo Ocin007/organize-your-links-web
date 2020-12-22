@@ -1,12 +1,12 @@
 import html from "./oyl-nav-bar.html";
 import scss from "./oyl-nav-bar.scss";
-import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import { ComponentReady, Inject, InjectionTarget, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
-import NotifyEvent from "../../../events/NotifyEvent";
-import {Status} from "../../../@types/enums";
 import OylNavBarTab from "./oyl-nav-bar-tab/oyl-nav-bar-tab";
 import Page from "../../pages/page";
+import { NotificationServiceInterface } from "../../../@types/types";
 
+@InjectionTarget()
 @OylComponent({
     html: html,
     scss: scss
@@ -23,6 +23,12 @@ class OylNavBar extends Component {
 
     static get observedAttributes() {
         return ['page-id'];
+    }
+
+    constructor(
+        @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface
+    ) {
+        super();
     }
 
     @ComponentReady()
@@ -52,18 +58,10 @@ class OylNavBar extends Component {
     private setTabActive(pageId: PageID, active: boolean): void {
         let tab = this.tabContainer.querySelector<OylNavBarTab>('[page-id="' + pageId + '"]');
         if (tab === null) {
-            this.sendError(pageId);
+            this.notifier.error(OylNavBar.PAGE_DOES_NOT_EXIST, {pageId: pageId});
         } else {
             tab.setAttribute('active', '' + active);
         }
-    }
-
-    private sendError(pageId: PageID): void {
-        this.dispatchEvent(new NotifyEvent(
-            Status.ERROR,
-            OylNavBar.PAGE_DOES_NOT_EXIST,
-            {detail: {raw: {pageId: pageId}}}
-        ));
     }
 }
 

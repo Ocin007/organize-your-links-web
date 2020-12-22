@@ -10,6 +10,10 @@ import OylNavBarTab from "./oyl-nav-bar/oyl-nav-bar-tab/oyl-nav-bar-tab";
 import OylLabel from "../common/oyl-label/oyl-label";
 import OylNotifyCard from "./oyl-notification/oyl-notify-card/oyl-notify-card";
 import OylDate from "../common/oyl-date/oyl-date";
+import Notifier from "../../utils/Notifier";
+import ApiClient from "../../utils/ApiClient";
+import SettingsService from "../../services/SettingsService";
+import RestServiceProvider from "../../providers/RestServiceProvider";
 
 @OylModule({
     declarations: [
@@ -26,6 +30,9 @@ import OylDate from "../common/oyl-date/oyl-date";
         OylDate,
     ],
     dependencies: [
+        {injectable: Notifier, alias: 'NotificationServiceInterface'},
+        {injectable: ApiClient, alias: 'RestClientInterface'},
+        {injectable: SettingsService, provider: RestServiceProvider, alias: 'SettingsServiceInterface'}
     ],
 })
 export class OylAppModule {}

@@ -1,12 +1,14 @@
 import html from "./oyl-notification.html";
 import scss from "./oyl-notification.scss";
-import { ComponentReady, OylComponent } from "../../../decorators/decorators";
+import { ComponentReady, Inject, InjectionTarget, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 import NotifyEvent from "../../../events/NotifyEvent";
 import OylNotifyCard from "./oyl-notify-card/oyl-notify-card";
 import { Events, SettingKey, Status } from "../../../@types/enums";
 import NotifyCardClickedEvent from "../../../events/NotifyCardClickedEvent";
+import { SettingsServiceInterface } from "../../../@types/types";
 
+@InjectionTarget()
 @OylComponent({
     html: html,
     scss: scss
@@ -22,6 +24,12 @@ class OylNotification extends Component {
     private storeInBuffer: boolean = true;
     private buffer: NotifyEvent[] = [];
 
+    constructor(
+        @Inject('SettingsServiceInterface') private settings: SettingsServiceInterface
+    ) {
+        super();
+    }
+
     static get tagName(): string {
         return 'oyl-notification';
     }
@@ -32,7 +40,7 @@ class OylNotification extends Component {
 
     @ComponentReady()
     connectedCallback(): void {
-        this.services.settings.ifInitSuccessful
+        this.settings.ifInitSuccessful
             .then(() => this.showNotificationsInBuffer())
             .catch(() => this.showNotificationsInBuffer());
         this.initCloseButtonRendering();
@@ -84,7 +92,7 @@ class OylNotification extends Component {
     private subscribeElementToSettingsService(notify: OylNotifyCard, status: Status): void {
         let settingKeys = OylNotification.getSettingKeys(status);
         notify.setSettingKeys(...settingKeys);
-        this.services.settings.subscribe(notify, settingKeys);
+        this.settings.subscribe(notify, settingKeys);
     }
 
     private showNotificationsInBuffer(): void {
@@ -93,11 +101,11 @@ class OylNotification extends Component {
     }
 
     private getNotifyConfig(status: Status): NotifyConfig {
-        if (!this.services.settings.isInitialised) {
+        if (!this.settings.isInitialised) {
             return OylNotification.defaultNotifyConfig;
         }
         let settingKeys: SettingKey[] = OylNotification.getSettingKeys(status);
-        let settings = this.services.settings.getSettings(settingKeys);
+        let settings = this.settings.getSettings(settingKeys);
         return {
             visible: settings.get(settingKeys[0]),
             autoClose: settings.get(settingKeys[1]),
@@ -149,7 +157,7 @@ class OylNotification extends Component {
     }
 
     private removeNotification(card: OylNotifyCard): void {
-        this.services.settings.unsubscribe(card, card.getSettingKeys());
+        this.settings.unsubscribe(card, card.getSettingKeys());
         setTimeout(() => {
             if (this.container.firstElementChild === card) {
                 this.container.removeChild(card);

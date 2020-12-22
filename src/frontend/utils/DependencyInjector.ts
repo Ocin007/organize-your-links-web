@@ -3,7 +3,7 @@ class DependencyInjector {
     private static dependencyRegistry: DependencyMap = new Map<string, {name: string, index: number}[]>();
     private static injectables: InjectableMap = new Map<string, Injectable>();
 
-    static addInjectable(className: string, constructor: ConstructorFunction, provider?: new () => ProviderInterface, alias?: string): void {
+    static addInjectable(className: string, constructor: ConstructorFunction, provider?: ConstructorFunction<ProviderInterface>, alias?: string): void {
         if (this.injectables.has(className)) {
             throw new Error(`DependencyManager: ${className} was already added as dependency.`);
         }

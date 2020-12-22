@@ -1,21 +1,22 @@
-import AbstractService from "./AbstractService";
 import { SettingKey } from "../@types/enums";
-import { Settings } from "../@types/types";
+import { NotificationServiceInterface, Settings, SettingsServiceInterface } from "../@types/types";
+import { Inject, InjectionTarget } from "../decorators/decorators";
 
-class SettingsService extends AbstractService implements ServiceInterface, Observable<SettingKey[]> {
+@InjectionTarget()
+class SettingsService implements SettingsServiceInterface {
 
-    static INIT_SUCCESSFUL = 'SettingsService: initialisation successful.';
-    static INIT_FAILED = 'SettingsService: initialisation failed.';
-    static SAVE_SETTINGS_SUCCESSFUL = 'SettingsService: save settings successful.';
-    static SAVE_SETTINGS_FAILED = 'SettingsService: save settings failed.';
-    static READ_BEFORE_INIT = 'SettingsService: Tried to read settings before initialisation.';
-    static WRITE_BEFORE_INIT = 'SettingsService: Tried to write settings before initialisation.';
-    static OBSERVER_NOT_FOUND = 'SettingsService: Given observer is not subscribed to the given list of items.';
+    private static INIT_SUCCESSFUL = 'SettingsService: initialisation successful.';
+    private static INIT_FAILED = 'SettingsService: initialisation failed.';
+    private static SAVE_SETTINGS_SUCCESSFUL = 'SettingsService: save settings successful.';
+    private static SAVE_SETTINGS_FAILED = 'SettingsService: save settings failed.';
+    private static READ_BEFORE_INIT = 'SettingsService: Tried to read settings before initialisation.';
+    private static WRITE_BEFORE_INIT = 'SettingsService: Tried to write settings before initialisation.';
+    private static OBSERVER_NOT_FOUND = 'SettingsService: Given observer is not subscribed to the given list of items.';
+    private static LOAD_SETTINGS_ERROR = 'Settings konnten nicht geladen werden.';
+    private static LOAD_SETTINGS_SUCCESS = 'Settings wurden erfolgreich geladen.';
 
     //TODO: neue route anlegen
     private static ROUTE = "/settings-v2";
-
-    private static _instance: SettingsService;
 
     private settings: Settings = new Map<SettingKey, any>();
     private subs: { observer: Observer<any>, watch?: SettingKey[] }[] = [];
@@ -25,19 +26,14 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
     private initResolve: () => void;
     private initReject: (reason: string) => void;
 
-    private constructor() {
-        super();
+    constructor(
+        @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface,
+        @Inject('RestClientInterface') private api: RestClientInterface
+    ) {
         this._initSuccessful = new Promise<void>((resolve, reject) => {
             this.initResolve = resolve;
             this.initReject = reject;
         });
-    }
-
-    static get instance(): SettingsService {
-        if (!this._instance) {
-            this._instance = new SettingsService();
-        }
-        return this._instance;
     }
 
     get isInitialised(): boolean {
@@ -64,8 +60,17 @@ class SettingsService extends AbstractService implements ServiceInterface, Obser
         return [];
     }
 
+    //TODO: selbe rückgabe wie in init()
     get ifInitSuccessful(): Promise<void> {
         return this._initSuccessful;
+    }
+
+    get successMessage(): string {
+        return SettingsService.LOAD_SETTINGS_SUCCESS;
+    }
+
+    get errorMessage(): string {
+        return SettingsService.LOAD_SETTINGS_ERROR;
     }
 
     subscribe<K>(observer: Observer<K>, watch?: SettingKey[]): void {

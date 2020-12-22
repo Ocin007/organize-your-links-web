@@ -1,24 +1,16 @@
-import Notifier from "./Notifier";
+import { NotificationServiceInterface } from "../@types/types";
+import { Inject, InjectionTarget } from "../decorators/decorators";
 
-class ApiClient {
+@InjectionTarget()
+class ApiClient implements RestClientInterface {
 
-    private static _instance: ApiClient;
     private static readonly baseApiUrl = '../api';
     private totalRequestCount: number = 0;
     private debugRequestCountLabel: HTMLElement;
-    private notifier: Notifier;
 
-    private constructor() {
-        this.notifier = new Notifier();
-    }
-
-    //TODO: evtl kein singleton, ist eigentlich nicht nötig
-    static get instance(): ApiClient {
-        if (!this._instance) {
-            this._instance = new ApiClient();
-        }
-        return this._instance;
-    }
+    constructor(
+        @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface
+    ) {}
 
     get(route: string): Promise<any> {
         return this.request('GET', route);

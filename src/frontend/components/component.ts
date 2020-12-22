@@ -1,4 +1,3 @@
-import ServiceProvider from "../services/ServiceProvider";
 import PageProvider from "./pages/PageProvider";
 import {ComponentReady} from "../decorators/decorators";
 
@@ -9,10 +8,7 @@ abstract class Component extends HTMLElement {
     private html: string;
     private scss: string;
 
-    protected get services(): ServiceProvider {
-        return ServiceProvider.instance;
-    }
-
+    //TODO: remove this
     protected get pages(): PageProvider {
         return PageProvider.instance;
     }
