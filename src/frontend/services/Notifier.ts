@@ -9,6 +9,14 @@ class Notifier implements NotificationServiceInterface {
     private buffer: NotifyEvent[] = [];
     private storeInBuffer: boolean = true;
 
+    private fnColorMap = {
+        error: '#ed4a4a',
+        warn: '#ffd370',
+        info: '#03a9f4',
+        debug: '#ffffff',
+        success: '#78d561',
+    };
+
     setReceiver(element: Component): this {
         this.notifyReceiver = element;
         return this;
@@ -25,35 +33,31 @@ class Notifier implements NotificationServiceInterface {
 
     success(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this {
         this.send(Status.SUCCESS, msg, raw, html);
-        Notifier.console(console.log, msg, raw, html);
         return this;
     }
 
     debug(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this {
         this.send(Status.DEBUG, msg, raw, html);
-        Notifier.console(console.log, msg, raw, html);
         return this;
     }
 
     info(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this {
         this.send(Status.INFO, msg, raw, html);
-        Notifier.console(console.log, msg, raw, html);
         return this;
     }
 
     warn(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this {
         this.send(Status.WARN, msg, raw, html);
-        Notifier.console(console.warn, msg, raw, html);
         return this;
     }
 
     error(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this {
         this.send(Status.ERROR, msg, raw, html);
-        Notifier.console(console.error, msg, raw, html);
         return this;
     }
 
     private send(status: Status, msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
+        this.printToConsole(status, msg, raw, html);
         let eventInitDict: CustomEventInit<NotifyDetails>;
         if (raw !== undefined || html !== undefined) {
             eventInitDict = {detail: {raw: raw, html: html}};
@@ -66,13 +70,31 @@ class Notifier implements NotificationServiceInterface {
         }
     }
 
-    private static console(logFn: (...args: any[]) => void, msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
-        logFn(msg);
+    private printToConsole(status: Status, msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
+        console.log('%c--------------------------------------------------------------------------', 'color: #ff00ff');
+        if (typeof msg === 'string') {
+            console.log('%c' + msg, `color: ${this.fnColorMap[status]}; font-weight: bold;`);
+        } else {
+            Notifier.printHtmlToConsole(status, msg);
+        }
         if (raw !== undefined) {
-            logFn(raw);
+            console.log(raw);
         }
         if (html !== undefined) {
-            logFn(html);
+            console.log(html);
+        }
+    }
+
+    private static printHtmlToConsole(status: Status, element: HTMLElement): void {
+        switch (status) {
+            case Status.WARN:
+                console.warn(element);
+                break;
+            case Status.ERROR:
+                console.error(element);
+                break;
+            default:
+                console.log(element);
         }
     }
 }
