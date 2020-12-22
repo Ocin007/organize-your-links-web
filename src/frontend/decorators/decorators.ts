@@ -19,13 +19,8 @@ export function OylModule(options: {
     }[]
 }) {
     return function (_) {
-        options.dependencies.forEach(dependency => {
-            DependencyInjector.addInjectable(
-                dependency.injectable.name,
-                dependency.injectable,
-                dependency.provider,
-                dependency.alias
-            );
+        options.dependencies.forEach(dep => {
+            DependencyInjector.addInjectable(dep.injectable.name, dep.injectable, dep.provider, dep.alias);
         });
         for (let component of options.declarations) {
             window.customElements.define(component.tagName, component);
