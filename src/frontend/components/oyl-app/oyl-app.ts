@@ -119,12 +119,12 @@ class OylApp extends Component {
             });
     }
 
-    @ExecOnReady(true)
+    @ExecOnReady()
     private setPageId(component: Component, pageId: PageID): void {
         component.setAttribute('page-id', pageId);
     }
 
-    @ExecOnReady(true)
+    @ExecOnReady()
     private addEventCallback(component: Component, eventType: Events): void {
         this.addEventListener(eventType, ev => component.eventCallback(ev));
     }

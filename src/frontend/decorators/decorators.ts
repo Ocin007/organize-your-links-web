@@ -104,13 +104,13 @@ export function ComponentReady() {
 
 /**
  * **Method decorator**
- * <p>Method is always executed when {@link Component component} fires an event of type {@link Events eventType}.
- * The method will only be executed once if singleExec is true.</p>
+ * <p>Method is executed once when {@link Component component} fires an event of type {@link Events eventType}.
+ * The method will be executed on every {@link Events eventType} if singleExec is false.</p>
  * @param eventType Events
  * @param singleExec boolean
  * @constructor
  */
-export function ExecOn(eventType: Events, singleExec: boolean = false) {
+export function ExecOn(eventType: Events, singleExec: boolean = true) {
     return function (target: Object, key: string | symbol, descriptor: DescriptorFuncWithFirstArg<Component>) {
         let originalFunc = descriptor.value;
 
@@ -136,6 +136,6 @@ export function ExecOn(eventType: Events, singleExec: boolean = false) {
  * @see ExecOn
  * @constructor
  */
-export function ExecOnReady(singleExec: boolean = false) {
+export function ExecOnReady(singleExec: boolean = true) {
     return ExecOn(Events.Ready, singleExec);
 }
