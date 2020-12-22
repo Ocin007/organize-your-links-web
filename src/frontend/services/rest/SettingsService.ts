@@ -1,6 +1,6 @@
-import { SettingKey } from "../@types/enums";
-import { NotificationServiceInterface, Settings, SettingsServiceInterface } from "../@types/types";
-import { Inject, InjectionTarget } from "../decorators/decorators";
+import { SettingKey } from "../../@types/enums";
+import { NotificationServiceInterface, Settings, SettingsServiceInterface } from "../../@types/types";
+import { Inject, InjectionTarget } from "../../decorators/decorators";
 
 @InjectionTarget()
 class SettingsService implements SettingsServiceInterface {
