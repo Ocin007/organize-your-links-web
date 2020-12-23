@@ -44,7 +44,7 @@ class OylApp extends Component {
     @ComponentConnected()
     connectedCallback(): void {
         this.initNavigation();
-        this.initPopups(this.popupFrame, Events.Popup);
+        this.initPopups(this.popupFrame);
         this.initNotifications(this.notification);
     }
 
@@ -77,8 +77,8 @@ class OylApp extends Component {
     }
 
     @ExecOnReady()
-    private initPopups(component: Component, eventType: Events): void {
-        this.addEventListener(eventType, ev => component.eventCallback(ev));
+    private initPopups(component: Component): void {
+        this.addEventListener(Events.Popup, ev => component.eventCallback(ev));
     }
 
     @ExecOnReady()

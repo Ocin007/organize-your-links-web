@@ -5,8 +5,10 @@ export type Settings = Map<SettingKey,any>;
 
 
 
-export interface NotificationServiceInterface {
+export interface EventEmitter {
     setReceiver(element: Component): this;
+}
+export interface NotificationServiceInterface extends EventEmitter {
     sendNotificationsToReceiver(): this;
     success(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;
     debug(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;
