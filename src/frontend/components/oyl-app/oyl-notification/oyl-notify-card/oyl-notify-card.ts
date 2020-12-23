@@ -1,6 +1,6 @@
 import html from "./oyl-notify-card.html";
 import scss from "./oyl-notify-card.scss";
-import { ComponentReady, Inject, InjectionTarget, OylComponent } from "../../../../decorators/decorators";
+import { ComponentReady, Inject, OylComponent } from "../../../../decorators/decorators";
 import Component from "../../../component";
 import successIcon from "./assets/icons/success.ico";
 import infoIcon from "./assets/icons/info.ico";
@@ -13,8 +13,6 @@ import NotifyCardClickedEvent from "../../../../events/NotifyCardClickedEvent";
 import OylDate from "../../../common/oyl-date/oyl-date";
 import { Settings, SettingsServiceInterface } from "../../../../@types/types";
 
-//TODO: remove this, setSettings test
-@InjectionTarget()
 @OylComponent({
     html: html,
     scss: scss

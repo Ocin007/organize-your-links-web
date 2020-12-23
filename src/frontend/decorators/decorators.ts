@@ -30,17 +30,20 @@ export function OylModule(options: {
     }
 }
 
-//TODO: InjectionTarget hier einbinden (nur wenn es dependencies gibt)
 /**
  * **Class decorator**
- * <p>Adds the HTML and SCSS to the Component.</p>
+ * <p>Adds the HTML and SCSS to the component and injects dependencies specified via {@link Inject}.</p>
  * @param options
  * @constructor
  */
 export function OylComponent(options: { html: string, scss: string }) {
-    return function (constructor: Function) {
+    return function (constructor: ConstructorFunction) {
         constructor.prototype.html = options.html;
         constructor.prototype.scss = options.scss;
+
+        if (DependencyInjector.hasDependencies(constructor.name)) {
+            return InjectionTarget()(constructor);
+        }
     }
 }
 

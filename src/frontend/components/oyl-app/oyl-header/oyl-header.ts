@@ -1,10 +1,9 @@
 import html from "./oyl-header.html";
 import scss from "./oyl-header.scss";
-import { ComponentReady, Inject, InjectionTarget, OylComponent } from "../../../decorators/decorators";
+import { ComponentReady, Inject, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 import { NotificationServiceInterface } from "../../../@types/types";
 
-@InjectionTarget()
 @OylComponent({
     html: html,
     scss: scss

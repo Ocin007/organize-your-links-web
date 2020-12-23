@@ -53,6 +53,10 @@ class DependencyInjector {
         return injectables;
     }
 
+    static hasDependencies(className: string): boolean {
+        return this.dependencyRegistry.get(className) !== undefined;
+    }
+
     private static addInstanceToInjectable(injectable: Injectable): void {
         if (injectable.instance === undefined) {
             if (injectable.provider === undefined) {

@@ -1,12 +1,11 @@
 import html from "./oyl-nav-bar.html";
 import scss from "./oyl-nav-bar.scss";
-import { ComponentReady, Inject, InjectionTarget, OylComponent } from "../../../decorators/decorators";
+import { ComponentReady, Inject, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 import OylNavBarTab from "./oyl-nav-bar-tab/oyl-nav-bar-tab";
 import Page from "../../pages/page";
 import { NotificationServiceInterface } from "../../../@types/types";
 
-@InjectionTarget()
 @OylComponent({
     html: html,
     scss: scss

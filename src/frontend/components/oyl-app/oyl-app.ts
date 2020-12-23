@@ -1,6 +1,6 @@
 import html from "./oyl-app.html";
 import scss from "./oyl-app.scss";
-import { ComponentReady, ExecOnReady, Inject, InjectionTarget, OylComponent } from "../../decorators/decorators";
+import { ComponentReady, ExecOnReady, Inject, OylComponent } from "../../decorators/decorators";
 import Component from "../component";
 import { Events, SettingKey } from "../../@types/enums";
 import OylNavBar from "./oyl-nav-bar/oyl-nav-bar";
@@ -12,7 +12,6 @@ import NavEvent from "../../events/NavEvent";
 import OylLabel from "../common/oyl-label/oyl-label";
 import { NotificationServiceInterface, SettingsServiceInterface } from "../../@types/types";
 
-@InjectionTarget()
 @OylComponent({
     html: html,
     scss: scss

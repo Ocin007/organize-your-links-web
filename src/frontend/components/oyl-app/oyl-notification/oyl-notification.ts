@@ -1,6 +1,6 @@
 import html from "./oyl-notification.html";
 import scss from "./oyl-notification.scss";
-import { ComponentReady, Inject, InjectionTarget, OylComponent } from "../../../decorators/decorators";
+import { ComponentReady, Inject, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 import NotifyEvent from "../../../events/NotifyEvent";
 import OylNotifyCard from "./oyl-notify-card/oyl-notify-card";
@@ -8,7 +8,6 @@ import { Events, SettingKey, Status } from "../../../@types/enums";
 import NotifyCardClickedEvent from "../../../events/NotifyCardClickedEvent";
 import { SettingsServiceInterface } from "../../../@types/types";
 
-@InjectionTarget()
 @OylComponent({
     html: html,
     scss: scss
