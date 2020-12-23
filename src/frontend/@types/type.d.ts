@@ -14,7 +14,7 @@ declare type Injectable = {
     instance?: Object,
     provider?: ProviderInterface
 };
-declare type DependencyMap = Map<string, {name: string, paramIndex: number}[]>;
+declare type DependencyMap = Map<string, string[]>;
 declare type InjectableMap = Map<string, Injectable>;
 
 
