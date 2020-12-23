@@ -5,10 +5,10 @@ class DependencyInjector {
 
     static addInjectable(className: string, constructor: ConstructorFunction, provider?: ConstructorFunction<ProviderInterface>, alias?: string): void {
         if (this.injectables.has(className)) {
-            throw new Error(`DependencyManager: ${className} was already added as dependency.`);
+            throw new Error(`DependencyInjector: ${className} was already added as dependency.`);
         }
         if (alias !== undefined && this.injectables.has(alias)) {
-            throw new Error(`DependencyManager: alias ${alias} for ${className} was already added as dependency.`);
+            throw new Error(`DependencyInjector: alias ${alias} for ${className} was already added as dependency.`);
         }
         let injectable: Injectable = {constructor: constructor};
         if (provider !== undefined) {
