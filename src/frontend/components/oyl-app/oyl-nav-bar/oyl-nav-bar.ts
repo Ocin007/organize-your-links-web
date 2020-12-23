@@ -1,6 +1,6 @@
 import html from "./oyl-nav-bar.html";
 import scss from "./oyl-nav-bar.scss";
-import { ComponentReady, Inject, OylComponent } from "../../../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected, Inject, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 import OylNavBarTab from "./oyl-nav-bar-tab/oyl-nav-bar-tab";
 import Page from "../../pages/page";
@@ -30,7 +30,7 @@ class OylNavBar extends Component {
         super();
     }
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
         this.pages.all.forEach((page: Page) => {
             let tab = document.createElement(OylNavBarTab.tagName);
@@ -48,6 +48,7 @@ class OylNavBar extends Component {
         this.setTabActive(newVal, true);
     }
 
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 

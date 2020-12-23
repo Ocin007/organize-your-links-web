@@ -1,5 +1,5 @@
 import PageProvider from "./pages/PageProvider";
-import {ComponentReady} from "../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected } from "../decorators/decorators";
 
 abstract class Component extends HTMLElement {
 
@@ -50,13 +50,14 @@ abstract class Component extends HTMLElement {
         return [];
     }
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
     }
 
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 

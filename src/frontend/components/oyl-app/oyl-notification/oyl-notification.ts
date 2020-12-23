@@ -1,6 +1,6 @@
 import html from "./oyl-notification.html";
 import scss from "./oyl-notification.scss";
-import { ComponentReady, Inject, OylComponent } from "../../../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected, Inject, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 import NotifyEvent from "../../../events/NotifyEvent";
 import OylNotifyCard from "./oyl-notify-card/oyl-notify-card";
@@ -37,7 +37,7 @@ class OylNotification extends Component {
         return [];
     }
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
         this.settings.whenInitSuccessful()
             .then(() => this.showNotificationsInBuffer())
@@ -49,6 +49,7 @@ class OylNotification extends Component {
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
     }
 
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 

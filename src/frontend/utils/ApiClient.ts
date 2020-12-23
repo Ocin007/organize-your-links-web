@@ -10,7 +10,9 @@ class ApiClient implements RestClientInterface {
 
     constructor(
         @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface
-    ) {}
+    ) {
+        this.debugInitTotalRequestCount();
+    }
 
     get(route: string): Promise<any> {
         return this.request('GET', route);
@@ -29,7 +31,6 @@ class ApiClient implements RestClientInterface {
     }
 
     private request(method: 'GET' | 'PUT' | 'POST' | 'DELETE', route: string, data?: object): Promise<any> {
-        this.debugInitTotalRequestCount();
         this.debugIncRequestCount();
         this.notifier.debug(`ApiClient: Request ${method} ${route}`, data);
 
@@ -61,9 +62,6 @@ class ApiClient implements RestClientInterface {
     }
 
     private debugInitTotalRequestCount(): void {
-        if (this.totalRequestCount !== 0) {
-            return;
-        }
         let label = document.createElement('oyl-label');
         label.setAttribute('label', 'Total amount of requests: {{val1}}');
         label.setAttribute('val1', '0');

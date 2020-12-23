@@ -1,6 +1,6 @@
 import html from "./oyl-app.html";
 import scss from "./oyl-app.scss";
-import { ComponentReady, ExecOnReady, Inject, OylComponent } from "../../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected, ExecOnReady, Inject, OylComponent } from "../../decorators/decorators";
 import Component from "../component";
 import { Events, SettingKey } from "../../@types/enums";
 import OylNavBar from "./oyl-nav-bar/oyl-nav-bar";
@@ -44,7 +44,7 @@ class OylApp extends Component {
         // wenn entsprechender service nicht initialisiert ist
     }
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
         this.initNavigation();
         this.initPopups(this.popupFrame, Events.Popup);
@@ -54,6 +54,7 @@ class OylApp extends Component {
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
     }
 
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 
@@ -92,10 +93,14 @@ class OylApp extends Component {
     private debugLoadedComponentsCount(): void {
         let label = new OylLabel('Loaded components: {{val1}}', '0');
         let componentCount = 0;
-        this.addEventListener(Events.Ready, () => {
+        let count = () => {
             componentCount++;
             label.setAttribute('val1', componentCount.toString());
-        });
+        };
+        label.addEventListener(Events.Disconnected, () => {
+            this.removeEventListener(Events.Connected, count);
+        }, {once: true});
+        this.addEventListener(Events.Connected, count);
         this.notifier.debug(label, undefined, label);
     }
 

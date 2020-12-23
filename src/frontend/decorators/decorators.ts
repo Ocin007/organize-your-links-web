@@ -1,7 +1,8 @@
-import ComponentReadyEvent from "../events/ComponentReadyEvent";
+import ComponentConnectedEvent from "../events/ComponentConnectedEvent";
 import Component from "../components/component";
 import {Events} from "../@types/enums";
 import DependencyInjector from "../utils/DependencyInjector";
+import ComponentDisconnectedEvent from "../events/ComponentDisconnectedEvent";
 
 //TODO: Directive decorator anschauen
 
@@ -86,16 +87,34 @@ export function Inject(dependency: string) {
 
 /**
  * **Method decorator**
- * <p>Event {@link ComponentReadyEvent} is fired when {@link connectedCallback} is executed.</p>
+ * <p>Event {@link ComponentConnectedEvent} is fired when method is executed.</p>
  * @constructor
  */
-export function ComponentReady() {
-    return function (target: Object, key: "connectedCallback", descriptor: PropertyDescriptor) {
+export function ComponentConnected() {
+    return Dispatch(ComponentConnectedEvent);
+}
+
+/**
+ * **Method decorator**
+ * <p>Event {@link ComponentDisconnectedEvent} is fired when method is executed.</p>
+ * @constructor
+ */
+export function ComponentDisconnected() {
+    return Dispatch(ComponentDisconnectedEvent);
+}
+
+/**
+ * **Method decorator**
+ * <p>Event is fired when method is executed.</p>
+ * @constructor
+ */
+export function Dispatch(event: new () => Event) {
+    return function (target: Object, key: string | symbol, descriptor: PropertyDescriptor) {
         let originalFunc = descriptor.value;
 
         descriptor.value = function (...args: any[]) {
             let result = originalFunc.apply(this, args);
-            this.dispatchEvent(new ComponentReadyEvent());
+            this.dispatchEvent(new event());
             return result;
         };
 
@@ -133,10 +152,10 @@ export function ExecOn(eventType: Events, singleExec: boolean = true) {
 
 /**
  * **Method decorator**
- * <p>Method executed on {@link ComponentReadyEvent}.</p>
+ * <p>Method executed on {@link ComponentConnectedEvent}.</p>
  * @see ExecOn
  * @constructor
  */
 export function ExecOnReady(singleExec: boolean = true) {
-    return ExecOn(Events.Ready, singleExec);
+    return ExecOn(Events.Connected, singleExec);
 }

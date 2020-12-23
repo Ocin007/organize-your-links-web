@@ -1,6 +1,6 @@
 import html from "./oyl-notify-card.html";
 import scss from "./oyl-notify-card.scss";
-import { ComponentReady, Inject, OylComponent } from "../../../../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected, Inject, OylComponent } from "../../../../decorators/decorators";
 import Component from "../../../component";
 import successIcon from "./assets/icons/success.ico";
 import infoIcon from "./assets/icons/info.ico";
@@ -136,7 +136,7 @@ class OylNotifyCard extends Component implements Observer<Settings> {
         }
     }
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
         this.isRemoved = false;
         this.render();
@@ -152,6 +152,7 @@ class OylNotifyCard extends Component implements Observer<Settings> {
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
     }
 
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 

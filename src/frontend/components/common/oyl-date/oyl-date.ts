@@ -1,6 +1,6 @@
 import html from "./oyl-date.html";
 import scss from "./oyl-date.scss";
-import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 
 @OylComponent({
@@ -32,7 +32,7 @@ class OylDate extends Component {
         this.format = 'timeMs';
     }
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
     }
 
@@ -51,6 +51,7 @@ class OylDate extends Component {
         }
     }
 
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 

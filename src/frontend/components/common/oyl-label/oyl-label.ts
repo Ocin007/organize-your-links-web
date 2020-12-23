@@ -1,6 +1,6 @@
 import html from "./oyl-label.html";
 import scss from "./oyl-label.scss";
-import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 
 @OylComponent({
@@ -24,7 +24,7 @@ class OylLabel extends Component {
         this.refreshContent();
     }
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
     }
 
@@ -33,7 +33,7 @@ class OylLabel extends Component {
         this.refreshContent();
     }
 
-    //TODO: vielleicht event ComponentDisconnectedEvent
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 

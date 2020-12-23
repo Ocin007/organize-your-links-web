@@ -1,6 +1,6 @@
 import html from "./oyl-nav-bar-tab.html";
 import scss from "./oyl-nav-bar-tab.scss";
-import {ComponentReady, OylComponent} from "../../../../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected, OylComponent } from "../../../../decorators/decorators";
 import Component from "../../../component";
 import NavEvent from "../../../../events/NavEvent";
 
@@ -20,7 +20,7 @@ class OylNavBarTab extends Component {
         return ['page-id', 'active'];
     }
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
         this.onclick = () => this.dispatchEvent(new NavEvent(this.getAttribute('page-id')));
     }
@@ -36,6 +36,7 @@ class OylNavBarTab extends Component {
         }
     }
 
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 

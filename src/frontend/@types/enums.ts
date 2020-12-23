@@ -2,7 +2,8 @@ export enum Events {
     Nav = 'navEvent',
     Notify = 'notifyEvent',
     Popup = 'popupEvent',
-    Ready = 'readyEvent',
+    Connected = 'connectedEvent',
+    Disconnected = 'disconnectedEvent',
     NotifyClick = 'notifyClickEvent'
 }
 export enum Status {

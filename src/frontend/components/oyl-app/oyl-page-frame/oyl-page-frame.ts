@@ -1,6 +1,6 @@
 import html from "./oyl-page-frame.html";
 import scss from "./oyl-page-frame.scss";
-import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 
 @OylComponent({
@@ -17,13 +17,14 @@ class OylPageFrame extends Component {
         return ['page-id'];
     }
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
     }
 
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 

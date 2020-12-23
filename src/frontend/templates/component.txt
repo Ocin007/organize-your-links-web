@@ -1,6 +1,6 @@
 import html from "./{{tag-name}}.html";
 import scss from "./{{tag-name}}.scss";
-import {ComponentReady, OylComponent} from "{{path-up}}../../decorators/decorators";
+import {ComponentConnected, ComponentDisconnected, OylComponent} from "{{path-up}}../../decorators/decorators";
 import Component from "{{path-up}}../component";
 
 @OylComponent({
@@ -17,13 +17,14 @@ class {{ClassName}} extends Component {
         return [];
     }
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
     }
 
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 

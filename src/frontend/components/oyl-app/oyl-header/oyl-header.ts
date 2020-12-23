@@ -1,6 +1,6 @@
 import html from "./oyl-header.html";
 import scss from "./oyl-header.scss";
-import { ComponentReady, Inject, OylComponent } from "../../../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected, Inject, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 import { NotificationServiceInterface } from "../../../@types/types";
 
@@ -35,7 +35,7 @@ class OylHeader extends Component {
         return ['title'];
     }
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
         //TODO: remove this
         this.addEventListener('click', () => {
@@ -48,6 +48,7 @@ class OylHeader extends Component {
         this.heading.innerText = newVal;
     }
 
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 

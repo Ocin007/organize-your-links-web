@@ -1,6 +1,6 @@
 import html from "./oyl-popup-frame.html";
 import scss from "./oyl-popup-frame.scss";
-import {ComponentReady, OylComponent} from "../../../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 
 @OylComponent({
@@ -19,13 +19,14 @@ class OylPopupFrame extends Component {
 
     //TODO: bekommt im event html element zum anzeigen + callbacks
 
-    @ComponentReady()
+    @ComponentConnected()
     connectedCallback(): void {
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
     }
 
+    @ComponentDisconnected()
     disconnectedCallback(): void {
     }
 
