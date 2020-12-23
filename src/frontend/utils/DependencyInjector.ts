@@ -1,6 +1,6 @@
 class DependencyInjector {
 
-    private static dependencyRegistry: DependencyMap = new Map<string, {name: string, index: number}[]>();
+    private static dependencyRegistry: DependencyMap = new Map<string, {name: string, paramIndex: number}[]>();
     private static injectables: InjectableMap = new Map<string, Injectable>();
 
     static addInjectable(className: string, constructor: ConstructorFunction, provider?: ConstructorFunction<ProviderInterface>, alias?: string): void {
@@ -22,35 +22,40 @@ class DependencyInjector {
 
     static registerDependency(className: string, dependencyName: string, argIndex: number): void {
         let dependencyList = this.dependencyRegistry.get(className);
-        let dependency = {name: dependencyName, index: argIndex};
+        let dependency = {name: dependencyName, paramIndex: argIndex};
         if (dependencyList === undefined) {
             this.dependencyRegistry.set(className, [dependency]);
             return;
         }
         dependencyList.push(dependency);
-        dependencyList.sort((a, b) => a.index - b.index);
+        dependencyList.sort((a, b) => a.paramIndex - b.paramIndex);
     }
 
-    static getInjectableParameters(className: string): Object[] {
+    static injectParameters(className: string, oldArgs: any[]): any[] {
         let dependencyList = this.dependencyRegistry.get(className);
         if (dependencyList === undefined) {
-            return [];
+            return oldArgs;
         }
-        let injectables: (Object|undefined)[] = [];
-        for (let i = 0, d = 0; d < dependencyList.length; i++) {
-            if (i === dependencyList[d].index) {
+        let newArgs: any[] = [];
+        for (let paramIndex = 0, d = 0; d < dependencyList.length; paramIndex++) {
+            if (paramIndex === dependencyList[d].paramIndex) {
                 let injectable = this.injectables.get(dependencyList[d].name);
                 if (injectable === undefined) {
-                    throw new Error(`DependencyManager: ${dependencyList[d].name} is not an injectable dependency.`);
+                    throw new Error(`DependencyInjector: ${dependencyList[d].name} is not an injectable dependency.`);
                 }
                 this.addInstanceToInjectable(injectable);
-                injectables.push(injectable.instance);
+                newArgs.push(injectable.instance);
                 d++;
             } else {
-                injectables.push(undefined);
+                newArgs.push(oldArgs[paramIndex]);
             }
         }
-        return injectables;
+        for (let i = 0; i < oldArgs.length; i++) {
+            if (oldArgs[i] !== undefined) {
+                newArgs[i] = oldArgs[i];
+            }
+        }
+        return newArgs;
     }
 
     static hasDependencies(className: string): boolean {

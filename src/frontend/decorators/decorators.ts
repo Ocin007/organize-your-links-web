@@ -56,14 +56,7 @@ export function InjectionTarget() {
     return function (constructor: ConstructorFunction) {
         let newClass: any = class extends constructor {
             constructor(...oldArgs: any[]) {
-                let newArgs = DependencyInjector.getInjectableParameters(constructor.name);
-                //TODO: diese logik in DependencyInjector verschieben
-                // vlt. methode umbenennen und alte argumente mit übergeben
-                for (let i = 0; i < oldArgs.length; i++) {
-                    if (oldArgs[i] !== undefined) {
-                        newArgs[i] = oldArgs[i];
-                    }
-                }
+                let newArgs = DependencyInjector.injectParameters(constructor.name, oldArgs);
                 super(...newArgs);
             }
         }
