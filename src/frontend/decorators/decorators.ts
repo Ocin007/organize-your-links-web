@@ -4,8 +4,6 @@ import {Events} from "../@types/enums";
 import DependencyInjector from "../utils/DependencyInjector";
 import ComponentDisconnectedEvent from "../events/ComponentDisconnectedEvent";
 
-//TODO: Directive decorator anschauen
-
 /**
  * **Class decorator**
  * <p>Marks class as a module. The components in declarations will be defined as custom elements and the

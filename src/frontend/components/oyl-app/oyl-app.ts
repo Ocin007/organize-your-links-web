@@ -39,9 +39,6 @@ class OylApp extends Component {
         super();
         this.initGlobalDefaultErrorHandling();
         this.debugLoadedComponentsCount();
-        //TODO: ladescreen
-        //TODO: elemente sollen selbst bestimmen, ob sie gerendert werden wollen,
-        // wenn entsprechender service nicht initialisiert ist
     }
 
     @ComponentConnected()
