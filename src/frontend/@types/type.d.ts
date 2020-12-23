@@ -30,9 +30,7 @@ declare interface ComponentConstructor extends ConstructorFunction<HTMLElement> 
 }
 declare interface RestServiceInterface {
     isInitialised: boolean;
-
-    //TODO: rename to whenInitSuccessful, vielleicht besser als methode?
-    ifInitSuccessful: Promise<void>;
+    whenInitSuccessful(): Promise<string[]>;
     init(): Promise<string[]>;
     readonly successMessage: string;
     readonly errorMessage: string;

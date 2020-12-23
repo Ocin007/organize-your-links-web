@@ -39,7 +39,7 @@ class OylNotification extends Component {
 
     @ComponentReady()
     connectedCallback(): void {
-        this.settings.ifInitSuccessful
+        this.settings.whenInitSuccessful()
             .then(() => this.showNotificationsInBuffer())
             .catch(() => this.showNotificationsInBuffer());
         this.initCloseButtonRendering();

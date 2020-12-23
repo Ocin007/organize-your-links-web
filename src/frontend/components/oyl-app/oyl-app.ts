@@ -68,8 +68,8 @@ class OylApp extends Component {
             this.notifier.debug(`OylApp: navigate to pageId '${ev.pageId}'.`);
         });
         let startPage: PageID;
-        this.settings.ifInitSuccessful
-            .then(_ => startPage = this.settings.get<PageID>(SettingKey.START_PAGE))
+        this.settings.whenInitSuccessful()
+            .then(err => startPage = (err.length === 0) ? this.settings.get<PageID>(SettingKey.START_PAGE) : 'playlist_all')
             .catch(_ => startPage = 'playlist_all')//TODO: feste id oder garnix, weil eh keine settings
             .finally(() => {
                 this.navBar.setAttribute('page-id', startPage);

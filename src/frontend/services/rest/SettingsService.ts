@@ -22,15 +22,15 @@ class SettingsService implements SettingsServiceInterface {
     private subs: { observer: Observer<any>, watch?: SettingKey[] }[] = [];
     private _isInitialised: boolean = false;
 
-    private readonly _initSuccessful: Promise<void>;
-    private initResolve: () => void;
-    private initReject: (reason: string) => void;
+    private readonly _initSuccessful: Promise<string[]>;
+    private initResolve: (errors: string[]) => void;
+    private initReject: (error: Error) => void;
 
     constructor(
         @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface,
         @Inject('RestClientInterface') private api: RestClientInterface
     ) {
-        this._initSuccessful = new Promise<void>((resolve, reject) => {
+        this._initSuccessful = new Promise<string[]>((resolve, reject) => {
             this.initResolve = resolve;
             this.initReject = reject;
         });
@@ -44,24 +44,23 @@ class SettingsService implements SettingsServiceInterface {
         let result = await this.api.get(SettingsService.ROUTE);
         if (result instanceof Error) {
             this.notifier.debug(SettingsService.INIT_FAILED, result);
-            this.initReject(SettingsService.INIT_FAILED);
+            this.initReject(result);
             throw result;
         }
         if (result.error !== undefined) {
             this.notifier.debug(SettingsService.INIT_FAILED, result);
-            this.initReject(SettingsService.INIT_FAILED);
+            this.initResolve(result.error);
             return result.error;
         }
         this.settings = this.objectToSettings(result.response);
         this._isInitialised = true;
         this.notifier.debug(SettingsService.INIT_SUCCESSFUL, result);
-        this.initResolve();
+        this.initResolve([]);
         this.notifySubs(this.settings);
         return [];
     }
 
-    //TODO: selbe rückgabe wie in init()
-    get ifInitSuccessful(): Promise<void> {
+    whenInitSuccessful(): Promise<string[]> {
         return this._initSuccessful;
     }
 
