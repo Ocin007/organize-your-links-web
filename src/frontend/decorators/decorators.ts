@@ -13,15 +13,11 @@ import ComponentDisconnectedEvent from "../events/ComponentDisconnectedEvent";
  */
 export function OylModule(options: {
     declarations: ComponentConstructor[],
-    dependencies: {
-        injectable: ConstructorFunction,
-        provider?: ConstructorFunction<ProviderInterface>,
-        alias?: string
-    }[]
+    dependencies: Dependency[]
 }) {
     return function (_) {
-        options.dependencies.forEach(dep => {
-            DependencyInjector.addInjectable(dep.injectable.name, dep.injectable, dep.provider, dep.alias);
+        options.dependencies.forEach(dependency => {
+            DependencyInjector.addInjectable(dependency);
         });
         for (let component of options.declarations) {
             window.customElements.define(component.tagName, component);

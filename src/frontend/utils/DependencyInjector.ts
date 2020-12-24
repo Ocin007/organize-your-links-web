@@ -3,20 +3,23 @@ class DependencyInjector {
     private static dependencyRegistry: DependencyMap = new Map<string, string[]>();
     private static injectables: InjectableMap = new Map<string, Injectable>();
 
-    static addInjectable(className: string, constructor: ConstructorFunction, provider?: ConstructorFunction<ProviderInterface>, alias?: string): void {
-        if (this.injectables.has(className)) {
-            throw new Error(`DependencyInjector: ${className} was already added as dependency.`);
+    static addInjectable(dependency: Dependency): void {
+        if (this.injectables.has(dependency.injectable.name)) {
+            throw new Error(`DependencyInjector: ${dependency.injectable.name} was already added as dependency.`);
         }
-        if (alias !== undefined && this.injectables.has(alias)) {
-            throw new Error(`DependencyInjector: alias ${alias} for ${className} was already added as dependency.`);
+        if (dependency.alias !== undefined && this.injectables.has(dependency.alias)) {
+            throw new Error(`DependencyInjector: alias ${dependency.alias} for ${dependency.injectable.name} was already added as dependency.`);
         }
-        let injectable: Injectable = {constructor: constructor};
-        if (provider !== undefined) {
-            injectable.provider = new provider();
+        let injectable: Injectable = {
+            constructor: dependency.injectable,
+            multi: dependency.multi === true
+        };
+        if (dependency.provider !== undefined) {
+            injectable.provider = new dependency.provider();
         }
-        this.injectables.set(className, injectable);
-        if (alias !== undefined) {
-            this.injectables.set(alias, injectable);
+        this.injectables.set(dependency.injectable.name, injectable);
+        if (dependency.alias !== undefined) {
+            this.injectables.set(dependency.alias, injectable);
         }
     }
 
@@ -57,7 +60,7 @@ class DependencyInjector {
     }
 
     private static addInstanceToInjectable(injectable: Injectable): void {
-        if (injectable.instance !== undefined) {
+        if (injectable.instance !== undefined && !injectable.multi) {
             return;
         }
         if (injectable.provider === undefined) {

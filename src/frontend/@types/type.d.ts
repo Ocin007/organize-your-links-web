@@ -11,11 +11,18 @@ declare type NotifyConfig = {
 declare type NotifyType = 'success' | 'debug' | 'info' | 'warn' | 'error';
 declare type Injectable = {
     constructor: ConstructorFunction,
+    multi: boolean,
     instance?: Object,
     provider?: ProviderInterface
 };
 declare type DependencyMap = Map<string, string[]>;
 declare type InjectableMap = Map<string, Injectable>;
+declare type Dependency = {
+    injectable: ConstructorFunction,
+    provider?: ConstructorFunction<ProviderInterface>,
+    alias?: string,
+    multi?: boolean,
+};
 
 
 
