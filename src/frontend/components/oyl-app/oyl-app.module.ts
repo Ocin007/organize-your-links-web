@@ -30,6 +30,8 @@ import RestServiceProvider from "../../providers/RestServiceProvider";
         OylDate,
     ],
     dependencies: [
+        //TODO: option multi=true -> es werden immer neue instanzen angelegt
+        // hier als allgemeine option, oder jeweils in @Inject()?
         {injectable: Notifier, alias: 'NotificationServiceInterface'},
         {injectable: ApiClient, alias: 'RestClientInterface'},
         {injectable: SettingsService, provider: RestServiceProvider, alias: 'SettingsServiceInterface'}

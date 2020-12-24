@@ -7,7 +7,6 @@ import OylNavBar from "./oyl-nav-bar/oyl-nav-bar";
 import OylPageFrame from "./oyl-page-frame/oyl-page-frame";
 import OylSlidePage from "./oyl-slide-page/oyl-slide-page";
 import OylPopupFrame from "./oyl-popup-frame/oyl-popup-frame";
-import OylNotification from "./oyl-notification/oyl-notification";
 import NavEvent from "../../events/NavEvent";
 import OylLabel from "../common/oyl-label/oyl-label";
 import { NotificationServiceInterface, SettingsServiceInterface } from "../../@types/types";
@@ -22,7 +21,6 @@ class OylApp extends Component {
     protected pageFrame: OylPageFrame;
     protected slidePage: OylSlidePage;
     protected popupFrame: OylPopupFrame;
-    protected notification: OylNotification;
 
     static get tagName(): string {
         return 'oyl-app';
@@ -32,6 +30,14 @@ class OylApp extends Component {
         return [];
     }
 
+    //TODO: FormController + FormElementsInterface allgemeines System (in Popups, Serie bearbeiten, Settings...)
+    //TODO: opacity Layer als eigenes modul (component + service)
+    // dieses modul jeweils für slidePage und Popup importieren oder einmal allgemein?
+
+    //TODO: <ng-content> mechanik für routing hilfreich
+    // <oyl-notification>
+    //     <oyl-notify-card></oyl-notify-card>
+    // </oyl-notification>
     constructor(
         @Inject('SettingsServiceInterface') private settings: SettingsServiceInterface,
         @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface
@@ -45,7 +51,6 @@ class OylApp extends Component {
     connectedCallback(): void {
         this.initNavigation();
         this.initPopups(this.popupFrame);
-        this.initNotifications(this.notification);
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
@@ -58,6 +63,9 @@ class OylApp extends Component {
     eventCallback(ev: Event): void {
     }
 
+    //TODO: NavigationService (als observable!)
+    //TODO: advanced: NavigationModule mit routing service und komponente, die entsprechende
+    // komponente einbindet, zu der navigiert wird (ersetzt wahrscheinlich <oyl-page-frame>)
     private initNavigation(): void {
         this.addEventListener(Events.Nav, (ev: NavEvent) => {
             this.navBar.setAttribute('page-id', ev.pageId);
@@ -76,15 +84,10 @@ class OylApp extends Component {
             });
     }
 
+    //TODO: PopupService (als observable?)
     @ExecOnReady()
     private initPopups(component: Component): void {
         this.addEventListener(Events.Popup, ev => component.eventCallback(ev));
-    }
-
-    @ExecOnReady()
-    private initNotifications(component: Component): void {
-        this.addEventListener(Events.Notify, ev => component.eventCallback(ev));
-        this.notifier.setReceiver(this).sendNotificationsToReceiver();
     }
 
     private debugLoadedComponentsCount(): void {

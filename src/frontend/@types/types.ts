@@ -1,14 +1,10 @@
-import { SettingKey } from "./enums";
-import Component from "../components/component";
+import { SettingKey, Status } from "./enums";
 
 export type Settings = Map<SettingKey,any>;
 
 
 
-export interface EventEmitter {
-    setReceiver(element: Component): this;
-}
-export interface NotificationServiceInterface extends EventEmitter {
+export interface NotificationServiceInterface extends Observable<Status[]> {
     sendNotificationsToReceiver(): this;
     success(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;
     debug(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;

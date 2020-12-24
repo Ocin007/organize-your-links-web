@@ -6,13 +6,13 @@ import NotifyEvent from "../../../events/NotifyEvent";
 import OylNotifyCard from "./oyl-notify-card/oyl-notify-card";
 import { Events, SettingKey, Status } from "../../../@types/enums";
 import NotifyCardClickedEvent from "../../../events/NotifyCardClickedEvent";
-import { SettingsServiceInterface } from "../../../@types/types";
+import { NotificationServiceInterface, SettingsServiceInterface } from "../../../@types/types";
 
 @OylComponent({
     html: html,
     scss: scss
 })
-class OylNotification extends Component {
+class OylNotification extends Component implements Observer<NotifyEvent> {
 
     static ELEMENT_INCORRECT_TYPE = 'Created Element <oyl-notify-card> not instance of OylNotifyCard';
     static DELAY = 100;
@@ -20,11 +20,9 @@ class OylNotification extends Component {
     protected container: HTMLDivElement;
     protected closeAll: HTMLDivElement;
 
-    private storeInBuffer: boolean = true;
-    private buffer: NotifyEvent[] = [];
-
     constructor(
-        @Inject('SettingsServiceInterface') private settings: SettingsServiceInterface
+        @Inject('SettingsServiceInterface') private settings: SettingsServiceInterface,
+        @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface
     ) {
         super();
     }
@@ -40,8 +38,12 @@ class OylNotification extends Component {
     @ComponentConnected()
     connectedCallback(): void {
         this.settings.whenInitSuccessful()
-            .then(() => this.showNotificationsInBuffer())
-            .catch(() => this.showNotificationsInBuffer());
+            .then(() => undefined)
+            .catch(() => undefined)
+            .finally(() => {
+                this.notifier.subscribe(this);
+                this.notifier.sendNotificationsToReceiver();
+            });
         this.initCloseButtonRendering();
         this.initEventListeners();
     }
@@ -53,11 +55,10 @@ class OylNotification extends Component {
     disconnectedCallback(): void {
     }
 
-    eventCallback(ev: NotifyEvent): void {
-        if (this.storeInBuffer) {
-            this.buffer.push(ev);
-            return;
-        }
+    eventCallback(ev: Event): void {
+    }
+
+    update(ev: NotifyEvent<NotifyDetails>): void {
         this.showNotification(ev);
     }
 
@@ -93,11 +94,6 @@ class OylNotification extends Component {
         let settingKeys = OylNotification.getSettingKeys(status);
         notify.setSettingKeys(...settingKeys);
         this.settings.subscribe(notify, settingKeys);
-    }
-
-    private showNotificationsInBuffer(): void {
-        this.storeInBuffer = false;
-        this.buffer.forEach(ev => this.showNotification(ev));
     }
 
     private getNotifyConfig(status: Status): NotifyConfig {

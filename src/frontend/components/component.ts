@@ -61,6 +61,7 @@ abstract class Component extends HTMLElement {
     disconnectedCallback(): void {
     }
 
+    //TODO: remove these
     eventCallback(ev: Event): void {
     }
 }
