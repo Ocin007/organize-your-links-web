@@ -38,11 +38,11 @@ declare interface ComponentConstructor extends ConstructorFunction<HTMLElement> 
     tagName: string;
 }
 declare interface RestServiceInterface {
-    isInitialised: boolean;
-    whenInitSuccessful(): Promise<string[]>;
-    init(): Promise<string[]>;
     readonly successMessage: string;
     readonly errorMessage: string;
+    readonly isInitialised: boolean;
+    whenInitSuccessful(): Promise<string[]>;
+    init(): Promise<string[]>;
 }
 declare interface ObservableInterface {
     subscribe<K>(observer: ObserverFunction<K>, watch?: WatchKey[]): void;
