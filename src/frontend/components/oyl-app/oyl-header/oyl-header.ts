@@ -51,9 +51,6 @@ class OylHeader extends Component {
     @ComponentDisconnected()
     disconnectedCallback(): void {
     }
-
-    eventCallback(ev: Event): void {
-    }
 }
 
 export default OylHeader;

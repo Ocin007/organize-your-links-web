@@ -55,9 +55,6 @@ class OylDate extends Component {
     disconnectedCallback(): void {
     }
 
-    eventCallback(ev: Event): void {
-    }
-
     private setTimestamp(newVal: string): boolean {
         let timestamp = parseInt(newVal);
         if (isNaN(timestamp)) {

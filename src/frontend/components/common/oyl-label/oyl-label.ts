@@ -37,9 +37,6 @@ class OylLabel extends Component {
     disconnectedCallback(): void {
     }
 
-    eventCallback(ev: Event): void {
-    }
-
     private refreshContent(): void {
         let newLabel = this.label;
         for (let i = 1; i < OylLabel.observedAttributes.length; i++) {

@@ -27,9 +27,6 @@ class {{ClassName}} extends Component {
     @ComponentDisconnected()
     disconnectedCallback(): void {
     }
-
-    eventCallback(ev: Event): void {
-    }
 }
 
 export default {{ClassName}};

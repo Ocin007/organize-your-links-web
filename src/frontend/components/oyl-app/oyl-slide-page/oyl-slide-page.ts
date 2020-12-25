@@ -27,9 +27,6 @@ class OylSlidePage extends Component {
     @ComponentDisconnected()
     disconnectedCallback(): void {
     }
-
-    eventCallback(ev: Event): void {
-    }
 }
 
 export default OylSlidePage;

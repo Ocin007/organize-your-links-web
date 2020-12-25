@@ -17,6 +17,8 @@ class OylPopupFrame extends Component {
         return [];
     }
 
+    //TODO: service implementieren
+
     //TODO: bekommt im event html element zum anzeigen + callbacks
 
     @ComponentConnected()
@@ -28,9 +30,6 @@ class OylPopupFrame extends Component {
 
     @ComponentDisconnected()
     disconnectedCallback(): void {
-    }
-
-    eventCallback(ev: Event): void {
     }
 }
 

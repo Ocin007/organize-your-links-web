@@ -1,12 +1,11 @@
 import html from "./oyl-app.html";
 import scss from "./oyl-app.scss";
-import { ComponentConnected, ComponentDisconnected, ExecOnReady, Inject, OylComponent } from "../../decorators/decorators";
+import { ComponentConnected, ComponentDisconnected, Inject, OylComponent } from "../../decorators/decorators";
 import Component from "../component";
 import { Events, SettingKey } from "../../@types/enums";
 import OylNavBar from "./oyl-nav-bar/oyl-nav-bar";
 import OylPageFrame from "./oyl-page-frame/oyl-page-frame";
 import OylSlidePage from "./oyl-slide-page/oyl-slide-page";
-import OylPopupFrame from "./oyl-popup-frame/oyl-popup-frame";
 import NavEvent from "../../events/NavEvent";
 import OylLabel from "../common/oyl-label/oyl-label";
 import { NotificationServiceInterface, SettingsServiceInterface } from "../../@types/types";
@@ -20,7 +19,6 @@ class OylApp extends Component {
     protected navBar: OylNavBar;
     protected pageFrame: OylPageFrame;
     protected slidePage: OylSlidePage;
-    protected popupFrame: OylPopupFrame;
 
     static get tagName(): string {
         return 'oyl-app';
@@ -50,7 +48,6 @@ class OylApp extends Component {
     @ComponentConnected()
     connectedCallback(): void {
         this.initNavigation();
-        this.initPopups(this.popupFrame);
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
@@ -58,9 +55,6 @@ class OylApp extends Component {
 
     @ComponentDisconnected()
     disconnectedCallback(): void {
-    }
-
-    eventCallback(ev: Event): void {
     }
 
     //TODO: NavigationService (als observable!)
@@ -82,12 +76,6 @@ class OylApp extends Component {
                 this.pageFrame.setAttribute('page-id', startPage);
                 this.slidePage.setAttribute('page-id', startPage);
             });
-    }
-
-    //TODO: PopupService (als observable?)
-    @ExecOnReady()
-    private initPopups(component: Component): void {
-        this.addEventListener(Events.Popup, ev => component.eventCallback(ev));
     }
 
     private debugLoadedComponentsCount(): void {

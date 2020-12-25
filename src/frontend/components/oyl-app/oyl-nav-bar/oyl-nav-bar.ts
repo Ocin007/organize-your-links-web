@@ -52,9 +52,6 @@ class OylNavBar extends Component {
     disconnectedCallback(): void {
     }
 
-    eventCallback(ev: Event): void {
-    }
-
     private setTabActive(pageId: PageID, active: boolean): void {
         let tab = this.tabContainer.querySelector<OylNavBarTab>('[page-id="' + pageId + '"]');
         if (tab === null) {

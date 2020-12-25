@@ -54,9 +54,6 @@ class OylNotification extends Component {
     disconnectedCallback(): void {
     }
 
-    eventCallback(ev: Event): void {
-    }
-
     private showNotification(notify: NotifyObject): void {
         let config = this.getNotifyConfig(notify.status);
         if (!config.visible) {

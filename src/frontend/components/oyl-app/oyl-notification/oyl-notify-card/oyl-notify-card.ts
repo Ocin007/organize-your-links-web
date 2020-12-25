@@ -155,9 +155,6 @@ class OylNotifyCard extends Component {
     disconnectedCallback(): void {
     }
 
-    eventCallback(ev: Event): void {
-    }
-
     private render(): void {
         this.renderDescription();
         this.renderDate();
