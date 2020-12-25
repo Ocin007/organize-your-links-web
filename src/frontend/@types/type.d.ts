@@ -23,6 +23,8 @@ declare type Dependency = {
     alias?: string,
     multi?: boolean,
 };
+declare type ObserverFunction<T> = (newValue: T) => void;
+declare type WatchKey = any;
 
 
 
@@ -42,12 +44,15 @@ declare interface RestServiceInterface {
     readonly successMessage: string;
     readonly errorMessage: string;
 }
-declare interface Observer<T extends any> {
-    update(newValue: T): void;
+declare interface ObservableInterface {
+    subscribe<K>(observer: ObserverFunction<K>, watch?: WatchKey[]): void;
+    unsubscribe<K>(observer: ObserverFunction<K>, watch?: WatchKey[]): void;
+    notifySubs<K>(getNewValue: (subWatch?: WatchKey[]) => K): void;
+    hasSubs(): boolean;
 }
-declare interface Observable<T extends any[]> {
-    subscribe<K>(observer: Observer<K>, watch?: T): void;
-    unsubscribe<K>(observer: Observer<K>, watch?: T): void;
+declare interface IsObservable {
+    subscribe(observer: ObserverFunction<any>, watch?: WatchKey[]): void;
+    unsubscribe(observer: ObserverFunction<any>, watch?: WatchKey[]): void;
 }
 declare interface ProviderInterface {
     getInstance(constructor: ConstructorFunction): Object;

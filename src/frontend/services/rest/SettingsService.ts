@@ -11,7 +11,6 @@ class SettingsService implements SettingsServiceInterface {
     private static SAVE_SETTINGS_FAILED = 'SettingsService: save settings failed.';
     private static READ_BEFORE_INIT = 'SettingsService: Tried to read settings before initialisation.';
     private static WRITE_BEFORE_INIT = 'SettingsService: Tried to write settings before initialisation.';
-    private static OBSERVER_NOT_FOUND = 'SettingsService: Given observer is not subscribed to the given list of items.';
     private static LOAD_SETTINGS_ERROR = 'Settings konnten nicht geladen werden.';
     private static LOAD_SETTINGS_SUCCESS = 'Settings wurden erfolgreich geladen.';
 
@@ -19,7 +18,6 @@ class SettingsService implements SettingsServiceInterface {
     private static ROUTE = "/settings-v2";
 
     private settings: Settings = new Map<SettingKey, any>();
-    private subs: { observer: Observer<any>, watch?: SettingKey[] }[] = [];
     private _isInitialised: boolean = false;
 
     private readonly _initSuccessful: Promise<string[]>;
@@ -28,7 +26,8 @@ class SettingsService implements SettingsServiceInterface {
 
     constructor(
         @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface,
-        @Inject('RestClientInterface') private api: RestClientInterface
+        @Inject('RestClientInterface') private api: RestClientInterface,
+        @Inject('ObservableInterface') private observable: ObservableInterface
     ) {
         this._initSuccessful = new Promise<string[]>((resolve, reject) => {
             this.initResolve = resolve;
@@ -72,17 +71,12 @@ class SettingsService implements SettingsServiceInterface {
         return SettingsService.LOAD_SETTINGS_ERROR;
     }
 
-    subscribe<K>(observer: Observer<K>, watch?: SettingKey[]): void {
-        this.subs.push({observer: observer, watch: watch});
+    subscribe(observer: ObserverFunction<Settings>, watch?: SettingKey[]): void {
+        this.observable.subscribe(observer, watch);
     }
 
-    unsubscribe<K>(observer: Observer<K>, watch?: SettingKey[]): void {
-        let index = this.subs.findIndex((value => value.observer === observer && this.settingKeysEqual(value.watch, watch)));
-        if (index === -1) {
-            this.notifier.debug(SettingsService.OBSERVER_NOT_FOUND, {observer: observer, watch: watch});
-            return;
-        }
-        this.subs.splice(index, 1);
+    unsubscribe(observer: ObserverFunction<Settings>, watch?: SettingKey[]): void {
+        this.observable.unsubscribe(observer, watch);
     }
 
     getSettings(keyList?: SettingKey[]): Settings {
@@ -125,31 +119,15 @@ class SettingsService implements SettingsServiceInterface {
         return [];
     }
 
-    private settingKeysEqual(arr1?: SettingKey[], arr2?: SettingKey[]): boolean {
-        if (arr1 === undefined && arr2 === undefined) {
-            return true;
-        }
-        if (arr1 === undefined || arr2 === undefined) {
-            return false;
-        }
-        if (arr1.length !== arr2.length) {
-            return false;
-        }
-        let equal: boolean = true;
-        arr1.forEach(key => equal &&= arr2.includes(key));
-        return equal;
-    }
-
     private notifySubs(newSettings: Settings): void {
-        this.subs.forEach((sub) => {
-            if (sub.watch === undefined) {
-                sub.observer.update(new Map<SettingKey, any>([...this.settings]));
-                return;
+        this.observable.notifySubs(subWatch => {
+            if (subWatch === undefined) {
+                return new Map<SettingKey, any>([...this.settings]);
             }
             let hasAnyKey = false;
-            sub.watch.forEach(key => hasAnyKey ||= newSettings.has(key));
+            subWatch.forEach(key => hasAnyKey ||= newSettings.has(key));
             if (hasAnyKey) {
-                sub.observer.update(this.getSettings(sub.watch));
+                return this.getSettings(subWatch);
             }
         });
     }

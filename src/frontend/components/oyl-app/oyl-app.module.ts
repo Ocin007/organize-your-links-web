@@ -14,6 +14,7 @@ import Notifier from "../../services/Notifier";
 import ApiClient from "../../utils/ApiClient";
 import SettingsService from "../../services/rest/SettingsService";
 import RestServiceProvider from "../../providers/RestServiceProvider";
+import Observable from "../../utils/Observable";
 
 @OylModule({
     declarations: [
@@ -30,8 +31,7 @@ import RestServiceProvider from "../../providers/RestServiceProvider";
         OylDate,
     ],
     dependencies: [
-        //TODO: option multi=true -> es werden immer neue instanzen angelegt
-        // hier als allgemeine option, oder jeweils in @Inject()?
+        {injectable: Observable, alias: 'ObservableInterface', multi: true},
         {injectable: Notifier, alias: 'NotificationServiceInterface'},
         {injectable: ApiClient, alias: 'RestClientInterface'},
         {injectable: SettingsService, provider: RestServiceProvider, alias: 'SettingsServiceInterface'}

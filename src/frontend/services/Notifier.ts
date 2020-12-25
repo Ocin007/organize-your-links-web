@@ -1,10 +1,11 @@
 import { Status } from "../@types/enums";
 import NotifyEvent from "../events/NotifyEvent";
 import { NotificationServiceInterface } from "../@types/types";
+import { Inject, InjectionTarget } from "../decorators/decorators";
 
+@InjectionTarget()
 class Notifier implements NotificationServiceInterface {
 
-    private subs: { observer: Observer<any>, watch?: Status[] }[] = [];
     private buffer: NotifyEvent[] = [];
     private storeInBuffer: boolean = true;
 
@@ -16,43 +17,22 @@ class Notifier implements NotificationServiceInterface {
         success: '#78d561',
     };
 
-    subscribe<K>(observer: Observer<K>, watch?: Status[]): void {
-        this.subs.push({observer: observer, watch: watch});
+    constructor(
+        @Inject('ObservableInterface') private observable: ObservableInterface
+    ) {}
+
+    subscribe(observer: ObserverFunction<NotifyEvent>, watch?: Status[]): void {
+        this.observable.subscribe(observer, watch);
     }
 
-    unsubscribe<K>(observer: Observer<K>, watch?: Status[]): void {
-        let index = this.subs.findIndex((value => value.observer === observer && this.statusListsEqual(value.watch, watch)));
-        if (index === -1) {
-            return;
-        }
-        this.subs.splice(index, 1);
-    }
-
-    private statusListsEqual(arr1?: Status[], arr2?: Status[]): boolean {
-        if (arr1 === undefined && arr2 === undefined) {
-            return true;
-        }
-        if (arr1 === undefined || arr2 === undefined) {
-            return false;
-        }
-        if (arr1.length !== arr2.length) {
-            return false;
-        }
-        let equal: boolean = true;
-        arr1.forEach(key => equal &&= arr2.includes(key));
-        return equal;
+    unsubscribe(observer: ObserverFunction<NotifyEvent>, watch?: Status[]): void {
+        this.observable.unsubscribe(observer, watch);
     }
 
     private notifySubs(ev: NotifyEvent): void {
-        this.subs.forEach((sub) => {
-            if (sub.watch === undefined) {
-                sub.observer.update(ev);
-                return;
-            }
-            let hasAnyKey = false;
-            sub.watch.forEach(key => hasAnyKey ||= key === ev.status);
-            if (hasAnyKey) {
-                sub.observer.update(ev);
+        this.observable.notifySubs(subWatch => {
+            if (subWatch === undefined || subWatch.includes(ev.status)) {
+                return ev;
             }
         });
     }
@@ -98,7 +78,7 @@ class Notifier implements NotificationServiceInterface {
             eventInitDict = {detail: {raw: raw, html: html}};
         }
         let ev = new NotifyEvent(status, msg, eventInitDict);
-        if (this.subs.length === 0 || this.storeInBuffer) {
+        if (!this.observable.hasSubs() || this.storeInBuffer) {
             this.buffer.push(ev);
         } else {
             this.notifySubs(ev);

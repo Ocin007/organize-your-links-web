@@ -12,7 +12,7 @@ import { NotificationServiceInterface, SettingsServiceInterface } from "../../..
     html: html,
     scss: scss
 })
-class OylNotification extends Component implements Observer<NotifyEvent> {
+class OylNotification extends Component {
 
     static ELEMENT_INCORRECT_TYPE = 'Created Element <oyl-notify-card> not instance of OylNotifyCard';
     static DELAY = 100;
@@ -41,7 +41,7 @@ class OylNotification extends Component implements Observer<NotifyEvent> {
             .then(() => undefined)
             .catch(() => undefined)
             .finally(() => {
-                this.notifier.subscribe(this);
+                this.notifier.subscribe(ev => this.showNotification(ev));
                 this.notifier.sendNotificationsToReceiver();
             });
         this.initCloseButtonRendering();
@@ -56,10 +56,6 @@ class OylNotification extends Component implements Observer<NotifyEvent> {
     }
 
     eventCallback(ev: Event): void {
-    }
-
-    update(ev: NotifyEvent<NotifyDetails>): void {
-        this.showNotification(ev);
     }
 
     private showNotification(ev: NotifyEvent): void {
@@ -93,7 +89,7 @@ class OylNotification extends Component implements Observer<NotifyEvent> {
     private subscribeElementToSettingsService(notify: OylNotifyCard, status: Status): void {
         let settingKeys = OylNotification.getSettingKeys(status);
         notify.setSettingKeys(...settingKeys);
-        this.settings.subscribe(notify, settingKeys);
+        this.settings.subscribe(notify.update, settingKeys);
     }
 
     private getNotifyConfig(status: Status): NotifyConfig {
@@ -152,16 +148,16 @@ class OylNotification extends Component implements Observer<NotifyEvent> {
         }
     }
 
-    private removeNotification(card: OylNotifyCard): void {
-        this.settings.unsubscribe(card, card.getSettingKeys());
+    private removeNotification(notify: OylNotifyCard): void {
+        this.settings.unsubscribe(notify.update, notify.getSettingKeys());
         setTimeout(() => {
-            if (this.container.firstElementChild === card) {
-                this.container.removeChild(card);
+            if (this.container.firstElementChild === notify) {
+                this.container.removeChild(notify);
                 return;
             }
-            card.classList.add('no-height');
+            notify.classList.add('no-height');
             setTimeout(() => {
-                this.container.removeChild(card);
+                this.container.removeChild(notify);
             }, OylNotification.DELAY);
         }, OylNotification.DELAY);
     }

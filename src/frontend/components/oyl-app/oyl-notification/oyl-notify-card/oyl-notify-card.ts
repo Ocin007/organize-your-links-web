@@ -17,7 +17,7 @@ import { Settings, SettingsServiceInterface } from "../../../../@types/types";
     html: html,
     scss: scss
 })
-class OylNotifyCard extends Component implements Observer<Settings> {
+class OylNotifyCard extends Component {
 
     private readonly headLine = {
         success: 'SUCCESS',
@@ -116,7 +116,7 @@ class OylNotifyCard extends Component implements Observer<Settings> {
         ];
     }
 
-    update(settings: Settings): void {
+    update: (settings: Settings) => void  = (settings: Settings) => {
         let visible: boolean = settings.get(this.keyVisible);
         if (!visible) {
             this.closeCard();
