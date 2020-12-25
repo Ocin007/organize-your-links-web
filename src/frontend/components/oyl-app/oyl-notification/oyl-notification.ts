@@ -2,11 +2,10 @@ import html from "./oyl-notification.html";
 import scss from "./oyl-notification.scss";
 import { ComponentConnected, ComponentDisconnected, Inject, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
-import NotifyEvent from "../../../events/NotifyEvent";
 import OylNotifyCard from "./oyl-notify-card/oyl-notify-card";
 import { Events, SettingKey, Status } from "../../../@types/enums";
 import NotifyCardClickedEvent from "../../../events/NotifyCardClickedEvent";
-import { NotificationServiceInterface, SettingsServiceInterface } from "../../../@types/types";
+import { NotificationServiceInterface, NotifyObject, SettingsServiceInterface } from "../../../@types/types";
 
 @OylComponent({
     html: html,
@@ -41,7 +40,7 @@ class OylNotification extends Component {
             .then(() => undefined)
             .catch(() => undefined)
             .finally(() => {
-                this.notifier.subscribe(ev => this.showNotification(ev));
+                this.notifier.subscribe(notify => this.showNotification(notify));
                 this.notifier.sendNotificationsToReceiver();
             });
         this.initCloseButtonRendering();
@@ -58,38 +57,38 @@ class OylNotification extends Component {
     eventCallback(ev: Event): void {
     }
 
-    private showNotification(ev: NotifyEvent): void {
-        let config = this.getNotifyConfig(ev.status);
+    private showNotification(notify: NotifyObject): void {
+        let config = this.getNotifyConfig(notify.status);
         if (!config.visible) {
             return;
         }
-        let notify = OylNotification.createNotificationElement(ev, config);
-        this.subscribeElementToSettingsService(notify, ev.status);
+        let element = OylNotification.createNotificationElement(notify, config);
+        this.subscribeElementToSettingsService(element, notify.status);
         if (this.container.children.length === 0) {
-            this.container.appendChild(notify);
+            this.container.appendChild(element);
         } else {
-            notify.classList.add("no-height");
-            this.container.appendChild(notify);
-            notify.classList.remove("no-height");
+            element.classList.add("no-height");
+            this.container.appendChild(element);
+            element.classList.remove("no-height");
         }
     }
 
-    private static createNotificationElement(ev: NotifyEvent, settings: NotifyConfig): OylNotifyCard {
-        let notify = document.createElement(OylNotifyCard.tagName);
-        if (notify instanceof OylNotifyCard) {
-            notify.setAttributesFromEvent(ev);
+    private static createNotificationElement(notify: NotifyObject, settings: NotifyConfig): OylNotifyCard {
+        let element = document.createElement(OylNotifyCard.tagName);
+        if (element instanceof OylNotifyCard) {
+            element.setAttributesFromEvent(notify);
             if (settings.autoClose) {
-                notify.closeAfter(settings.interval, OylNotification.DELAY);
+                element.closeAfter(settings.interval, OylNotification.DELAY);
             }
-            return notify;
+            return element;
         }
         throw new Error(OylNotification.ELEMENT_INCORRECT_TYPE);
     }
 
-    private subscribeElementToSettingsService(notify: OylNotifyCard, status: Status): void {
+    private subscribeElementToSettingsService(element: OylNotifyCard, status: Status): void {
         let settingKeys = OylNotification.getSettingKeys(status);
-        notify.setSettingKeys(...settingKeys);
-        this.settings.subscribe(notify.update, settingKeys);
+        element.setSettingKeys(...settingKeys);
+        this.settings.subscribe(element.update, settingKeys);
     }
 
     private getNotifyConfig(status: Status): NotifyConfig {
@@ -148,23 +147,23 @@ class OylNotification extends Component {
         }
     }
 
-    private removeNotification(notify: OylNotifyCard): void {
-        this.settings.unsubscribe(notify.update, notify.getSettingKeys());
+    private removeNotification(element: OylNotifyCard): void {
+        this.settings.unsubscribe(element.update, element.getSettingKeys());
         setTimeout(() => {
-            if (this.container.firstElementChild === notify) {
-                this.container.removeChild(notify);
+            if (this.container.firstElementChild === element) {
+                this.container.removeChild(element);
                 return;
             }
-            notify.classList.add('no-height');
+            element.classList.add('no-height');
             setTimeout(() => {
-                this.container.removeChild(notify);
+                this.container.removeChild(element);
             }, OylNotification.DELAY);
         }, OylNotification.DELAY);
     }
 
     private removeAllNotifications(): void {
-        this.container.childNodes.forEach((card: OylNotifyCard) => {
-            card.closeCard();
+        this.container.childNodes.forEach((element: OylNotifyCard) => {
+            element.closeCard();
         });
     }
 
@@ -186,9 +185,9 @@ class OylNotification extends Component {
 
     private initEventListeners(): void {
         this.addEventListener(Events.NotifyClick, (ev: NotifyCardClickedEvent) => {
-            let card = ev.composedPath()[0];
-            if (card instanceof OylNotifyCard) {
-                this.removeNotification(card);
+            let element = ev.composedPath()[0];
+            if (element instanceof OylNotifyCard) {
+                this.removeNotification(element);
             }
         });
         this.closeAll.addEventListener('click', () => {

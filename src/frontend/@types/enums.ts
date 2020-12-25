@@ -1,6 +1,5 @@
 export enum Events {
     Nav = 'navEvent',
-    Notify = 'notifyEvent',
     Popup = 'popupEvent',
     Connected = 'connectedEvent',
     Disconnected = 'disconnectedEvent',

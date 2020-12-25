@@ -1,12 +1,11 @@
 import { Status } from "../@types/enums";
-import NotifyEvent from "../events/NotifyEvent";
-import { NotificationServiceInterface } from "../@types/types";
+import { NotificationServiceInterface, NotifyObject } from "../@types/types";
 import { Inject, InjectionTarget } from "../decorators/decorators";
 
 @InjectionTarget()
 class Notifier implements NotificationServiceInterface {
 
-    private buffer: NotifyEvent[] = [];
+    private buffer: NotifyObject[] = [];
     private storeInBuffer: boolean = true;
 
     private fnColorMap = {
@@ -21,26 +20,26 @@ class Notifier implements NotificationServiceInterface {
         @Inject('ObservableInterface') private observable: ObservableInterface
     ) {}
 
-    subscribe(observer: ObserverFunction<NotifyEvent>, watch?: Status[]): void {
+    subscribe(observer: ObserverFunction<NotifyObject>, watch?: Status[]): void {
         this.observable.subscribe(observer, watch);
     }
 
-    unsubscribe(observer: ObserverFunction<NotifyEvent>, watch?: Status[]): void {
+    unsubscribe(observer: ObserverFunction<NotifyObject>, watch?: Status[]): void {
         this.observable.unsubscribe(observer, watch);
     }
 
-    private notifySubs(ev: NotifyEvent): void {
+    private notifySubs(notify: NotifyObject): void {
         this.observable.notifySubs(subWatch => {
-            if (subWatch === undefined || subWatch.includes(ev.status)) {
-                return ev;
+            if (subWatch === undefined || subWatch.includes(notify.status)) {
+                return notify;
             }
         });
     }
 
     sendNotificationsToReceiver(): this {
         this.storeInBuffer = false;
-        this.buffer.forEach(ev => {
-            this.notifySubs(ev);
+        this.buffer.forEach(notify => {
+            this.notifySubs(notify);
         });
         this.buffer = [];
         return this;
@@ -73,15 +72,20 @@ class Notifier implements NotificationServiceInterface {
 
     private send(status: Status, msg: string | HTMLElement, raw?: Object, html?: HTMLElement): void {
         this.printToConsole(status, msg, raw, html);
-        let eventInitDict: CustomEventInit<NotifyDetails>;
+        let detail: NotifyDetails = null;
         if (raw !== undefined || html !== undefined) {
-            eventInitDict = {detail: {raw: raw, html: html}};
+            detail = {raw: raw, html: html};
         }
-        let ev = new NotifyEvent(status, msg, eventInitDict);
+        let notify: NotifyObject = {
+            status: status,
+            msg: msg,
+            date: new Date(),
+            detail: detail
+        };
         if (!this.observable.hasSubs() || this.storeInBuffer) {
-            this.buffer.push(ev);
+            this.buffer.push(notify);
         } else {
-            this.notifySubs(ev);
+            this.notifySubs(notify);
         }
     }
 

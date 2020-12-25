@@ -1,7 +1,12 @@
-import { SettingKey } from "./enums";
+import { SettingKey, Status } from "./enums";
 
 export type Settings = Map<SettingKey,any>;
-
+export type NotifyObject = {
+    date: Date;
+    status: Status;
+    msg: string | HTMLElement;
+    detail: NotifyDetails | null;
+};
 
 
 export interface NotificationServiceInterface extends IsObservable {

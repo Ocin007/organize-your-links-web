@@ -7,11 +7,10 @@ import infoIcon from "./assets/icons/info.ico";
 import warnIcon from "./assets/icons/warn.ico";
 import errorIcon from "./assets/icons/error.ico";
 import debugIcon from "./assets/icons/debug.ico";
-import NotifyEvent from "../../../../events/NotifyEvent";
 import { SettingKey, Status } from "../../../../@types/enums";
 import NotifyCardClickedEvent from "../../../../events/NotifyCardClickedEvent";
 import OylDate from "../../../common/oyl-date/oyl-date";
-import { Settings, SettingsServiceInterface } from "../../../../@types/types";
+import { NotifyObject, Settings, SettingsServiceInterface } from "../../../../@types/types";
 
 @OylComponent({
     html: html,
@@ -73,15 +72,15 @@ class OylNotifyCard extends Component {
         return [];
     }
 
-    setAttributesFromEvent(ev: NotifyEvent): void {
-        this.status = ev.status;
-        if (ev.msg instanceof HTMLElement) {
-            this.msgLabel = ev.msg;
+    setAttributesFromEvent(notify: NotifyObject): void {
+        this.status = notify.status;
+        if (notify.msg instanceof HTMLElement) {
+            this.msgLabel = notify.msg;
         } else {
-            this.msgString = ev.msg;
+            this.msgString = notify.msg;
         }
-        this.date = ev.date;
-        this.details = ev.detail;
+        this.date = notify.date;
+        this.details = notify.detail;
     }
 
     closeAfter(milliSeconds: number, delay: number): void {
