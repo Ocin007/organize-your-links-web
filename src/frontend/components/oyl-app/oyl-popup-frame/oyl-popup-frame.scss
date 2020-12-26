@@ -94,7 +94,7 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        flex-grow: 1;
+        flex: 1 1 0;
         transition:
                 background $default-transition-duration,
                 box-shadow $default-transition-duration,
