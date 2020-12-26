@@ -15,6 +15,7 @@ import ApiClient from "../../utils/ApiClient";
 import SettingsService from "../../services/rest/SettingsService";
 import RestServiceProvider from "../../providers/RestServiceProvider";
 import Observable from "../../utils/Observable";
+import OylOpacityLayer from "../common/oyl-opacity-layer/oyl-opacity-layer";
 
 @OylModule({
     declarations: [
@@ -29,6 +30,7 @@ import Observable from "../../utils/Observable";
         OylLabel,
         OylNotifyCard,
         OylDate,
+        OylOpacityLayer,
     ],
     dependencies: [
         {injectable: Observable, alias: 'ObservableInterface', multi: true},
