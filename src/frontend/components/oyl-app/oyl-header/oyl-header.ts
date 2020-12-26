@@ -2,7 +2,6 @@ import html from "./oyl-header.html";
 import scss from "./oyl-header.scss";
 import { ComponentConnected, ComponentDisconnected, Inject, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
-import { NotificationServiceInterface } from "../../../@types/types";
 
 @OylComponent({
     html: html,

@@ -8,7 +8,7 @@ import OylPageFrame from "./oyl-page-frame/oyl-page-frame";
 import OylSlidePage from "./oyl-slide-page/oyl-slide-page";
 import NavEvent from "../../events/NavEvent";
 import OylLabel from "../common/oyl-label/oyl-label";
-import { NotificationServiceInterface, SettingsServiceInterface } from "../../@types/types";
+import { SettingsServiceInterface } from "../../@types/types";
 
 @OylComponent({
     html: html,

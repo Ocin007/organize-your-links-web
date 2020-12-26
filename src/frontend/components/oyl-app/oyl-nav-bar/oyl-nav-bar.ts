@@ -4,7 +4,6 @@ import { ComponentConnected, ComponentDisconnected, Inject, OylComponent } from 
 import Component from "../../component";
 import OylNavBarTab from "./oyl-nav-bar-tab/oyl-nav-bar-tab";
 import Page from "../../pages/page";
-import { NotificationServiceInterface } from "../../../@types/types";
 
 @OylComponent({
     html: html,

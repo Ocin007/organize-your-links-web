@@ -1,5 +1,5 @@
 import { Status } from "../@types/enums";
-import { NotificationServiceInterface, NotifyObject } from "../@types/types";
+import { NotifyObject } from "../@types/types";
 import { Inject, InjectionTarget } from "../decorators/decorators";
 
 @InjectionTarget()

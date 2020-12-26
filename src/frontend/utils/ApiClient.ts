@@ -1,4 +1,3 @@
-import { NotificationServiceInterface } from "../@types/types";
 import { Inject, InjectionTarget } from "../decorators/decorators";
 
 @InjectionTarget()

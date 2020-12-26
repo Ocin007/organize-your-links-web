@@ -5,7 +5,7 @@ import Component from "../../component";
 import OylNotifyCard from "./oyl-notify-card/oyl-notify-card";
 import { Events, SettingKey, Status } from "../../../@types/enums";
 import NotifyCardClickedEvent from "../../../events/NotifyCardClickedEvent";
-import { NotificationServiceInterface, NotifyObject, SettingsServiceInterface } from "../../../@types/types";
+import { NotifyObject, SettingsServiceInterface } from "../../../@types/types";
 
 @OylComponent({
     html: html,

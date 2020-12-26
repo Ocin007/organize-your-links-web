@@ -82,3 +82,11 @@ declare interface PopupServiceInterface {
     push(config: PopupConfig): Promise<ButtonName>;
     pop(): Promise<PopupObject>;
 }
+declare interface NotificationServiceInterface extends IsObservable {
+    sendNotificationsToReceiver(): this;
+    success(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;
+    debug(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;
+    info(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;
+    warn(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;
+    error(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;
+}

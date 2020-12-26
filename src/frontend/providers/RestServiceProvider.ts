@@ -1,5 +1,4 @@
 import { Inject, InjectionTarget } from "../decorators/decorators";
-import { NotificationServiceInterface } from "../@types/types";
 
 @InjectionTarget()
 class RestServiceProvider implements ProviderInterface {
