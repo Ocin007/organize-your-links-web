@@ -14,16 +14,7 @@ $close-button-front: #2c2c2c;
   &:hover .close-all-button {
     opacity: 0.5;
   }
-  &::-webkit-scrollbar {
-    width: 4px;
-    &-track {
-      background-color: rgba(150, 150, 150, 0);
-    }
-    &-thumb {
-      background-color: $font-white;
-      transition: background-color 0.2s;
-    }
-  }
+  @include customScrollBar;
   .inner-container {
     display: flex;
     flex-direction: column;
@@ -88,15 +79,15 @@ $close-button-front: #2c2c2c;
 }
 .trans-02 {
   transition:
-          opacity 0.2s,
-          box-shadow 0.2s,
-          background-color 0.2s,
-          bottom 0.2s,
-          left 0.2s,
-          right 0.2s,
-          top 0.2s,
-          width 0.2s,
-          height 0.2s;
+          opacity $default-transition-duration,
+          box-shadow $default-transition-duration,
+          background-color $default-transition-duration,
+          bottom $default-transition-duration,
+          left $default-transition-duration,
+          right $default-transition-duration,
+          top $default-transition-duration,
+          width $default-transition-duration,
+          height $default-transition-duration;
 }
 oyl-notify-card {
   transition: margin-top 0.1s linear;

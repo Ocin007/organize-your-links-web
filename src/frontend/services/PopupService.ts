@@ -21,13 +21,17 @@ class PopupService implements PopupServiceInterface {
 
     pop(): Promise<PopupObject> {
         return new Promise<PopupObject>(resolve => {
-            let config = this.popups.pop();
+            let config = this.popups.shift();
             if (config === undefined) {
                 this.lastPopResolver = resolve;
             } else {
                 resolve(config);
             }
         });
+    }
+
+    hasPopups(): boolean {
+        return this.popups.length !== 0;
     }
 }
 

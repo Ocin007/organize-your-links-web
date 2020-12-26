@@ -73,7 +73,7 @@ class OylNotification extends Component {
     private static createNotificationElement(notify: NotifyObject, settings: NotifyConfig): OylNotifyCard {
         let element = document.createElement(OylNotifyCard.tagName);
         if (element instanceof OylNotifyCard) {
-            element.setAttributesFromEvent(notify);
+            element.setAttributesFromObject(notify);
             if (settings.autoClose) {
                 element.closeAfter(settings.interval, OylNotification.DELAY);
             }

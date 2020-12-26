@@ -9,7 +9,10 @@ import Component from "../../component";
 })
 class OylOpacityLayer extends Component {
 
+    private static DELAY: number = 200;
+
     protected opacityLayer: HTMLDivElement;
+    private timeoutId: NodeJS.Timeout;
 
     static get tagName(): string {
         return 'oyl-opacity-layer';
@@ -25,9 +28,18 @@ class OylOpacityLayer extends Component {
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
         if (newVal === 'true') {
+            clearTimeout(this.timeoutId);
             this.opacityLayer.classList.add('visible');
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    this.opacityLayer.classList.add('fade-in');
+                });
+            });
         } else {
-            this.opacityLayer.classList.remove('visible');
+            this.opacityLayer.classList.remove('fade-in');
+            this.timeoutId = setTimeout(() => {
+                this.opacityLayer.classList.remove('visible');
+            }, OylOpacityLayer.DELAY);
         }
     }
 

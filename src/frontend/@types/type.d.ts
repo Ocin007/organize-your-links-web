@@ -26,15 +26,19 @@ declare type Dependency = {
 declare type ObserverFunction<T> = (newValue: T) => void;
 declare type WatchKey = any;
 declare type PopupConfig = {
+    width?: PopupSize,
+    height?: PopupSize,
     title?: {text: string, style?: string},
     description?: {text: string, style?: string} | HTMLElement,
     buttons?: {
         text: string,
         id: ButtonName,
-        type: 'info' | 'abort' | 'confirm' | 'neutral'
+        type: ButtonType
     }[]
 };
 declare type ButtonName = string;
+declare type ButtonType = 'info' | 'abort' | 'confirm' | 'neutral';
+declare type PopupSize = 'small' | 'big';
 declare type PopupObject = {
     config: PopupConfig,
     buttonClicked: (id: ButtonName) => void,
@@ -81,6 +85,7 @@ declare interface RestClientInterface {
 declare interface PopupServiceInterface {
     push(config: PopupConfig): Promise<ButtonName>;
     pop(): Promise<PopupObject>;
+    hasPopups(): boolean;
 }
 declare interface NotificationServiceInterface extends IsObservable {
     sendNotificationsToReceiver(): this;

@@ -12,6 +12,8 @@ $shadow-bottom: 0 0 20px 0;
 $default-font-size: 0.8em;
 $default-line-height: 1.2em;
 
+$default-transition-duration: 0.2s;
+
 $error: #ed4a4a;
 $warn: #ffd370;
 $info: #03a9f4;
@@ -53,6 +55,18 @@ Source: https://material-components.github.io/material-components-web-catalog/#/
     width: 70%;
     height: $default-line-height;
     background: linear-gradient(to right, rgba(78, 80, 82, 0), rgba(78, 80, 82, 1) 90%);
+  }
+}
+
+@mixin customScrollBar {
+  &::-webkit-scrollbar {
+    width: 4px;
+    &-track {
+      background-color: rgba(150, 150, 150, 0);
+    }
+    &-thumb {
+      background-color: $font-white;
+    }
   }
 }
 
