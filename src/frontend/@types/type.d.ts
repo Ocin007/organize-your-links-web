@@ -25,6 +25,21 @@ declare type Dependency = {
 };
 declare type ObserverFunction<T> = (newValue: T) => void;
 declare type WatchKey = any;
+declare type PopupConfig = {
+    title?: {text: string, style?: string},
+    description?: {text: string, style?: string} | HTMLElement,
+    buttons?: {
+        text: string,
+        id: ButtonName,
+        type: 'info' | 'abort' | 'confirm' | 'neutral'
+    }[]
+};
+declare type ButtonName = string;
+declare type PopupObject = {
+    config: PopupConfig,
+    buttonClicked: (id: ButtonName) => void,
+    aborted: () => void
+};
 
 
 
@@ -62,4 +77,8 @@ declare interface RestClientInterface {
     put(route: string, data?: object): Promise<any>;
     post(route: string, data?: object): Promise<any>;
     delete(route: string, data?: object): Promise<any>;
+}
+declare interface PopupServiceInterface {
+    push(config: PopupConfig): Promise<ButtonName>;
+    pop(): Promise<PopupObject>;
 }

@@ -16,6 +16,7 @@ import SettingsService from "../../services/rest/SettingsService";
 import RestServiceProvider from "../../providers/RestServiceProvider";
 import Observable from "../../utils/Observable";
 import OylOpacityLayer from "../common/oyl-opacity-layer/oyl-opacity-layer";
+import PopupService from "../../services/PopupService";
 
 @OylModule({
     declarations: [
@@ -36,6 +37,7 @@ import OylOpacityLayer from "../common/oyl-opacity-layer/oyl-opacity-layer";
         {injectable: Observable, alias: 'ObservableInterface', multi: true},
         {injectable: Notifier, alias: 'NotificationServiceInterface'},
         {injectable: ApiClient, alias: 'RestClientInterface'},
+        {injectable: PopupService, alias: 'PopupServiceInterface'},
         {injectable: SettingsService, provider: RestServiceProvider, alias: 'SettingsServiceInterface'}
     ],
 })
