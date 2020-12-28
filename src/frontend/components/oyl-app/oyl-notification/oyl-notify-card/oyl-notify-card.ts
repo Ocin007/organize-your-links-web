@@ -10,7 +10,8 @@ import debugIcon from "./assets/icons/debug.ico";
 import { SettingKey, Status } from "../../../../@types/enums";
 import NotifyCardClickedEvent from "../../../../events/NotifyCardClickedEvent";
 import OylDate from "../../../common/oyl-date/oyl-date";
-import { NotifyObject, Settings, SettingsServiceInterface } from "../../../../@types/types";
+import { NotifyObject, Settings } from "../../../../@types/types";
+import OylNotifyDetails from "./oyl-notify-details/oyl-notify-details";
 
 @OylComponent({
     html: html,
@@ -24,6 +25,14 @@ class OylNotifyCard extends Component {
         warn: 'WARNING',
         error: 'ERROR',
         debug: 'DEBUG'
+    };
+
+    private readonly colors = {
+        success: '#78d561',
+        info: '#03a9f4',
+        warn: '#ffd370',
+        error: '#ed4a4a',
+        debug: '#dadde0',
     };
 
     protected card: HTMLDivElement;
@@ -58,8 +67,7 @@ class OylNotifyCard extends Component {
     private keyInterval: SettingKey;
 
     constructor(
-        //TODO: remove this, setSettings test
-        @Inject('SettingsServiceInterface') private settings: SettingsServiceInterface
+        @Inject('PopupServiceInterface') private popup: PopupServiceInterface
     ) {
         super();
     }
@@ -72,7 +80,7 @@ class OylNotifyCard extends Component {
         return [];
     }
 
-    setAttributesFromEvent(notify: NotifyObject): void {
+    setAttributesFromObject(notify: NotifyObject): void {
         this.status = notify.status;
         if (notify.msg instanceof HTMLElement) {
             this.msgLabel = notify.msg;
@@ -179,16 +187,38 @@ class OylNotifyCard extends Component {
     }
 
     private openPopup(): void {
-        //TODO: PopupEvent
-
-        //TODO: remove this, setSettings test
-        let settings = this.settings.getSettings(this.getSettingKeys());
-        settings.delete(this.keyInterval);
-        settings.delete(this.keyVisible);
-        settings.set(this.keyAutoClose, !settings.get(this.keyAutoClose));
-        this.settings.setSettings(settings)
-            .then((bool) => console.log('set settings: ' + bool))
-            .catch(error => console.log(error));
+        let msg: Node | string;
+        if (this.msgLabel !== undefined) {
+            msg = this.msgLabel.cloneNode(true);
+        } else {
+            msg = this.msgString;
+        }
+        let description = new OylNotifyDetails(this.status, msg, this.date, this.details);
+        let autoClose = this.autoClose;
+        if (autoClose) {
+            this.disableAutoClose();
+        }
+        this.popup.push({
+            width: 'big',
+            height: 'big',
+            title: {
+                text: this.headLine[this.status] + ' Details',
+                style: 'color: ' + this.colors[this.status]
+            },
+            description: description,
+            buttons: [
+                {text: 'Karte entfernen', id: 'remove', type: 'info'},
+                {text: 'Schließen', id: '', type: 'neutral'},
+            ]
+        }).then(id => {
+            if (id === 'remove') {
+                this.closeCard();
+            }
+        }).catch(_ => {}).finally(() => {
+            if (autoClose) {
+                this.closeAfter(this.interval, 0);
+            }
+        });
     }
 
     closeCard(): void {
