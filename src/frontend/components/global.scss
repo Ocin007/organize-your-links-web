@@ -61,11 +61,15 @@ Source: https://material-components.github.io/material-components-web-catalog/#/
 @mixin customScrollBar {
   &::-webkit-scrollbar {
     width: 4px;
+    height: 4px;
     &-track {
       background-color: rgba(150, 150, 150, 0);
     }
     &-thumb {
       background-color: $font-white;
+    }
+    &-corner {
+      background-color: rgba(150, 150, 150, 0);
     }
   }
 }
