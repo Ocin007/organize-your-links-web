@@ -1,0 +1,34 @@
+<ul>
+    <li>
+        <span>
+            <span class="notify-front-weak">Status:</span>
+            <span data-property="statusElement"></span>
+        </span>
+    </li>
+    <li>
+        <span>
+            <span class="notify-front-weak">Zeit:</span>
+            <span>
+                <oyl-date data-property="timeElement1" format="timeMs"></oyl-date> (<oyl-date data-property="timeElement2" format="timeDiff"></oyl-date>)
+            </span>
+        </span>
+    </li>
+    <li>
+        <span>
+            <span class="notify-front-weak">Nachricht:</span>
+            <span data-property="msgElement"></span>
+        </span>
+    </li>
+    <li data-property="htmlDetailsContainer" class="hide">
+        <span>
+            <span class="notify-front-weak">Weitere Infos:</span>
+            <span data-property="htmlDetails"></span>
+        </span>
+    </li>
+    <li data-property="rawDetailsContainer" class="hide">
+        <span>
+            <span class="notify-front-weak">Data:</span>
+            <span data-property="rawDetails" class="json-string"></span>
+        </span>
+    </li>
+</ul>

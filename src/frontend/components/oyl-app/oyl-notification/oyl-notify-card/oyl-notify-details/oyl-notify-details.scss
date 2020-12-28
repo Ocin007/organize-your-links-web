@@ -1,1 +1,41 @@
 @import "../../../../global.scss";
+
+ul {
+    text-align: left;
+    li {
+        margin-bottom: 10px;
+    }
+    li > span {
+        display: flex;
+        span {
+            flex: 3 0 0;
+        }
+        span:first-child {
+            flex: 1 0 0;
+        }
+    }
+}
+.notify-front-weak {
+    color: $notify-front-weak;
+}
+.hide {
+    display: none;
+}
+.json-string {
+    white-space: pre;
+}
+.error {
+    color: $error;
+}
+.warn {
+    color: $warn;
+}
+.info {
+    color: $info;
+}
+.debug {
+    color: $debug;
+}
+.success {
+    color: $success;
+}
