@@ -18,6 +18,7 @@ import Observable from "../../utils/Observable";
 import OylOpacityLayer from "../common/oyl-opacity-layer/oyl-opacity-layer";
 import PopupService from "../../services/PopupService";
 import OylNotifyDetails from "./oyl-notification/oyl-notify-card/oyl-notify-details/oyl-notify-details";
+import OylJson from "../common/oyl-json/oyl-json";
 
 @OylModule({
     declarations: [
@@ -34,6 +35,7 @@ import OylNotifyDetails from "./oyl-notification/oyl-notify-card/oyl-notify-deta
         OylDate,
         OylOpacityLayer,
         OylNotifyDetails,
+        OylJson,
     ],
     dependencies: [
         {injectable: Observable, alias: 'ObservableInterface', multi: true},
