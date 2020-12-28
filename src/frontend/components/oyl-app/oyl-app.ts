@@ -9,6 +9,7 @@ import OylSlidePage from "./oyl-slide-page/oyl-slide-page";
 import NavEvent from "../../events/NavEvent";
 import OylLabel from "../common/oyl-label/oyl-label";
 import { SettingsServiceInterface } from "../../@types/types";
+import ComponentConnectedEvent from "../../events/ComponentConnectedEvent";
 
 @OylComponent({
     html: html,
@@ -80,16 +81,24 @@ class OylApp extends Component {
 
     private debugLoadedComponentsCount(): void {
         let label = new OylLabel('Loaded components: {{val1}}', '0');
+        let obj = {};
         let componentCount = 0;
-        let count = () => {
+        let count = (ev: ComponentConnectedEvent) => {
             componentCount++;
+            let element = ev.composedPath()[0];
+            if (element instanceof Component) {
+                if (obj[element.localName] === undefined) {
+                    obj[element.localName] = 0;
+                }
+                obj[element.localName]++;
+            }
             label.setAttribute('val1', componentCount.toString());
         };
         label.addEventListener(Events.Disconnected, () => {
             this.removeEventListener(Events.Connected, count);
         }, {once: true});
         this.addEventListener(Events.Connected, count);
-        this.notifier.debug(label, undefined, label);
+        this.notifier.debug(label, obj);
     }
 
     private initGlobalDefaultErrorHandling() {
