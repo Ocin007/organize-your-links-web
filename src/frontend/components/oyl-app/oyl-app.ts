@@ -58,7 +58,6 @@ class OylApp extends Component {
     disconnectedCallback(): void {
     }
 
-    //TODO: NavigationService (als observable!)
     //TODO: advanced: NavigationModule mit routing service und komponente, die entsprechende
     // komponente einbindet, zu der navigiert wird (ersetzt wahrscheinlich <oyl-page-frame>)
     private initNavigation(): void {

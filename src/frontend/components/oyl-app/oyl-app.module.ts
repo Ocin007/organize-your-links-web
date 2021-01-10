@@ -19,6 +19,7 @@ import OylOpacityLayer from "../common/oyl-opacity-layer/oyl-opacity-layer";
 import PopupService from "../../services/PopupService";
 import OylNotifyDetails from "./oyl-notification/oyl-notify-card/oyl-notify-details/oyl-notify-details";
 import OylJson from "../common/oyl-json/oyl-json";
+import NavigationService from "../../services/NavigationService";
 
 @OylModule({
     declarations: [
@@ -42,6 +43,7 @@ import OylJson from "../common/oyl-json/oyl-json";
         {injectable: Notifier, alias: 'NotificationServiceInterface'},
         {injectable: ApiClient, alias: 'RestClientInterface'},
         {injectable: PopupService, alias: 'PopupServiceInterface'},
+        {injectable: NavigationService, alias: 'NavigationServiceInterface'},
         {injectable: SettingsService, provider: RestServiceProvider, alias: 'SettingsServiceInterface'}
     ],
 })

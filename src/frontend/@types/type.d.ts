@@ -1,4 +1,9 @@
 declare type PageID = string;
+declare type PageOptions = {
+    pageId: PageID,
+    active: boolean,
+    [key: string]: any
+};
 declare type NotifyDetails = {
     html?: HTMLElement,
     raw?: Object
@@ -94,4 +99,7 @@ declare interface NotificationServiceInterface extends IsObservable {
     info(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;
     warn(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;
     error(msg: string | HTMLElement, raw?: Object, html?: HTMLElement): this;
+}
+declare interface NavigationServiceInterface extends IsObservable {
+    navigateTo(pageId: PageID, options?: {}): void;
 }
