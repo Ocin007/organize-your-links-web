@@ -18,7 +18,7 @@ class SettingsManagerTest extends TestCase
     public function setUp(): void
     {
         $this->defaultSettings = [
-            'startPage' => 3,
+            'startPage' => "edit-series-page",
             'initialDataId' => "",
             'animationSpeedSingle' => 0.05,
             'animationSpeedMulti' => 0.1,

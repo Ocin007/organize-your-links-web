@@ -8,7 +8,7 @@ interface Setting
     const KEY_TITLE_LANGUAGE = 'titleLanguage';
 
     const KEY_TYPE_MAP = [
-        'startPage' => 'integer',
+        'startPage' => 'string',
         self::KEY_INITIAL_DATA_ID => 'string',
         'animationSpeedSingle' => 'double',
         'animationSpeedMulti' => 'double',
@@ -47,7 +47,7 @@ interface Setting
     ];
 
     const DEFAULT = [
-        'startPage' => 3,
+        'startPage' => "edit-series-page",
         self::KEY_INITIAL_DATA_ID => "",
         'animationSpeedSingle' => 0.05,
         'animationSpeedMulti' => 0.1,

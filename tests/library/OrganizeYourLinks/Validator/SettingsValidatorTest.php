@@ -151,7 +151,7 @@ class SettingsValidatorTest extends TestCase
     {
         return [
             [
-                'startPage' => 4,
+                'startPage' => 'page-id',
                 'initialDataId' => 'id2',
                 'animationSpeedSingle' => 0.05,
                 'animationSpeedMulti' => 0.1,
