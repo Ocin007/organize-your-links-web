@@ -3,7 +3,10 @@ import { Inject, InjectionTarget } from "../decorators/decorators";
 @InjectionTarget()
 class NavigationService implements NavigationServiceInterface {
 
-    private currentActive: PageID;
+    //TODO: anzahl serien in playlist über pageoptions
+
+    private currentPageId: PageID;
+    private currentPageOptions: PageOptions;
 
     constructor(
         @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface,
@@ -11,6 +14,9 @@ class NavigationService implements NavigationServiceInterface {
     ) {}
 
     subscribe(observer: ObserverFunction<PageOptions>, watch?: PageID[]): void {
+        if (this.currentPageId !== undefined && (watch === undefined || watch.includes(this.currentPageId))) {
+            observer(this.currentPageOptions);
+        }
         this.observable.subscribe(observer, watch);
     }
 
@@ -19,19 +25,16 @@ class NavigationService implements NavigationServiceInterface {
     }
 
     navigateTo(pageId: PageID, options?: {}): void {
-        if (this.currentActive !== pageId && this.currentActive !== undefined) {
+        if (this.currentPageId !== pageId && this.currentPageId !== undefined) {
             this.closeCurrent();
         }
         this.openPage(pageId, options);
     }
 
     private closeCurrent() {
-        let pageOptions: PageOptions = {
-            pageId: this.currentActive,
-            active: false
-        };
-        this.notifier.debug(`NavigationService: close current active page (${this.currentActive}).`, pageOptions);
-        this.notifySubs(pageOptions);
+        this.currentPageOptions.active = false;
+        this.notifier.debug(`NavigationService: close current active page (${this.currentPageId}).`, this.currentPageOptions);
+        this.notifySubs(this.currentPageOptions);
     }
 
     private openPage(pageId: PageID, options: {} = {}) {
@@ -42,7 +45,8 @@ class NavigationService implements NavigationServiceInterface {
         };
         this.notifier.debug(`NavigationService: open page ${pageId}.`, pageOptions);
         this.notifySubs(pageOptions);
-        this.currentActive = pageId;
+        this.currentPageId = pageId;
+        this.currentPageOptions = pageOptions;
     }
 
     private notifySubs(options: PageOptions): void {

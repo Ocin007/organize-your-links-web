@@ -20,6 +20,9 @@ import PopupService from "../../services/PopupService";
 import OylNotifyDetails from "./oyl-notification/oyl-notify-card/oyl-notify-details/oyl-notify-details";
 import OylJson from "../common/oyl-json/oyl-json";
 import NavigationService from "../../services/NavigationService";
+import EditSeriesPage from "../pages/edit/series/EditSeriesPage";
+import PageService from "../../services/PageService";
+import OylEditSeriesPage from "../pages/edit/series/oyl-edit-series-page/oyl-edit-series-page";
 
 @OylModule({
     declarations: [
@@ -37,6 +40,7 @@ import NavigationService from "../../services/NavigationService";
         OylOpacityLayer,
         OylNotifyDetails,
         OylJson,
+        OylEditSeriesPage,
     ],
     dependencies: [
         {injectable: Observable, alias: 'ObservableInterface', multi: true},
@@ -44,7 +48,10 @@ import NavigationService from "../../services/NavigationService";
         {injectable: ApiClient, alias: 'RestClientInterface'},
         {injectable: PopupService, alias: 'PopupServiceInterface'},
         {injectable: NavigationService, alias: 'NavigationServiceInterface'},
-        {injectable: SettingsService, provider: RestServiceProvider, alias: 'SettingsServiceInterface'}
+        {injectable: SettingsService, provider: RestServiceProvider, alias: 'SettingsServiceInterface'},
+
+        {injectable: EditSeriesPage},
+        {injectable: PageService, alias: 'PageServiceInterface'}
     ],
 })
 export class OylAppModule {}

@@ -3,10 +3,6 @@ import scss from "./oyl-app.scss";
 import { ComponentConnected, ComponentDisconnected, Inject, OylComponent } from "../../decorators/decorators";
 import Component from "../component";
 import { Events, SettingKey } from "../../@types/enums";
-import OylNavBar from "./oyl-nav-bar/oyl-nav-bar";
-import OylPageFrame from "./oyl-page-frame/oyl-page-frame";
-import OylSlidePage from "./oyl-slide-page/oyl-slide-page";
-import NavEvent from "../../events/NavEvent";
 import OylLabel from "../common/oyl-label/oyl-label";
 import { SettingsServiceInterface } from "../../@types/types";
 import ComponentConnectedEvent from "../../events/ComponentConnectedEvent";
@@ -16,10 +12,6 @@ import ComponentConnectedEvent from "../../events/ComponentConnectedEvent";
     scss: scss
 })
 class OylApp extends Component {
-
-    protected navBar: OylNavBar;
-    protected pageFrame: OylPageFrame;
-    protected slidePage: OylSlidePage;
 
     static get tagName(): string {
         return 'oyl-app';
@@ -39,7 +31,8 @@ class OylApp extends Component {
     // </oyl-notification>
     constructor(
         @Inject('SettingsServiceInterface') private settings: SettingsServiceInterface,
-        @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface
+        @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface,
+        @Inject('NavigationServiceInterface') private navigator: NavigationServiceInterface
     ) {
         super();
         this.initGlobalDefaultErrorHandling();
@@ -48,7 +41,7 @@ class OylApp extends Component {
 
     @ComponentConnected()
     connectedCallback(): void {
-        this.initNavigation();
+        this.openStartPage();
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
@@ -58,24 +51,12 @@ class OylApp extends Component {
     disconnectedCallback(): void {
     }
 
-    //TODO: advanced: NavigationModule mit routing service und komponente, die entsprechende
-    // komponente einbindet, zu der navigiert wird (ersetzt wahrscheinlich <oyl-page-frame>)
-    private initNavigation(): void {
-        this.addEventListener(Events.Nav, (ev: NavEvent) => {
-            this.navBar.setAttribute('page-id', ev.pageId);
-            this.pageFrame.setAttribute('page-id', ev.pageId);
-            this.slidePage.setAttribute('page-id', ev.pageId);
-            this.notifier.debug(`OylApp: navigate to pageId '${ev.pageId}'.`);
-        });
+    private openStartPage(): void {
         let startPage: PageID;
         this.settings.whenInitSuccessful()
-            .then(err => startPage = (err.length === 0) ? this.settings.get<PageID>(SettingKey.START_PAGE) : 'playlist_all')
-            .catch(_ => startPage = 'playlist_all')//TODO: feste id oder garnix, weil eh keine settings
-            .finally(() => {
-                this.navBar.setAttribute('page-id', startPage);
-                this.pageFrame.setAttribute('page-id', startPage);
-                this.slidePage.setAttribute('page-id', startPage);
-            });
+            .then(err => startPage = (err.length === 0) ? this.settings.get<PageID>(SettingKey.START_PAGE) : '')
+            .catch(_ => startPage = '')
+            .finally(() => this.navigator.navigateTo(startPage));
     }
 
     private debugLoadedComponentsCount(): void {

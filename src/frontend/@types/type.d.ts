@@ -103,3 +103,11 @@ declare interface NotificationServiceInterface extends IsObservable {
 declare interface NavigationServiceInterface extends IsObservable {
     navigateTo(pageId: PageID, options?: {}): void;
 }
+declare interface PageInterface {
+    readonly pageId: PageID;
+    readonly label: string;
+}
+declare interface PageServiceInterface {
+    getAll(): PageInterface[];
+    get(pageId: PageID): PageInterface;
+}

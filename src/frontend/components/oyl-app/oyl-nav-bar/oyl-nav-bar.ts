@@ -3,15 +3,12 @@ import scss from "./oyl-nav-bar.scss";
 import { ComponentConnected, ComponentDisconnected, Inject, OylComponent } from "../../../decorators/decorators";
 import Component from "../../component";
 import OylNavBarTab from "./oyl-nav-bar-tab/oyl-nav-bar-tab";
-import Page from "../../pages/page";
 
 @OylComponent({
     html: html,
     scss: scss
 })
 class OylNavBar extends Component {
-
-    static PAGE_DOES_NOT_EXIST = 'Seite existiert nicht.';
 
     protected tabContainer: HTMLDivElement;
 
@@ -20,44 +17,36 @@ class OylNavBar extends Component {
     }
 
     static get observedAttributes() {
-        return ['page-id'];
+        return [];
     }
 
     constructor(
-        @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface
+        @Inject('PageServiceInterface') private pages: PageServiceInterface,
+        @Inject('NavigationServiceInterface') private navigator: NavigationServiceInterface
     ) {
         super();
     }
 
     @ComponentConnected()
     connectedCallback(): void {
-        this.pages.all.forEach((page: Page) => {
-            let tab = document.createElement(OylNavBarTab.tagName);
-            if (tab instanceof OylNavBarTab) {
-                this.tabContainer.appendChild(tab);
-                tab.setAttribute('page-id', page.pageId);
-            }
+        this.pages.getAll().forEach((page: PageInterface) => {
+            let tab = new OylNavBarTab();
+            this.tabContainer.appendChild(tab);
+            tab.setAttribute('label', page.label);
+            this.navigator.subscribe((options: PageOptions) => {
+                tab.setAttribute('active', options.active.toString());
+            }, [page.pageId]);
+            tab.addEventListener('click', _ => {
+                this.navigator.navigateTo(page.pageId);
+            });
         });
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
-        if (oldVal !== null) {
-            this.setTabActive(oldVal, false);
-        }
-        this.setTabActive(newVal, true);
     }
 
     @ComponentDisconnected()
     disconnectedCallback(): void {
-    }
-
-    private setTabActive(pageId: PageID, active: boolean): void {
-        let tab = this.tabContainer.querySelector<OylNavBarTab>('[page-id="' + pageId + '"]');
-        if (tab === null) {
-            this.notifier.error(OylNavBar.PAGE_DOES_NOT_EXIST, {pageId: pageId});
-        } else {
-            tab.setAttribute('active', '' + active);
-        }
     }
 }
 

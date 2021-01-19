@@ -1,4 +1,3 @@
-import PageProvider from "./pages/PageProvider";
 import { ComponentConnected, ComponentDisconnected } from "../decorators/decorators";
 
 abstract class Component extends HTMLElement {
@@ -7,11 +6,6 @@ abstract class Component extends HTMLElement {
 
     private html: string;
     private scss: string;
-
-    //TODO: remove this
-    protected get pages(): PageProvider {
-        return PageProvider.instance;
-    }
 
     constructor() {
         super();
