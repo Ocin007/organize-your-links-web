@@ -1,9 +1,4 @@
 declare type PageID = string;
-declare type PageOptions = {
-    pageId: PageID,
-    active: boolean,
-    [key: string]: any
-};
 declare type NotifyDetails = {
     html?: HTMLElement,
     raw?: Object
@@ -49,6 +44,7 @@ declare type PopupObject = {
     buttonClicked: (id: ButtonName) => void,
     aborted: () => void
 };
+declare type SeriesID = string;
 
 
 
@@ -106,8 +102,18 @@ declare interface NavigationServiceInterface extends IsObservable {
 declare interface PageInterface {
     readonly pageId: PageID;
     readonly label: string;
+    readonly component: HTMLElement;
+    update(options: PageOptions): void;
 }
 declare interface PageServiceInterface {
     getAll(): PageInterface[];
     get(pageId: PageID): PageInterface;
+}
+declare interface PageOptions {
+    pageId: PageID;
+    active: boolean;
+    [key: string]: any;
+}
+declare interface SeriesPageOptions extends PageOptions {
+    seriesId: SeriesID;
 }

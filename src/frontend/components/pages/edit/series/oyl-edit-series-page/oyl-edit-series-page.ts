@@ -9,23 +9,37 @@ import Component from "../../../../component";
 })
 class OylEditSeriesPage extends Component {
 
+    private seriesId: SeriesID;
+
     static get tagName(): string {
         return 'oyl-edit-series-page';
     }
 
     static get observedAttributes() {
-        return [];
+        return ['series-id'];
     }
 
     @ComponentConnected()
     connectedCallback(): void {
+        this.render();
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string): void {
+        this.seriesId = newVal;
+        this.render();
     }
 
     @ComponentDisconnected()
     disconnectedCallback(): void {
+        this.resetPage();
+    }
+
+    private render(): void {
+        //TODO: build actual page
+    }
+
+    private resetPage() {
+        //TODO: reset page?
     }
 }
 
