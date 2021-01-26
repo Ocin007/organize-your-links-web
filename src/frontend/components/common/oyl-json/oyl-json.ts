@@ -54,14 +54,15 @@ class OylJson extends Component {
     }
 
     private renderStringValues(json: string): string {
-        let strValues = json.match(/"(([^"]|\\")*)"[,\n]/g);
+        let strValues = json.match(/"(([^"]|\\")*)"[,]?\n/g);
         if (strValues === null) {
             return json;
         }
         strValues.forEach(match => {
             let value = match.substr(0, match.length - 1);
-            if (match.endsWith(',')) {
-                json = json.replace(match, `<span class="green">${value}</span><span class="orange">,</span>`);
+            if (value.endsWith(',')) {
+                value = value.substr(0, value.length - 1);
+                json = json.replace(match, `<span class="green">${value}</span><span class="orange">,</span>\n`);
             } else {
                 json = json.replace(match, `<span class="green">${value}</span>\n`);
             }
