@@ -51,7 +51,7 @@ declare type Series = {
         overview: Translation,
         seriesId: string,
         lastUpdated: number,
-        firstAired: string,
+        firstAired: number,
         poster: string,//als fallback, wenn sonst kein thumbnail da ist
         tags: string[],//tag ids, mapping von id auf name
         status: SeriesStatus,
@@ -93,7 +93,7 @@ declare type Episode = {
         overview: Translation,
         episodeId: string,
         lastUpdated: number,
-        firstAired: string,
+        firstAired: number,
         thumbnail: string,
         season: number,
         episode: number,
