@@ -21,8 +21,11 @@ ul {
 .hide {
     display: none;
 }
-.json-string {
+.keep-whitespace {
     white-space: pre;
+}
+.error-container {
+    padding-left: 40px;
 }
 .error {
     color: $error;

@@ -20,6 +20,7 @@ class OylNotifyDetails extends Component {
     protected htmlDetails: HTMLSpanElement;
     protected rawDetailsContainer: HTMLLIElement;
     protected rawDetails: HTMLSpanElement;
+    protected errorDiv: HTMLDivElement;
 
     static get tagName(): string {
         return 'oyl-notify-details';
@@ -71,8 +72,11 @@ class OylNotifyDetails extends Component {
             this.rawDetailsContainer.classList.remove('hide');
             //TODO: async, mit loading spinner
             // oder (ab bestimmter größe) link, der raw im neuen tab öffnet
-            //TODO: check instance of Error -> anders printen
-            this.rawDetails.appendChild(new OylJson(this.details.raw));
+            if (this.details.raw instanceof Error) {
+                this.errorDiv.innerText = this.details.raw.stack;
+            } else {
+                this.rawDetails.appendChild(new OylJson(this.details.raw));
+            }
         }
     }
 }
