@@ -23,6 +23,7 @@ import NavigationService from "../../services/NavigationService";
 import EditSeriesPage from "../pages/edit/series/EditSeriesPage";
 import PageService from "../../services/PageService";
 import OylEditSeriesPage from "../pages/edit/series/oyl-edit-series-page/oyl-edit-series-page";
+import SeriesService from "../../services/rest/SeriesService";
 
 @OylModule({
     declarations: [
@@ -49,6 +50,7 @@ import OylEditSeriesPage from "../pages/edit/series/oyl-edit-series-page/oyl-edi
         {injectable: PopupService, alias: 'PopupServiceInterface'},
         {injectable: NavigationService, alias: 'NavigationServiceInterface'},
         {injectable: SettingsService, provider: RestServiceProvider, alias: 'SettingsServiceInterface'},
+        {injectable: SeriesService, provider: RestServiceProvider, alias: 'SeriesServiceInterface'},
 
         {injectable: EditSeriesPage},
         {injectable: PageService, alias: 'PageServiceInterface'}

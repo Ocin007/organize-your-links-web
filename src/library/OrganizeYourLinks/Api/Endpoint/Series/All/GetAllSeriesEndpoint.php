@@ -33,6 +33,8 @@ class GetAllSeriesEndpoint implements JsonEndpointHandlerInterface
 
     public function execute(ResponseJson $response): void
     {
+//        throw new \Exception('test');//TODO: remove this
+//        $response->appendErrors(new ErrorList(['test 1', 'test 2']));return;//TODO: remove this
         $allSeries = $this->seriesManager->getAll(null, $this->sorter);
         if ($allSeries === null) {
             $errorList = $this->seriesManager->getErrorList();

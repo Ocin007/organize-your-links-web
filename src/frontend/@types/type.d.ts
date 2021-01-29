@@ -44,7 +44,89 @@ declare type PopupObject = {
     buttonClicked: (id: ButtonName) => void,
     aborted: () => void
 };
+declare type Series = {
+    id: SeriesID,
+    api: {
+        name: Translation,
+        overview: Translation,
+        seriesId: string,
+        lastUpdated: number,
+        firstAired: string,
+        poster: string,//als fallback, wenn sonst kein thumbnail da ist
+        tags: string[],//tag ids, mapping von id auf name
+        status: SeriesStatus,
+        aliases: string[],
+    },
+    apiHasChanges: boolean,//ist auch true wenn eine episode changes hat
+    customTags: string[],
+    created: number,
+    lastUpdated: number,
+    name: Translation,
+    playlists: PlaylistID[],
+    rank: Rank,
+    favorite: boolean,
+    seasons: Season[],
+    movies: EpisodeGroup[],
+    others: EpisodeGroup[]
+};
+declare type Season = {
+    favorite: boolean,
+    lastUpdated: number,
+    api: {
+        airedSeasonID: string,//wird wohl nicht benutzt, brauch ich das? lieber bei episode speichern?
+    },
+    groups: EpisodeGroup[]
+};
+declare type EpisodeGroup = {
+    thumbnail: string,
+    api: {
+        thumbnail: string,
+    },
+    url: string,
+    name: Translation,//alternativer name (season 4 teil 1 / teil 2)
+    lastUpdated: number,
+    episodes: Episode[]
+}
+declare type Episode = {
+    api: {
+        name: Translation,
+        overview: Translation,
+        episodeId: string,
+        lastUpdated: number,
+        firstAired: string,
+        thumbnail: string,
+        season: number,
+        episode: number,
+        isMovie: boolean,
+    },
+    apiHasChanges: boolean,
+    lastChecked: number,
+    name: Translation,
+    lastUpdated: number,
+    url: string,
+    favorite: boolean,
+    watched: boolean,
+    firstWatched: number,
+};
+declare type Translation = {
+    de: string,
+    en: string,
+    jpn: string
+}
+declare type Language = 'de' | 'en' | 'jpn';
+declare type Rank = 's' | 'a' | 'b' | 'c' | 'd' | '?';
+declare type SeriesStatus = 'tba' | 'ongoing' | 'ended';
 declare type SeriesID = string;
+declare type PlaylistID = string;
+declare type GroupedSeriesList = {
+    [firstChar: string]: Series[];
+};
+declare type SeriesList = {
+    [seriesId: string]: {
+        firstChar: string,
+        series: Series
+    }
+};
 
 
 
@@ -116,4 +198,12 @@ declare interface PageOptions {
 }
 declare interface SeriesPageOptions extends PageOptions {
     seriesId: SeriesID;
+}
+declare interface SeriesServiceInterface extends RestServiceInterface, IsObservable {
+    get(seriesId: SeriesID): Series;
+    getList(idList?: SeriesID[]): SeriesList;
+    getGroupedList(idList?: SeriesID[]): GroupedSeriesList;
+    create(series: Series): Promise<string[]>;
+    update(changed: Series[]): Promise<string[]>;
+    delete(seriesId: SeriesID): Promise<string[]>;
 }

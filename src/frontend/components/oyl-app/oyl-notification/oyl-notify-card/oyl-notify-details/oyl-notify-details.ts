@@ -69,6 +69,9 @@ class OylNotifyDetails extends Component {
         }
         if (this.details.raw !== undefined) {
             this.rawDetailsContainer.classList.remove('hide');
+            //TODO: async, mit loading spinner
+            // oder (ab bestimmter größe) link, der raw im neuen tab öffnet
+            //TODO: check instance of Error -> anders printen
             this.rawDetails.appendChild(new OylJson(this.details.raw));
         }
     }

@@ -12,7 +12,7 @@ class EditSeriesPage implements PageInterface {
         return 'Serie bearbeiten';
     }
 
-    get component(): HTMLElement {
+    get component(): OylEditSeriesPage {
         if (this._component === undefined) {
             this._component = new OylEditSeriesPage();
         }

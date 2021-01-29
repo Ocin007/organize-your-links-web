@@ -193,6 +193,7 @@ class OylNotifyCard extends Component {
         } else {
             msg = this.msgString;
         }
+        //TODO: details vielleicht nicht immer neu generieren
         let description = new OylNotifyDetails(this.status, msg, this.date, this.details);
         let autoClose = this.autoClose;
         if (autoClose) {

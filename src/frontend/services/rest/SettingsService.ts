@@ -24,6 +24,7 @@ class SettingsService implements SettingsServiceInterface {
     private initResolve: (errors: string[]) => void;
     private initReject: (error: Error) => void;
 
+    //TODO: von AbstractRestService erben
     constructor(
         @Inject('NotificationServiceInterface') private notifier: NotificationServiceInterface,
         @Inject('RestClientInterface') private api: RestClientInterface,
